@@ -1,0 +1,49 @@
+header {
+  height: 100px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  position: relative;
+}
+
+.col-3 {
+  height: 100%;
+}
+
+.center img {
+  width: auto;
+  height: 70px;
+}
+
+.nav {
+  display: flex;
+  justify-content: center; /* căn giữa */
+  align-items: center; /* căn giữa theo chiều dọc */
+}
+
+/* Header.module.css */
+.nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex; /* xếp ngang */
+  justify-content: center; /* căn giữa */
+
+  gap: 40px; /* khoảng cách giữa các mục */
+}
+
+.nav li {
+  flex: 0 0 auto; /* không cho li kéo giãn */
+}
+
+.nav li a {
+  text-decoration: none;
+  color: #000;
+  font-weight: 600;
+  padding: 8px 12px;
+  transition: color 0.3s ease;
+  font-size: 20px;
+}
+
+.nav li a:hover {
+  color: #ff6600;
+}
