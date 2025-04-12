@@ -82,14 +82,16 @@ function Menus() {
           </Box>
           <CustomTabPanel value={value} index={0}>
             <div className="row">
-              <div className="col-3">
-                <OverlayCard
-                  description={["Description 1"]}
-                  height="300px"
-                  title="Title"
-                  imageSrc={img1}
-                />
-              </div>
+              {menus.map((item, index) => (
+                <div className="col-3 mb-4" key={index}>
+                  <OverlayCard
+                    description={[item.description || "No description"]}
+                    height="300px"
+                    title={item.title || "No title"}
+                    imageSrc={item.image || img1} // Nếu không có hình thì dùng img1
+                  />
+                </div>
+              ))}
             </div>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
