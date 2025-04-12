@@ -82,26 +82,67 @@ function Menus() {
           </Box>
           <CustomTabPanel value={value} index={0}>
             <div className="row">
-              {menus.map((item, index) => (
-                <div className="col-3 mb-4" key={index}>
-                  <OverlayCard
-                    description={[item.description || "No description"]}
-                    height="300px"
-                    title={item.title || "No title"}
-                    imageSrc={item.image || img1} // Nếu không có hình thì dùng img1
-                  />
-                </div>
-              ))}
+              {menus
+                .filter((item) => item.category === "appetizer")
+                .map((item, index) => (
+                  <div className="col-3 mb-4" key={index}>
+                    <OverlayCard
+                      title={item.title}
+                      description={[item.description]}
+                      height="450px"
+                      imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                    />
+                  </div>
+                ))}
             </div>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-            Item Two
+            <div className="row">
+              {menus
+                .filter((item) => item.category === "mainCourse")
+                .map((item, index) => (
+                  <div className="col-3 mb-4" key={index}>
+                    <OverlayCard
+                      title={item.title}
+                      description={[item.description]}
+                      height="450px"
+                      imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                    />
+                  </div>
+                ))}
+            </div>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
-            Item Three
+            <div className="row">
+              {menus
+                .filter((item) => item.category === "dessert")
+                .map((item, index) => (
+                  <div className="col-3 mb-4" key={index}>
+                    <OverlayCard
+                      title={item.title}
+                      description={[item.description]}
+                      height="450px"
+                      imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                    />
+                  </div>
+                ))}
+            </div>
           </CustomTabPanel>
           <CustomTabPanel value={value} index={3}>
-            Item Four
+            <div className="row">
+              {menus
+                .filter((item) => item.category === "drink")
+                .map((item, index) => (
+                  <div className="col-3 mb-4" key={index}>
+                    <OverlayCard
+                      title={item.title}
+                      description={[item.description]}
+                      height="450px"
+                      imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                    />
+                  </div>
+                ))}
+            </div>
           </CustomTabPanel>
         </Box>
       </div>

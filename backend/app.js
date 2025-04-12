@@ -17,6 +17,9 @@ app.use(bodyParser.json());
 // Routes
 app.use("/api/menus", menuRoutes);
 
+//Upload: Cho phép truy cập vào thư mục uploads
+app.use("/uploads", express.static("uploads"));
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
