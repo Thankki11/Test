@@ -25,3 +25,19 @@ exports.getMenuById = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+exports.getMenuByCategory = async (req, res) => {
+  const { category } = req.params; // Lấy category từ params
+
+  try {
+    const menus = await Menu.find({ category }).limit(4); // Tìm menu theo category và giới hạn kết quả là 4 món ăn
+
+    if (!menus) {
+      return res.status(404).json({ message: "Menu not found" }); // Nếu không tìm thấy menu
+    }
+
+    res.json(menus); // Trả về danh sách menu
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};

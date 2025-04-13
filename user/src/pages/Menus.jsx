@@ -90,7 +90,7 @@ function Menus() {
                     <Link to={`/detail/${item._id}`}>
                       <OverlayCard
                         title={item.title}
-                        description={[item.description]}
+                        description={["$ " + item.price]}
                         height="450px"
                         imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
                       />
