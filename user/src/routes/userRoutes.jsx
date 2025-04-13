@@ -7,7 +7,7 @@ import RegisterClass from "../pages/RegisterClass";
 import Recruitment from "../pages/Recuitment";
 import Shop from "../pages/Shop";
 import Detail from "../pages/Detail";
-
+import Test from "../pages/test";
 // Layout
 import UserLayout from "../layouts/UserLayout";
 
@@ -89,6 +89,14 @@ const routes = [
     element: (
       <UserLayout>
         <Detail />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/test",
+    element: (
+      <UserLayout>
+        <Test />
       </UserLayout>
     ),
   },

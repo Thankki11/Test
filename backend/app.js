@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const connectDB = require("./config/db");
 const menuRoutes = require("./routes/menuRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 
 const app = express();
 require("dotenv").config();
@@ -16,6 +17,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use("/api/menus", menuRoutes);
+app.use("/api/carts", cartRoutes);
 
 //Upload: Cho phép truy cập vào thư mục uploads
 app.use("/uploads", express.static("uploads"));

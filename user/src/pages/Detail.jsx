@@ -20,7 +20,6 @@ function Detail() {
   const [relatedMenus, setRelatedMenus] = useState([]); // State để lưu danh sách món ăn liên quan
   const [value, setValue] = useState("1");
   const { id } = useParams(); // Lấy id từ URL
-  const [cart, setCart] = useState([]); // State giả cho giỏ hàng
   const [quantity, setQuantity] = useState(1); // State để lưu số lượng món ăn
 
   // Hàm gọi API để lấy chi tiết món ăn
@@ -30,7 +29,6 @@ function Detail() {
       .get(`http://localhost:5000/api/menus/${id}`)
       .then((response) => {
         setMenu(response.data); // Lưu dữ liệu món ăn vào state
-        console.log(response.data); // In ra để kiểm tra dữ liệu
         axios
           .get(
             `http://localhost:5000/api/menus/category/${response.data.category}`
@@ -47,33 +45,6 @@ function Detail() {
         console.error("There was an error fetching the menu detail!", error);
       });
   }, [id]); // useEffect sẽ được gọi lại khi id thay đổi
-
-  // Hàm xử lý khi người dùng nhấn nút "Add to cart"
-  const handleAddToCart = () => {
-    // Giả sử menu là đối tượng món ăn đã được lấy từ API
-    const menu = { id: 1, title: "Pizza", price: 10 }; // Ví dụ
-
-    // Thêm món ăn vào giỏ hàng với số lượng đã chọn
-    const existingItem = cart.find((item) => item.id === menu.id);
-    if (existingItem) {
-      setCart(
-        cart.map((item) =>
-          item.id === menu.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        )
-      );
-    } else {
-      // Nếu món ăn chưa có trong giỏ hàng, thêm mới
-      setCart([
-        ...cart,
-        { id: menu._id, title: menu.title, price: menu.price, quantity },
-      ]);
-    }
-    alert(
-      `${menu.title} has been added to the cart with quantity: ${quantity}`
-    ); // Thông báo
-  };
 
   if (!menu) {
     return <div>Loading...</div>; // Nếu chưa có dữ liệu món ăn, hiển thị loading
@@ -103,7 +74,7 @@ function Detail() {
               <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
               <ButtonWhite
                 buttontext={"Add to cart"}
-                onClick={handleAddToCart}
+                onClick={() => sendProductToCart(menu, quantity)}
               />
               <ButtonWhite buttontext={"Buy now"} />
             </div>
@@ -207,3 +178,27 @@ function Detail() {
 }
 
 export default Detail;
+
+//Gửi món ăn vào giỏ hàng trên server
+const sendProductToCart = (menu, quantity) => {
+  const data = {
+    cartId: "67fb8e201f70bf74520565e7",
+    items: [
+      {
+        _id: menu._id, // ID món ăn từ state menu
+        title: menu.title, // Tên món ăn từ state menu
+        quantity: quantity, // Số lượng từ state quantity
+        price: menu.price, // Giá món ăn từ state menu
+      },
+    ],
+  };
+  axios
+    .post("http://localhost:5000/api/carts/add", data) // Gửi dữ liệu tới server
+    .then((response) => {
+      console.log("Data sent successfully:", response.data);
+      window.alert(`${menu.title} (${quantity}) đã được thêm vào giỏ hàng!`);
+    })
+    .catch((error) => {
+      console.error("Error sending data:", error);
+    });
+};
