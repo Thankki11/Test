@@ -9,3 +9,19 @@ exports.getMenus = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+exports.getMenuById = async (req, res) => {
+  const { id } = req.params; // Lấy id từ params
+
+  try {
+    const menu = await Menu.findById(id); // Tìm menu theo id
+
+    if (!menu) {
+      return res.status(404).json({ message: "Menu not found" }); // Nếu không tìm thấy menu
+    }
+
+    res.json(menu); // Trả về menu chi tiết
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};

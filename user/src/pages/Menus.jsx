@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
+import { Link } from "react-router-dom";
 
 import OverlayCard from "../components/OverlayCard/OverlayCard";
 import PageHeader from "../components/PageHeader/PageHeader";
@@ -86,12 +87,14 @@ function Menus() {
                 .filter((item) => item.category === "appetizer")
                 .map((item, index) => (
                   <div className="col-3 mb-4" key={index}>
-                    <OverlayCard
-                      title={item.title}
-                      description={[item.description]}
-                      height="450px"
-                      imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
-                    />
+                    <Link to={`/detail/${item._id}`}>
+                      <OverlayCard
+                        title={item.title}
+                        description={[item.description]}
+                        height="450px"
+                        imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                      />
+                    </Link>
                   </div>
                 ))}
             </div>
@@ -102,12 +105,14 @@ function Menus() {
                 .filter((item) => item.category === "mainCourse")
                 .map((item, index) => (
                   <div className="col-3 mb-4" key={index}>
-                    <OverlayCard
-                      title={item.title}
-                      description={[item.description]}
-                      height="450px"
-                      imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
-                    />
+                    <Link to={`/detail/${item._id}`}>
+                      <OverlayCard
+                        title={item.title}
+                        description={[item.description]}
+                        height="450px"
+                        imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                      />
+                    </Link>
                   </div>
                 ))}
             </div>
@@ -118,12 +123,14 @@ function Menus() {
                 .filter((item) => item.category === "dessert")
                 .map((item, index) => (
                   <div className="col-3 mb-4" key={index}>
-                    <OverlayCard
-                      title={item.title}
-                      description={[item.description]}
-                      height="450px"
-                      imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
-                    />
+                    <Link to={`/detail/${item._id}`}>
+                      <OverlayCard
+                        title={item.title}
+                        description={[item.description]}
+                        height="450px"
+                        imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                      />
+                    </Link>
                   </div>
                 ))}
             </div>
@@ -134,12 +141,14 @@ function Menus() {
                 .filter((item) => item.category === "drink")
                 .map((item, index) => (
                   <div className="col-3 mb-4" key={index}>
-                    <OverlayCard
-                      title={item.title}
-                      description={[item.description]}
-                      height="450px"
-                      imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
-                    />
+                    <Link to={`/detail/${item._id}`}>
+                      <OverlayCard
+                        title={item.title}
+                        description={[item.description]}
+                        height="450px"
+                        imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                      />
+                    </Link>
                   </div>
                 ))}
             </div>

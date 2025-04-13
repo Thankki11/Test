@@ -84,6 +84,14 @@ const routes = [
       </UserLayout>
     ),
   },
+  {
+    path: "/detail/:id",
+    element: (
+      <UserLayout>
+        <Detail />
+      </UserLayout>
+    ),
+  },
 ];
 
 export default routes;

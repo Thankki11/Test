@@ -16,7 +16,7 @@ function Header() {
           >
             <div>
               <ButtonWhite
-                buttontext="Login"
+                buttontext="Cart (0)"
                 onClick={() => alert("Button Clicked!")}
               />
             </div>

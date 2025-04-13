@@ -14,9 +14,9 @@ function OverlayCard({
           className={styles.content + " d-flex flex-column align-items-center"}
         >
           <li>
-            <a href="#" className="d-flex justify-content-center">
+            <div href="#" className="d-flex justify-content-center">
               <h2>{title}</h2>
-            </a>
+            </div>
           </li>
           <li>
             {description.map((line, index) => (
