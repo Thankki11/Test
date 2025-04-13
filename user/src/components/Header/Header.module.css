@@ -21,13 +21,13 @@ header {
 }
 
 /* Header.module.css */
-.nav ul {
+.mainMenus {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex; /* xếp ngang */
   justify-content: center; /* căn giữa */
-
+  align-items: center; /* căn giữa theo chiều dọc */
   gap: 40px; /* khoảng cách giữa các mục */
 }
 
@@ -35,7 +35,8 @@ header {
   flex: 0 0 auto; /* không cho li kéo giãn */
 }
 
-.nav li a {
+.nav li a,
+.dropdownText {
   text-decoration: none;
   color: #000;
   font-weight: 600;

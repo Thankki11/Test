@@ -3,9 +3,10 @@ import Home from "../pages/Home";
 import Menus from "../pages/Menus";
 import Blogs from "../pages/Blogs";
 import Chefs from "../pages/Chefs";
-import CookingClassRegister from "../pages/CookingClassRegister";
+import RegisterClass from "../pages/RegisterClass";
 import Recruitment from "../pages/Recuitment";
 import Shop from "../pages/Shop";
+import Detail from "../pages/Detail";
 
 // Layout
 import UserLayout from "../layouts/UserLayout";
@@ -44,14 +45,6 @@ const routes = [
     ),
   },
   {
-    path: "/cooking-class-register",
-    element: (
-      <UserLayout>
-        <CookingClassRegister />
-      </UserLayout>
-    ),
-  },
-  {
     path: "/recruitment",
     element: (
       <UserLayout>
@@ -64,6 +57,30 @@ const routes = [
     element: (
       <UserLayout>
         <Shop />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/recuitment",
+    element: (
+      <UserLayout>
+        <Recruitment />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/register-class",
+    element: (
+      <UserLayout>
+        <RegisterClass />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/detail",
+    element: (
+      <UserLayout>
+        <Detail />
       </UserLayout>
     ),
   },

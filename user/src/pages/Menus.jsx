@@ -41,7 +41,7 @@ function Menus() {
         h2Title={""}
         title={"Menus"}
         subTitle={"Welcome to our delicious corner"}
-        buttonText={"Button"}
+        height="65vh"
       />
       <div className="section">
         <div className="text-center mb-5">

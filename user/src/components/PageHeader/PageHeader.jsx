@@ -9,9 +9,13 @@ function PageHeader({
   title,
   h2Title,
   buttonText,
+  height = "85vh", // chiều cao mặc định
 }) {
   return (
-    <section className={styles.section}>
+    <section
+      className={styles.section}
+      style={{ height: height, position: "relative" }}
+    >
       {backgroundType === "video" ? (
         <video
           className={styles.backgroundMedia}
@@ -34,13 +38,16 @@ function PageHeader({
         className={styles.overlay}
         style={{ backgroundColor: overlayColor }}
       ></div>
+
       <div className={styles.content}>
-        <div className="container text-white">
-          <div className="d-flex flex-column h-100 text-center align-items-center">
+        <div className="container text-white h-100">
+          <div className="d-flex flex-column h-100 text-center align-items-center justify-content-center">
             <h6 className={styles.subTitle}>{subTitle}</h6>
             <h1 className={"display-3 " + styles.titleText}>{title}</h1>
             <h2 className={styles.h2Title}>{h2Title}</h2>
-            <ButtonWhite2 buttontext={buttonText} className={styles.btn} />
+            {buttonText && (
+              <ButtonWhite2 buttontext={buttonText} className={styles.btn} />
+            )}
           </div>
         </div>
       </div>
