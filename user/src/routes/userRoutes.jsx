@@ -7,6 +7,7 @@ import RegisterClass from "../pages/RegisterClass";
 import Recruitment from "../pages/Recuitment";
 import Shop from "../pages/Shop";
 import Detail from "../pages/Detail";
+import CheckOut from "../pages/CheckOut";
 import Test from "../pages/test";
 // Layout
 import UserLayout from "../layouts/UserLayout";
@@ -89,6 +90,14 @@ const routes = [
     element: (
       <UserLayout>
         <Detail />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/check-out",
+    element: (
+      <UserLayout>
+        <CheckOut />
       </UserLayout>
     ),
   },

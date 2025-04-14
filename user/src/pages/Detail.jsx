@@ -9,6 +9,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import QuantitySelector from "../components/QuantitySelector";
+import PageHeader from "../components/PageHeader/PageHeader";
 
 import { Link } from "react-router-dom";
 import React, { useEffect, useState } from "react";
@@ -21,6 +22,11 @@ function Detail() {
   const [value, setValue] = useState("1");
   const { id } = useParams(); // Lấy id từ URL
   const [quantity, setQuantity] = useState(1); // State để lưu số lượng món ăn
+
+  // Reset quantity về 1 mỗi khi id (menuId) thay đổi
+  useEffect(() => {
+    setQuantity(1);
+  }, [id]);
 
   // Hàm gọi API để lấy chi tiết món ăn
   useEffect(() => {
@@ -56,6 +62,14 @@ function Detail() {
 
   return (
     <div>
+      <PageHeader
+        backgroundType={"image"}
+        backgroundSrc={img1}
+        h2Title={""}
+        title={""}
+        subTitle={""}
+        height="10vh"
+      />
       <div className="section">
         <div className="row">
           <div className="col-5">
@@ -76,7 +90,12 @@ function Detail() {
                 buttontext={"Add to cart"}
                 onClick={() => sendProductToCart(menu, quantity)}
               />
-              <ButtonWhite buttontext={"Buy now"} />
+              <Link to={"/check-out"}>
+                <ButtonWhite
+                  buttontext={"Buy now"}
+                  onClick={() => sendProductToCart(menu, quantity, false)}
+                />
+              </Link>
             </div>
             {/* sku, category, tags */}
             <Box sx={{ width: "100%", typography: "body1" }}>
@@ -179,26 +198,40 @@ function Detail() {
 
 export default Detail;
 
-//Gửi món ăn vào giỏ hàng trên server
-const sendProductToCart = (menu, quantity) => {
-  const data = {
-    cartId: "67fb8e201f70bf74520565e7",
-    items: [
-      {
-        _id: menu._id, // ID món ăn từ state menu
-        title: menu.title, // Tên món ăn từ state menu
-        quantity: quantity, // Số lượng từ state quantity
-        price: menu.price, // Giá món ăn từ state menu
-      },
-    ],
-  };
-  axios
-    .post("http://localhost:5000/api/carts/add", data) // Gửi dữ liệu tới server
-    .then((response) => {
-      console.log("Data sent successfully:", response.data);
-      window.alert(`${menu.title} (${quantity}) đã được thêm vào giỏ hàng!`);
-    })
-    .catch((error) => {
-      console.error("Error sending data:", error);
+//Lưu món ăn kèm số lượng vào LocalStorage
+const sendProductToCart = (menu, quantity, isNotify = true) => {
+  const cartId = "67fb8e201f70bf74520565e7"; // Giỏ hàng mặc định hoặc lấy từ localStorage
+
+  // Lấy giỏ hàng hiện tại từ localStorage hoặc khởi tạo giỏ hàng mới nếu không tồn tại
+  let cart = JSON.parse(localStorage.getItem("cart")) || { cartId, items: [] };
+
+  // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+  const existingItemIndex = cart.items.findIndex(
+    (item) => item._id === menu._id
+  );
+
+  if (existingItemIndex !== -1) {
+    // Nếu sản phẩm đã có trong giỏ hàng, cập nhật số lượng
+    cart.items[existingItemIndex].quantity += quantity;
+  } else {
+    // Nếu không có sản phẩm, thêm mới vào giỏ hàng
+    cart.items.push({
+      _id: menu._id,
+      title: menu.title,
+      quantity: quantity,
+      price: menu.price,
+      imageUrl: menu.imageUrl,
     });
+  }
+
+  // Lưu lại giỏ hàng vào localStorage
+  localStorage.setItem("cart", JSON.stringify(cart));
+
+  // Gửi sự kiện custom để các component khác biết
+  window.dispatchEvent(new Event("cartUpdated"));
+
+  if (isNotify) {
+    // Thông báo cho người dùng
+    alert(`${menu.title} (${quantity}) đã được thêm vào giỏ hàng!`);
+  }
 };

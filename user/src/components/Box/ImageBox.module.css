@@ -8,7 +8,7 @@
 }
 
 .image {
-  width: auto; /* Giữ nguyên chiều rộng tự động */
+  width: 100%; /* Giữ nguyên chiều rộng tự động */
   height: 100%; /* Chiều cao bằng 100% của thẻ cha */
   object-fit: cover; /* Đảm bảo ảnh phủ đầy mà không thay đổi tỷ lệ */
 }

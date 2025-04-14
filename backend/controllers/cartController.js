@@ -1,12 +1,41 @@
 const Cart = require("../models/cartModel");
 
+exports.updateCart = async (req, res) => {
+  const { cart } = req.body;
+  const _id = "67fb8e201f70bf74520565e7"; // sau này thay bằng id giỏ hảng
+
+  try {
+    // Tìm giỏ hàng theo _id, nếu không có thì tạo mới
+    let existingCart = await Cart.findOne({ _id });
+
+    if (existingCart) {
+      existingCart.items = cart;
+      await existingCart.save();
+    } else {
+      await Cart.create({ _id, items: cart });
+    }
+
+    res.status(200).json({ message: "Giỏ hàng đã được cập nhật!" });
+  } catch (error) {
+    console.error("Lỗi cập nhật giỏ hàng:", error);
+    res.status(500).json({ error: "Đã xảy ra lỗi khi cập nhật giỏ hàng." });
+  }
+};
+
 // Lấy giỏ hàng hiện tại
 exports.getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne(); // lấy cart đầu tiên (giả lập 1 cart duy nhất)
-    if (!cart) {
-      return res.json({ items: [] }); // chưa có cart thì trả về rỗng
+    const { id } = req.query;
+
+    if (!id) {
+      return res.status(400).json({ message: "Missing cart id" });
     }
+
+    const cart = await Cart.findById(id);
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
     res.json(cart);
   } catch (err) {
     res.status(500).json({ message: "Server Error" });
