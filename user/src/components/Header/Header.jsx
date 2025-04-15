@@ -12,7 +12,7 @@ function Header() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [headerVisible, setHeaderVisible] = useState(true);
 
-  // Start Phần xử lý cuộn chuột hiển thị header
+  // Start load giỏ hàng từ localStorage
   useEffect(() => {
     const loadCart = () => {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || {
@@ -28,7 +28,9 @@ function Header() {
       window.removeEventListener("cartUpdated", loadCart);
     };
   }, []);
+  // End load giỏ hàng từ localStorage
 
+  // Start Phần xử lý cuộn chuột hiển thị header
   useEffect(() => {
     const controlHeader = () => {
       const currentScrollY = window.scrollY;
@@ -66,6 +68,8 @@ function Header() {
       item._id === id ? { ...item, quantity: item.quantity + 1 } : item
     );
     updateCart(updatedItems);
+    // Gửi sự kiện custom để các component khác biết
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const decreaseQuantity = (id) => {
@@ -75,6 +79,8 @@ function Header() {
         : item
     );
     updateCart(updatedItems);
+    // Gửi sự kiện custom để các component khác biết
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const deleteItem = (id) => {
@@ -84,13 +90,14 @@ function Header() {
     if (confirmDelete) {
       const updatedItems = items.filter((item) => item._id !== id);
       updateCart(updatedItems);
+      // Gửi sự kiện custom để các component khác biết
+      window.dispatchEvent(new Event("cartUpdated"));
     }
   };
   // End phần xử lý giỏ hàng
 
   return (
     <>
-      {" "}
       {/* *****offcanvas sidebar start***** */}
       <div
         className="offcanvas offcanvas-start w-25 d-flex flex-column"

@@ -1,7 +1,268 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import CartItem from "../components/CartItem";
+import Table from "../components/Table";
+import CustomForm from "../components/CustomForm";
+import PageHeader from "../components/PageHeader/PageHeader";
+import img1 from "../assets/images/menus/menu-slider-1.jpg";
 
 function CheckOut() {
-  return <div>Hello</div>;
+  const [items, setItems] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  //các giá trị trong bảng, giá trị hàng hóa
+  const selectedData = items
+    .filter((item) => selectedItems.includes(item._id))
+    .map((item) => ({
+      ...item,
+      total: item.price * item.quantity,
+    }));
+
+  const columns = [
+    { header: "Name", accessor: "name" },
+    { header: "Quantity", accessor: "quantity" },
+    {
+      header: "Unit Price ($)",
+      accessor: "price",
+      cell: (value) => `$${value.toFixed(2)}`,
+    },
+    {
+      header: "Subtotal ($)",
+      accessor: "total",
+      cell: (value) => `$${value.toFixed(2)}`,
+    },
+  ];
+
+  const totalAmount = items
+    .filter((item) => selectedItems.includes(item._id))
+    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const fields = [
+    {
+      name: "customerName",
+      label: "Full Name",
+      type: "text",
+      placeholder: "",
+      required: true,
+    },
+    {
+      name: "phoneNumber",
+      label: "Phone Number",
+      type: "text",
+      placeholder: "",
+      required: true,
+    },
+    {
+      name: "emailAddress",
+      label: "Email Address",
+      type: "text",
+      placeholder: "",
+      required: true,
+    },
+    {
+      name: "address",
+      label: "Delivery Address",
+      type: "text",
+      placeholder: "Street, district, city...",
+      required: true,
+    },
+    {
+      name: "paymentMethod",
+      label: "Payment Method",
+      type: "select",
+      options: [
+        { label: "Cash on Delivery (COD)", value: "cod" },
+        { label: "Bank Transfer", value: "bank" },
+        { label: "E-Wallet (Momo, ZaloPay...)", value: "e-wallet" },
+      ],
+      required: true,
+    },
+    {
+      name: "note",
+      label: "Additional Notes",
+      type: "text",
+      placeholder: "E.g. Deliver after 6 PM, no chili...",
+      required: false,
+    },
+    {
+      name: "agreeTerms",
+      label: "I agree to the terms and conditions",
+      type: "checkbox",
+      required: true,
+    },
+  ];
+
+  const handleSubmit = (data) => {
+    console.log("Form data:", data);
+  };
+
+  //Kiểm tra những món hàng nào đã được chọn
+  const handleSelect = (itemId) => {
+    setSelectedItems((prevSelected) => {
+      const newSelected = prevSelected.includes(itemId)
+        ? prevSelected.filter((id) => id !== itemId)
+        : [...prevSelected, itemId];
+
+      console.log("Danh sách món đã chọn:", newSelected);
+      return newSelected;
+    });
+  };
+
+  // Start load giỏ hàng từ localStorage
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    const loadCart = () => {
+      const savedCart = JSON.parse(localStorage.getItem("cart")) || {
+        items: [],
+      };
+      setItems(savedCart.items);
+    };
+
+    loadCart();
+    window.addEventListener("cartUpdated", loadCart);
+
+    return () => {
+      window.removeEventListener("cartUpdated", loadCart);
+    };
+  }, []);
+  // End load giỏ hàng từ localStorage
+
+  // Start phần xử lý giỏ hàng
+  const updateCart = (updatedItems) => {
+    setItems(updatedItems);
+    const updatedCart = {
+      cartId: "67fb8e201f70bf74520565e7",
+      items: updatedItems,
+    };
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const increaseQuantity = (id) => {
+    const updatedItems = items.map((item) =>
+      item._id === id ? { ...item, quantity: item.quantity + 1 } : item
+    );
+    updateCart(updatedItems);
+    // Gửi sự kiện custom để các component khác biết
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+  const decreaseQuantity = (id) => {
+    const updatedItems = items.map((item) =>
+      item._id === id && item.quantity > 1
+        ? { ...item, quantity: item.quantity - 1 }
+        : item
+    );
+    updateCart(updatedItems);
+    // Gửi sự kiện custom để các component khác biết
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+  const deleteItem = (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this item?"
+    );
+    if (confirmDelete) {
+      const updatedItems = items.filter((item) => item._id !== id);
+      updateCart(updatedItems);
+    }
+  };
+  // End phần xử lý giỏ hàng
+
+  return (
+    <>
+      <PageHeader
+        backgroundType={"image"}
+        backgroundSrc={img1}
+        h2Title={""}
+        title={"Check out"}
+        subTitle={""}
+        height="20vh"
+      />
+      <div className="section">
+        <div className="card">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-4">
+                <h2
+                  className="fw-bold text-center"
+                  style={{ fontSize: "40px" }}
+                >
+                  1. Select your stuffs to checkout
+                </h2>
+                <div
+                  style={{
+                    maxHeight: "800px", // điều chỉnh chiều cao theo nhu cầu
+                    overflowY: "auto",
+                    border: "1px solid #ccc", // tùy chọn: giúp nhìn rõ phần cuộn
+                    paddingRight: "10px", // tránh việc bị che mất bởi thanh scroll
+                  }}
+                >
+                  {items.map((item) => (
+                    <div
+                      key={item._id}
+                      className="form-check d-flex align-items-start mb-3"
+                    >
+                      <div className="ms-3 w-100">
+                        <CartItem
+                          item={item}
+                          onIncrease={increaseQuantity}
+                          onDecrease={decreaseQuantity}
+                          onDelete={deleteItem}
+                          extraElement={
+                            <button
+                              onClick={() => handleSelect(item._id)}
+                              className={`btn-select ${
+                                selectedItems.includes(item._id)
+                                  ? "selected"
+                                  : ""
+                              }`}
+                            >
+                              {selectedItems.includes(item._id)
+                                ? "Selected"
+                                : "Unselect"}
+                            </button>
+                          }
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="col-8">
+                <div className="card">
+                  <div className="card-body">
+                    <div className=" d-flex justify-content-center align-items-center">
+                      <h2 style={{ fontSize: "40px" }}>2. Review Your Order</h2>
+                    </div>
+                    <ul>
+                      <li>
+                        <Table columns={columns} data={selectedData} />
+                      </li>
+                      <li>
+                        <h2 style={{ fontSize: "30px", marginTop: "20px" }}>
+                          Total: ${totalAmount.toFixed(2)}
+                        </h2>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div className="col-12" style={{ paddingTop: "100px" }}>
+                  <h2 className="text-center" style={{ fontSize: "40px" }}>
+                    3. Billing details
+                  </h2>
+                  <CustomForm
+                    fields={fields}
+                    onSubmit={handleSubmit}
+                    buttonText="Place Order"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-4"></div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 export default CheckOut;

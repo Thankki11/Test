@@ -89,7 +89,7 @@ function Menus() {
                   <div className="col-3 mb-4" key={index}>
                     <Link to={`/detail/${item._id}`}>
                       <OverlayCard
-                        title={item.title}
+                        title={item.name}
                         description={["$ " + item.price]}
                         height="450px"
                         imageSrc={`http://localhost:3001/uploads/${item.imageUrl}`} // dùng imageUrl
@@ -107,7 +107,7 @@ function Menus() {
                   <div className="col-3 mb-4" key={index}>
                     <Link to={`/detail/${item._id}`}>
                       <OverlayCard
-                        title={item.title}
+                        title={item.name}
                         description={[item.description]}
                         height="450px"
                         imageSrc={`http://localhost:3001/uploads/${item.imageUrl}`} // dùng imageUrl
@@ -125,7 +125,7 @@ function Menus() {
                   <div className="col-3 mb-4" key={index}>
                     <Link to={`/detail/${item._id}`}>
                       <OverlayCard
-                        title={item.title}
+                        title={item.name}
                         description={[item.description]}
                         height="450px"
                         imageSrc={`http://localhost:3001/uploads/${item.imageUrl}`} // dùng imageUrl
@@ -143,7 +143,7 @@ function Menus() {
                   <div className="col-3 mb-4" key={index}>
                     <Link to={`/detail/${item._id}`}>
                       <OverlayCard
-                        title={item.title}
+                        title={item.name}
                         description={[item.description]}
                         height="450px"
                         imageSrc={`http://localhost:3001/uploads/${item.imageUrl}`} // dùng imageUrl

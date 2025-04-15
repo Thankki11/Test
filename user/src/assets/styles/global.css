@@ -145,6 +145,28 @@ button:hover {
   transition: all 0.5s;
 }
 
+/* Khi nút được chọn (có class "selected"), đổi màu nền và chữ */
+.btn-select.selected {
+  background-color: green; /* Màu xanh khi đã chọn */
+  color: white; /* Chữ trắng khi đã chọn */
+}
+
+/* Khi hover trên nút đã chọn, màu nền sẽ đậm hơn */
+.btn-select.selected:hover {
+  background-color: darkred; /* Nền xanh đậm khi hover */
+}
+
+.btn-select {
+  background-color: darkred; /* Nền xanh đậm khi hover */
+  color: white;
+  border: 2px solid white;
+}
+
+.btn-select:hover {
+  background-color: green; /* Màu xanh khi đã chọn */
+  color: white; /* Chữ trắng khi đã chọn */
+}
+
 .section {
   padding: 75px 250px;
 }

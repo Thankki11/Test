@@ -80,7 +80,7 @@ function Detail() {
             />
           </div>
           <div className="col-7">
-            <TitleWithSubtitle title={menu.title} subTitle={menu.category} />
+            <TitleWithSubtitle title={menu.name} subTitle={menu.category} />
             <h5 style={{ fontSize: "35px" }}>$ {menu.price}</h5>
             <p style={{ margin: "35px 0px" }}>{menu.description}</p>
             {/* button quantity, add to cart, buy now */}
@@ -182,7 +182,7 @@ function Detail() {
                 }}
               >
                 <OverlayCard
-                  title={relatedMenu.title}
+                  title={relatedMenu.name}
                   description={["$ " + relatedMenu.price]}
                   height="450px"
                   imageSrc={`http://localhost:3001/uploads/${relatedMenu.imageUrl}`}
@@ -217,7 +217,7 @@ const sendProductToCart = (menu, quantity, isNotify = true) => {
     // Nếu không có sản phẩm, thêm mới vào giỏ hàng
     cart.items.push({
       _id: menu._id,
-      title: menu.title,
+      name: menu.name,
       quantity: quantity,
       price: menu.price,
       imageUrl: menu.imageUrl,
@@ -232,6 +232,6 @@ const sendProductToCart = (menu, quantity, isNotify = true) => {
 
   if (isNotify) {
     // Thông báo cho người dùng
-    alert(`${menu.title} (${quantity}) đã được thêm vào giỏ hàng!`);
+    alert(`${menu.name} (${quantity}) đã được thêm vào giỏ hàng!`);
   }
 };
