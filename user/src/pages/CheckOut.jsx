@@ -5,7 +5,11 @@ import CustomForm from "../components/CustomForm";
 import PageHeader from "../components/PageHeader/PageHeader";
 import img1 from "../assets/images/menus/menu-slider-1.jpg";
 
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 function CheckOut() {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
 
@@ -91,8 +95,52 @@ function CheckOut() {
     },
   ];
 
-  const handleSubmit = (data) => {
+  const handleSubmit = async (data) => {
     console.log("Form data:", data);
+
+    const confirm = window.confirm("Bạn có chắc chắn muốn đặt hàng không?");
+    if (!confirm) return;
+
+    try {
+      // Tạo đối tượng đặt hàng với cấu trúc phù hợp
+      const reservation = {
+        ...data,
+        items: items
+          .filter((item) => selectedItems.includes(item._id)) // Chỉ lấy các món đã chọn
+          .map((item) => ({
+            menuItemId: item._id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        totalPrice: totalAmount,
+        createdAt: new Date().toISOString(),
+      };
+
+      await axios.post(
+        "http://localhost:3001/api/reservations/add",
+        reservation
+      );
+
+      // Cập nhật localStorage - chỉ xóa các món đã chọn
+      const cart = JSON.parse(localStorage.getItem("cart")) || {};
+      if (cart.items) {
+        cart.items = cart.items.filter(
+          (item) => !selectedItems.includes(item._id)
+        );
+        localStorage.setItem("cart", JSON.stringify(cart));
+      }
+
+      // Gửi sự kiện custom để các component khác biết
+      window.dispatchEvent(new Event("cartUpdated"));
+
+      // Thông báo và điều hướng về trang chủ
+      alert("Đặt hàng thành công!");
+      navigate("/"); // hoặc "/home"
+    } catch (error) {
+      console.error("Lỗi khi gửi đặt hàng:", error);
+      alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
+    }
   };
 
   //Kiểm tra những món hàng nào đã được chọn
@@ -176,6 +224,7 @@ function CheckOut() {
         title={"Check out"}
         subTitle={""}
         height="20vh"
+        titleSize="8rem"
       />
       <div className="section">
         <div className="card">
@@ -184,13 +233,13 @@ function CheckOut() {
               <div className="col-4">
                 <h2
                   className="fw-bold text-center"
-                  style={{ fontSize: "40px" }}
+                  style={{ fontSize: "35px" }}
                 >
                   1. Select your stuffs to checkout
                 </h2>
                 <div
                   style={{
-                    maxHeight: "800px", // điều chỉnh chiều cao theo nhu cầu
+                    maxHeight: "75vh", // điều chỉnh chiều cao theo nhu cầu
                     overflowY: "auto",
                     border: "1px solid #ccc", // tùy chọn: giúp nhìn rõ phần cuộn
                     paddingRight: "10px", // tránh việc bị che mất bởi thanh scroll
@@ -231,14 +280,14 @@ function CheckOut() {
                 <div className="card">
                   <div className="card-body">
                     <div className=" d-flex justify-content-center align-items-center">
-                      <h2 style={{ fontSize: "40px" }}>2. Review Your Order</h2>
+                      <h2 style={{ fontSize: "35px" }}>2. Review Your Order</h2>
                     </div>
                     <ul>
                       <li>
                         <Table columns={columns} data={selectedData} />
                       </li>
                       <li>
-                        <h2 style={{ fontSize: "30px", marginTop: "20px" }}>
+                        <h2 style={{ fontSize: "18px", marginTop: "20px" }}>
                           Total: ${totalAmount.toFixed(2)}
                         </h2>
                       </li>
@@ -246,7 +295,7 @@ function CheckOut() {
                   </div>
                 </div>
                 <div className="col-12" style={{ paddingTop: "100px" }}>
-                  <h2 className="text-center" style={{ fontSize: "40px" }}>
+                  <h2 className="text-center" style={{ fontSize: "35px" }}>
                     3. Billing details
                   </h2>
                   <CustomForm

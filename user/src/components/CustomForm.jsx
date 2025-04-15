@@ -1,5 +1,51 @@
 import React, { useState } from "react";
 
+// // Mảng các trường của form
+// const formFields = [
+//   {
+//     name: "name",
+//     label: "Full Name",
+//     type: "text",
+//     placeholder: "Enter your full name",
+//     required: true,
+//   },
+//   {
+//     name: "email",
+//     label: "Email",
+//     type: "text",
+//     placeholder: "Enter your email",
+//     required: true,
+//   },
+//   {
+//     name: "subscribe",
+//     label: "Subscribe to newsletter",
+//     type: "checkbox",
+//     required: false,
+//   },
+//   {
+//     name: "country",
+//     label: "Country",
+//     type: "select",
+//     options: [
+//       { value: "us", label: "United States" },
+//       { value: "ca", label: "Canada" },
+//       { value: "uk", label: "United Kingdom" },
+//     ],
+//     required: true,
+//   },
+// ];
+
+// // Hàm xử lý khi submit form
+// const handleFormSubmit = (formData) => {
+//   console.log("Form submitted with data:", formData);
+// };
+
+// <CustomForm
+//   fields={formFields}
+//   onSubmit={handleFormSubmit}
+//   buttonText="Submit Form"
+// />;
+
 const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
   const initialState = fields.reduce((acc, field) => {
     acc[field.name] =
@@ -46,7 +92,7 @@ const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
                 <label
                   htmlFor={field.name}
                   className="form-label"
-                  style={{ fontSize: "23px", fontWeight: "bold" }}
+                  style={{ fontSize: "18px", fontWeight: "bold" }}
                 >
                   {field.label}
                   {field.required && <span style={{ color: "red" }}>*</span>}
@@ -59,7 +105,7 @@ const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
                   placeholder={field.placeholder || ""}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   style={{
-                    fontSize: "20px",
+                    fontSize: "15px",
                     padding: "12px",
                   }}
                   required={field.required}
@@ -86,7 +132,7 @@ const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
                   className="form-check-label"
                   htmlFor={field.name}
                   style={{
-                    fontSize: "23px",
+                    fontSize: "18px",
                   }}
                 >
                   {field.label}
@@ -104,7 +150,7 @@ const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
                 <label
                   htmlFor={field.name}
                   className="form-label"
-                  style={{ fontSize: "23px", fontWeight: "bold" }}
+                  style={{ fontSize: "18px", fontWeight: "bold" }}
                 >
                   {field.label}
                   {field.required && <span style={{ color: "red" }}>*</span>}
@@ -115,7 +161,7 @@ const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
                   value={formData[field.name]}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   style={{
-                    fontSize: "20px",
+                    fontSize: "15px",
                     padding: "12px",
                   }}
                   required={field.required}
@@ -140,8 +186,8 @@ const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
       <button
         type="submit"
         style={{
-          fontSize: "20px",
-          padding: "12px 24px",
+          fontSize: "15px",
+          padding: "10px 20px",
         }}
       >
         {buttonText}

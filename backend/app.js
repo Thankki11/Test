@@ -5,6 +5,7 @@ const connectDB = require("./config/db");
 const menuRoutes = require("./routes/menuRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const chefRoutes = require("./routes/chefRoutes");
+const reservationRoutes = require("./routes/reservationRoutes");
 
 const app = express();
 require("dotenv").config();
@@ -20,6 +21,7 @@ app.use(bodyParser.json());
 app.use("/api/menus", menuRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/chefs", chefRoutes);
+app.use("/api/reservations", reservationRoutes);
 
 //Upload: Cho phép truy cập vào thư mục uploads
 app.use("/uploads", express.static("uploads"));
