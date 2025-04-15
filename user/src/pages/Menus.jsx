@@ -17,7 +17,7 @@ function Menus() {
   useEffect(() => {
     // Gửi yêu cầu GET đến API backend để lấy danh sách menus
     axios
-      .get("http://localhost:5000/api/menus")
+      .get("http://localhost:3001/api/menus")
       .then((response) => {
         setMenus(response.data); // Lưu dữ liệu nhận được vào state
         console.log(response.data); // In ra dữ liệu để kiểm tra
@@ -92,7 +92,7 @@ function Menus() {
                         title={item.title}
                         description={["$ " + item.price]}
                         height="450px"
-                        imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                        imageSrc={`http://localhost:3001/uploads/${item.imageUrl}`} // dùng imageUrl
                       />
                     </Link>
                   </div>
@@ -110,7 +110,7 @@ function Menus() {
                         title={item.title}
                         description={[item.description]}
                         height="450px"
-                        imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                        imageSrc={`http://localhost:3001/uploads/${item.imageUrl}`} // dùng imageUrl
                       />
                     </Link>
                   </div>
@@ -128,7 +128,7 @@ function Menus() {
                         title={item.title}
                         description={[item.description]}
                         height="450px"
-                        imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                        imageSrc={`http://localhost:3001/uploads/${item.imageUrl}`} // dùng imageUrl
                       />
                     </Link>
                   </div>
@@ -146,7 +146,7 @@ function Menus() {
                         title={item.title}
                         description={[item.description]}
                         height="450px"
-                        imageSrc={`http://localhost:5000/uploads/${item.imageUrl}`} // dùng imageUrl
+                        imageSrc={`http://localhost:3001/uploads/${item.imageUrl}`} // dùng imageUrl
                       />
                     </Link>
                   </div>

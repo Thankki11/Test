@@ -1,7 +1,7 @@
 // Routes
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import routes from "./routes/userRoutes";
-
+import adminRoutes from "./routes/adminRoutes";
 // CSS
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./assets/styles/global.css";
@@ -13,7 +13,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {routes.map((route, i) => (
+        {[...routes, ...adminRoutes].map((route, i) => (
           <Route key={i} path={route.path} element={route.element} />
         ))}
       </Routes>

@@ -41,3 +41,66 @@ exports.getMenuByCategory = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// Cập nhật món ăn
+exports.updateMenu = async (req, res) => {
+  const { id } = req.params;
+  const { name, description, imageUrl, category, price } = req.body;
+
+  try {
+    const menu = await Menu.findByIdAndUpdate(
+      id,
+      { name, description, imageUrl, category, price },
+      { new: true }
+    );
+
+    if (!menu) {
+      return res.status(404).json({ message: "Menu not found" });
+    }
+
+    res.json({ message: "Menu updated successfully", menu });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Xóa món ăn
+exports.deleteMenu = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const menu = await Menu.findByIdAndDelete(id);
+
+    if (!menu) {
+      return res.status(404).json({ message: "Menu not found" });
+    }
+
+    res.json({ message: "Menu deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Create a new menu item
+exports.createMenu = async (req, res) => {
+  const { name, description, imageUrl, category, price } = req.body;
+
+  console.log("Received data:", req.body); // Log dữ liệu nhận được từ frontend
+
+  try {
+    const newMenu = new Menu({
+      name,
+      description,
+      imageUrl,
+      category,
+      price,
+    });
+
+    const savedMenu = await newMenu.save();
+    res
+      .status(201)
+      .json({ message: "Menu created successfully", menu: savedMenu });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error", error: err.message });
+  }
+};

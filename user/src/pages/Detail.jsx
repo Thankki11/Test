@@ -32,12 +32,12 @@ function Detail() {
   useEffect(() => {
     // Gửi yêu cầu GET tới API để lấy chi tiết món ăn theo id
     axios
-      .get(`http://localhost:5000/api/menus/${id}`)
+      .get(`http://localhost:3001/api/menus/${id}`)
       .then((response) => {
         setMenu(response.data); // Lưu dữ liệu món ăn vào state
         axios
           .get(
-            `http://localhost:5000/api/menus/category/${response.data.category}`
+            `http://localhost:3001/api/menus/category/${response.data.category}`
           )
           .then((res) => {
             setRelatedMenus(res.data); // Lưu các món ăn liên quan vào state
@@ -75,7 +75,7 @@ function Detail() {
           <div className="col-5">
             <ImageBox
               height="800px"
-              src={`http://localhost:5000/uploads/${menu.imageUrl}`}
+              src={`http://localhost:3001/uploads/${menu.imageUrl}`}
               alt="menu"
             />
           </div>
@@ -185,7 +185,7 @@ function Detail() {
                   title={relatedMenu.title}
                   description={["$ " + relatedMenu.price]}
                   height="450px"
-                  imageSrc={`http://localhost:5000/uploads/${relatedMenu.imageUrl}`}
+                  imageSrc={`http://localhost:3001/uploads/${relatedMenu.imageUrl}`}
                 />
               </Link>
             </div>

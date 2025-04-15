@@ -9,7 +9,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onDelete }) => {
           <ImageBox
             height="200px"
             width="100%"
-            src={`http://localhost:5000/uploads/${item.imageUrl}`}
+            src={`http://localhost:3001/uploads/${item.imageUrl}`}
             alt="menu"
           />
         </div>
