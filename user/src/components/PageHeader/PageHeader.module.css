@@ -50,7 +50,7 @@
 
 .titleText {
   font-family: "HelloParis", "CaviarDreamsBold", sans-serif;
-  font-size: 10rem;
+  font-weight: 200;
   margin: 20px 0;
   line-height: 1.2;
 }

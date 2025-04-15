@@ -30,7 +30,7 @@ const Table = ({ columns, data, actions }) => {
       <thead>
         <tr>
           {columns.map((col) => (
-            <th key={col.accessor} style={{ fontSize: "23px" }}>
+            <th key={col.accessor} style={{ fontSize: "18px" }}>
               {col.header}
             </th>
           ))}
@@ -42,7 +42,7 @@ const Table = ({ columns, data, actions }) => {
           data.map((row, rowIndex) => (
             <tr key={row._id || rowIndex}>
               {columns.map((col) => (
-                <td key={col.accessor} style={{ fontSize: "20px" }}>
+                <td key={col.accessor} style={{ fontSize: "15px" }}>
                   {typeof col.cell === "function"
                     ? col.cell(row[col.accessor], row)
                     : row[col.accessor]}

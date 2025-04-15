@@ -15,7 +15,7 @@ const CartItem = ({ item, onIncrease, onDecrease, onDelete, extraElement }) => {
         </div>
         <h5
           className="card-title"
-          style={{ fontSize: "30px", marginTop: "10px" }}
+          style={{ fontSize: "22px", marginTop: "10px" }}
         >
           {item.name}
         </h5>
@@ -53,10 +53,17 @@ const CartItem = ({ item, onIncrease, onDecrease, onDelete, extraElement }) => {
           </button>
         </div>
 
-        <p className="card-text">Unit price: $ {item.price}</p>
+        <p className="card-text" style={{ marginBottom: "0.5rem" }}>
+          Unit price: $ {item.price}
+        </p>
 
         <div className="d-flex align-items-center">
-          <button onClick={() => onDelete(item._id)}>Delete</button>
+          <button
+            style={{ marginTop: "0px" }}
+            onClick={() => onDelete(item._id)}
+          >
+            Delete
+          </button>
           {extraElement && (
             <div style={{ marginLeft: "10px" }}>{extraElement}</div>
           )}
