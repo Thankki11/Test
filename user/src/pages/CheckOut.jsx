@@ -5,7 +5,7 @@ import CustomForm from "../components/CustomForm";
 import PageHeader from "../components/PageHeader/PageHeader";
 import img1 from "../assets/images/menus/menu-slider-1.jpg";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 
 function CheckOut() {
@@ -237,45 +237,76 @@ function CheckOut() {
                 >
                   1. Select your stuffs to checkout
                 </h2>
-                <div
-                  style={{
-                    maxHeight: "75vh", // điều chỉnh chiều cao theo nhu cầu
-                    overflowY: "auto",
-                    border: "1px solid #ccc", // tùy chọn: giúp nhìn rõ phần cuộn
-                    paddingRight: "10px", // tránh việc bị che mất bởi thanh scroll
-                  }}
-                >
-                  {items.map((item) => (
-                    <div
-                      key={item._id}
-                      className="form-check d-flex align-items-start mb-3"
+
+                {items.length === 0 ? (
+                  <div>
+                    <p
+                      className="text-center mt-4 p-3 rounded"
+                      style={{
+                        backgroundColor: "#f8d7da",
+                        color: "#721c24",
+                        border: "1px solid #f5c6cb",
+                        fontWeight: "bold",
+                        fontSize: "1.1rem",
+                      }}
                     >
-                      <div className="ms-3 w-100">
-                        <CartItem
-                          item={item}
-                          onIncrease={increaseQuantity}
-                          onDecrease={decreaseQuantity}
-                          onDelete={deleteItem}
-                          extraElement={
-                            <button
-                              onClick={() => handleSelect(item._id)}
-                              className={`btn-select ${
-                                selectedItems.includes(item._id)
-                                  ? "selected"
-                                  : ""
-                              }`}
-                            >
-                              {selectedItems.includes(item._id)
-                                ? "Selected"
-                                : "Unselect"}
-                            </button>
-                          }
-                        />
-                      </div>
+                      Your cart is currently empty. Please add some items to
+                      proceed with checkout.
+                    </p>
+                    <div
+                      className="d-flex justify-content-center"
+                      style={{ gap: "40px" }}
+                    >
+                      <Link to="/menus">
+                        <button>Go to menus</button>
+                      </Link>
+                      <Link to="/shop">
+                        <button>Go to shop</button>
+                      </Link>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      maxHeight: "75vh",
+                      overflowY: "auto",
+                      border: "1px solid #ccc",
+                      paddingRight: "10px",
+                    }}
+                  >
+                    {items.map((item) => (
+                      <div
+                        key={item._id}
+                        className="form-check d-flex align-items-start mb-3"
+                      >
+                        <div className="ms-3 w-100">
+                          <CartItem
+                            item={item}
+                            onIncrease={increaseQuantity}
+                            onDecrease={decreaseQuantity}
+                            onDelete={deleteItem}
+                            extraElement={
+                              <button
+                                onClick={() => handleSelect(item._id)}
+                                className={`btn-select ${
+                                  selectedItems.includes(item._id)
+                                    ? "selected"
+                                    : ""
+                                }`}
+                              >
+                                {selectedItems.includes(item._id)
+                                  ? "Selected"
+                                  : "Unselect"}
+                              </button>
+                            }
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
+
               <div className="col-8">
                 <div className="card">
                   <div className="card-body">
@@ -295,14 +326,31 @@ function CheckOut() {
                   </div>
                 </div>
                 <div className="col-12" style={{ paddingTop: "100px" }}>
-                  <h2 className="text-center" style={{ fontSize: "35px" }}>
-                    3. Billing details
-                  </h2>
-                  <CustomForm
-                    fields={fields}
-                    onSubmit={handleSubmit}
-                    buttonText="Place Order"
-                  />
+                  {selectedItems.length > 0 ? (
+                    <>
+                      <h2 className="text-center" style={{ fontSize: "35px" }}>
+                        3. Billing details
+                      </h2>
+                      <CustomForm
+                        fields={fields}
+                        onSubmit={handleSubmit}
+                        buttonText="Place Order"
+                      />
+                    </>
+                  ) : (
+                    <p
+                      className="text-center mt-4 p-3 rounded"
+                      style={{
+                        backgroundColor: "#fff3cd",
+                        color: "#856404",
+                        border: "1px solid #ffeeba",
+                        fontWeight: "bold",
+                        fontSize: "1.1rem",
+                      }}
+                    >
+                      Please select at least one item to proceed with checkout.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
