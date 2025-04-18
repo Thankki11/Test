@@ -95,65 +95,22 @@ exports.addReservations = async (req, res) => {
 exports.updateReservation = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
 
-    // Kiểm tra xem reservation có tồn tại không
-    const existingReservation = await Reservation.findById(id);
-    if (!existingReservation) {
-      return res.status(404).json({
-        success: false,
-        message: "Reservation not found",
-      });
-    }
+    // Loại bỏ các trường không được phép cập nhật
+    const { _id, __v, createdAt, ...updateData } = req.body;
 
-    // Chỉ cho phép cập nhật một số trường nhất định
-    const allowedUpdates = [
-      "status",
-      "customerName",
-      "emailAddress",
-      "phoneNumber",
-      "numberOfGuest",
-      "dateTime",
-      "specialRequests",
-    ];
-    const isValidOperation = Object.keys(updateData).every((field) =>
-      allowedUpdates.includes(field)
-    );
-
-    if (!isValidOperation) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid updates!",
-      });
-    }
-
-    // Cập nhật reservation
-    const updatedReservation = await Reservation.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
-
-    res.status(200).json({
-      success: true,
-      message: "Reservation updated successfully",
-      data: updatedReservation,
+    // Cập nhật chỉ với dữ liệu hợp lệ
+    const updated = await Reservation.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
     });
+
+    res.json({ success: true, data: updated });
   } catch (error) {
-    console.error("Error updating reservation:", error);
-
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((val) => val.message);
-      return res.status(400).json({
-        success: false,
-        message: "Validation error",
-        errors: messages,
-      });
-    }
-
+    console.error("Error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error while updating reservation",
+      message: error.message,
     });
   }
 };

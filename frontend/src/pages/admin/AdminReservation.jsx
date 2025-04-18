@@ -29,7 +29,29 @@ function AdminReservation() {
   //Lưu thông tin chi tiết của 1 đơn đặt bàn
   const [reservationDetail, setReservationDetail] = useState(null);
 
+  //Chỉnh sửa thông tin của lần đặt bàn
+  const handleUpdateReservation = async (id, updatedData) => {
+    try {
+      console.log(id);
+      const { _id, __v, createdAt, ...dataToSend } = updatedData;
+      console.log(updatedData);
+      const response = await axios.put(
+        `http://localhost:3001/api/reservations/update/${id}`, // URL của API cập nhật
+        dataToSend // Dữ liệu bạn muốn gửi để cập nhật
+      );
+
+      // Kiểm tra thành công và thông báo
+      if (response.status === 200) {
+        alert("Reservation updated successfully!");
+      }
+    } catch (error) {
+      console.error("Error updating reservation:", error);
+      alert("Failed to update reservation");
+    }
+  };
+
   const handleReservationDetail = (detail) => {
+    console.log(detail);
     setReservationDetail(detail);
   };
 
@@ -208,10 +230,10 @@ function AdminReservation() {
 
       {/* Modal xem detail của đơn đặt bàn */}
       <div className="modal fade" id="detailReservationModal" tabIndex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
             {/* <!-- Modal Header --> */}
-            <div class="modal-header">
+            <div className="modal-header">
               <h5 className="modal-title" style={{ fontSize: "30px" }}>
                 Reservation Details{" "}
                 {reservationDetail?._id &&
@@ -219,86 +241,217 @@ function AdminReservation() {
               </h5>
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
               ></button>
             </div>
 
             {/* <!-- Modal body --> */}
-            <div class="modal-body">
+            <div className="modal-body">
               {reservationDetail ? (
-                <div className="row">
-                  <div className="col-md-6">
-                    <p>
-                      <strong>Customer:</strong>{" "}
-                      {reservationDetail.customerName}
-                    </p>
-                    <p>
-                      <strong>Email:</strong> {reservationDetail.emailAddress}
-                    </p>
-                    <p>
-                      <strong>Phone:</strong> {reservationDetail.phoneNumber}
-                    </p>
-                    <p>
-                      <strong>Number of Guests:</strong>{" "}
-                      {reservationDetail.numberOfGuest}
-                    </p>
-                    <p>
-                      <strong>Seating Area:</strong>{" "}
-                      {reservationDetail.seatingArea}
-                    </p>
-                  </div>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    // Gọi hàm xử lý cập nhật ở đây
+                    handleUpdateReservation(
+                      reservationDetail._id,
+                      reservationDetail
+                    );
+                  }}
+                >
+                  <div className="row">
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">
+                          <strong>Customer:</strong>
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={reservationDetail.customerName || ""}
+                          onChange={(e) =>
+                            setReservationDetail({
+                              ...reservationDetail,
+                              customerName: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
 
-                  <div className="col-md-6">
-                    <p>
-                      <strong>Reservation Date:</strong>{" "}
-                      {new Date(reservationDetail.dateTime).toLocaleDateString(
-                        "en-GB"
-                      )}
-                    </p>
-                    <p>
-                      <strong>Reservation Time:</strong>{" "}
-                      {new Date(reservationDetail.dateTime).toLocaleTimeString(
-                        [],
-                        {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }
-                      )}
-                    </p>
-                    <p>
-                      <strong>Created At:</strong>{" "}
-                      {new Date(reservationDetail.createdAt).toLocaleString(
-                        "en-GB"
-                      )}
-                    </p>
-                    <p>
-                      <strong>Status:</strong>{" "}
-                      <span
-                        className={`badge bg-${
-                          reservationDetail.status === "confirmed"
-                            ? "success"
-                            : reservationDetail.status === "pending"
-                            ? "warning"
-                            : reservationDetail.status === "cancelled"
-                            ? "danger"
-                            : "secondary"
-                        }`}
-                      >
-                        {reservationDetail.status}
-                      </span>
-                    </p>
-                  </div>
+                      <div className="mb-3">
+                        <label className="form-label">
+                          <strong>Email:</strong>
+                        </label>
+                        <input
+                          type="email"
+                          className="form-control"
+                          value={reservationDetail.emailAddress || ""}
+                          onChange={(e) =>
+                            setReservationDetail({
+                              ...reservationDetail,
+                              emailAddress: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
 
-                  {reservationDetail.note && (
-                    <div className="col-12 mt-3">
-                      <p>
-                        <strong>Note:</strong>
-                      </p>
-                      <p>{reservationDetail.note}</p>
+                      <div className="mb-3">
+                        <label className="form-label">
+                          <strong>Phone:</strong>
+                        </label>
+                        <input
+                          type="tel"
+                          className="form-control"
+                          value={reservationDetail.phoneNumber || ""}
+                          onChange={(e) =>
+                            setReservationDetail({
+                              ...reservationDetail,
+                              phoneNumber: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label">
+                          <strong>Number of Guests:</strong>
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          className="form-control"
+                          value={reservationDetail.numberOfGuest || ""}
+                          onChange={(e) =>
+                            setReservationDetail({
+                              ...reservationDetail,
+                              numberOfGuest: parseInt(e.target.value),
+                            })
+                          }
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label">
+                          <strong>Seating Area:</strong>
+                        </label>
+                        <select
+                          className="form-select"
+                          value={reservationDetail.seatingArea || ""}
+                          onChange={(e) =>
+                            setReservationDetail({
+                              ...reservationDetail,
+                              seatingArea: e.target.value,
+                            })
+                          }
+                        >
+                          <option value="indoor">Indoor</option>
+                          <option value="outdoor">Outdoor</option>
+                          <option value="vip">VIP</option>
+                        </select>
+                      </div>
                     </div>
-                  )}
-                </div>
+
+                    <div className="col-md-6">
+                      <div className="mb-3">
+                        <label className="form-label">
+                          <strong>Reservation Date:</strong>
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          value={
+                            new Date(reservationDetail.dateTime)
+                              .toISOString()
+                              .split("T")[0]
+                          }
+                          onChange={(e) => {
+                            const newDate = new Date(
+                              reservationDetail.dateTime
+                            );
+                            const [year, month, day] =
+                              e.target.value.split("-");
+                            newDate.setFullYear(year, month - 1, day);
+                            setReservationDetail({
+                              ...reservationDetail,
+                              dateTime: newDate.toISOString(),
+                            });
+                          }}
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="form-label">
+                          <strong>Reservation Time:</strong>
+                        </label>
+                        <input
+                          type="time"
+                          className="form-control"
+                          value={new Date(reservationDetail.dateTime)
+                            .toTimeString()
+                            .substring(0, 5)}
+                          onChange={(e) => {
+                            const newDate = new Date(
+                              reservationDetail.dateTime
+                            );
+                            const [hours, minutes] = e.target.value.split(":");
+                            newDate.setHours(hours, minutes);
+                            setReservationDetail({
+                              ...reservationDetail,
+                              dateTime: newDate.toISOString(),
+                            });
+                          }}
+                        />
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="label mb-0">
+                          <strong>Created At:</strong>
+                        </label>
+                        <p style={{ fontSize: "14px" }}>
+                          {new Date(reservationDetail.createdAt).toLocaleString(
+                            "en-GB"
+                          )}
+                        </p>
+                      </div>
+
+                      <div className="mb-3">
+                        <label className="label mb-0">
+                          <strong>Status:</strong>
+                        </label>
+                        <p style={{ fontSize: "14px" }}>
+                          {reservationDetail.status}
+                        </p>
+                      </div>
+                    </div>
+
+                    {reservationDetail.note && (
+                      <div className="col-12 mt-3">
+                        <div className="mb-3">
+                          <label className="form-label">
+                            <strong>Note:</strong>
+                          </label>
+                          <textarea
+                            className="form-control"
+                            rows="3"
+                            value={reservationDetail.note || ""}
+                            onChange={(e) =>
+                              setReservationDetail({
+                                ...reservationDetail,
+                                note: e.target.value,
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="text-end mt-4">
+                    <button type="submit" className="btn btn-primary">
+                      Update Reservation
+                    </button>
+                  </div>
+                </form>
               ) : (
                 <div className="text-center py-4">
                   <div className="spinner-border text-primary" role="status">
@@ -309,10 +462,10 @@ function AdminReservation() {
             </div>
 
             {/* <!-- Modal footer --> */}
-            <div class="modal-footer">
+            <div className="modal-footer">
               <button
                 type="button"
-                class="btn btn-danger"
+                className="btn btn-danger"
                 data-bs-dismiss="modal"
               >
                 Close
