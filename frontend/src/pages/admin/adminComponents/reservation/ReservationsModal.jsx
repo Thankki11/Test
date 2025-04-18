@@ -152,7 +152,7 @@ function ReservationsModal() {
         </div>
       </div>
       <div>
-        <table className="table table-striped">
+        <table className="table table-striped mt-3">
           <thead>
             <tr>
               <th>Action</th>
@@ -185,10 +185,11 @@ function ReservationsModal() {
                       <i className="fa fa-times"></i>
                     </button>
                     <button
-                      className="btn btn-sm btn-primary"
+                      className="btn btn-sm btn-outline-danger me-2"
                       onClick={() => handleEdit(reservation._id)}
+                      style={{ padding: "0.25rem 0.5rem", fontSize: "0.8rem" }}
                     >
-                      Detail
+                      <i class="fa-solid fa-info"></i>
                     </button>
                   </td>
                   <td>{reservationTime}</td>
