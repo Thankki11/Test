@@ -9,9 +9,50 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { TextField } from "@mui/material";
 
+//Components
+import ReservationForm from "../../components/ReservationForm";
+import ReservationsModal from "./adminComponents/reservation/ReservationsModal";
+
 function AdminReservation() {
   //MUI
   const [value, setValue] = React.useState("1");
+  //Lọc theo ngày
+  const [showAll, setShowAll] = useState(false);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  //Lưu thông tin các đơn đặt bàn
+  const [reservations, setReservations] = useState([]);
+  const [filteredReservations, setFilteredReservations] = useState([]);
+
+  //xem dữ liệu toàn bộ hoặc theo ngàyngày
+  useEffect(() => {
+    if (!showAll) {
+      const today = new Date().toISOString().split("T")[0];
+      setFromDate(today);
+      setToDate(today);
+    } else {
+      setFromDate("");
+      setToDate("");
+    }
+  }, [showAll]);
+
+  // Lọc đơn đặt bàn khi fromDate, toDate thay đổi
+  useEffect(() => {
+    const filterReservations = () => {
+      if (showAll) {
+        setFilteredReservations(reservations);
+      } else {
+        setFilteredReservations(
+          reservations.filter((reservation) => {
+            const reservationDate = reservation.date; // Giả sử date là định dạng YYYY-MM-DD
+            return reservationDate >= fromDate && reservationDate <= toDate;
+          })
+        );
+      }
+    };
+
+    filterReservations(); // Lọc dữ liệu khi thay đổi ngày bắt đầu/kết thúc hoặc khi thay đổi showAll
+  }, [fromDate, toDate, showAll, reservations]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -43,100 +84,6 @@ function AdminReservation() {
               <p>Status: Working/Bảo trì</p>
               {/* Bảng chứa danh sách các đơn đã đặt tại bàn này theo ngày */}
               {/* Tính năng chưa làm: Sắp xếp đơn theo thời gian tăng dần */}
-              <div>
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <TextField
-                    id="date"
-                    label="Choose date"
-                    type="date"
-                    size="small"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                  />
-                  <button>Add new reservation</button>
-                </div>
-                <table className="table table-striped">
-                  <thead>
-                    <tr>
-                      <th>Action</th>
-                      <th>Time</th>
-                      <th>Customer</th>
-                      <th>Email</th>
-                      <th>Number of People</th>
-                      <th>Status</th>
-                      <th>Confirm</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      {
-                        time: "18:00",
-                        customer: "John Doe",
-                        email: "john@example.com",
-                        people: 3,
-                        status: "Pending",
-                      },
-                      {
-                        time: "19:30",
-                        customer: "Mary Moe",
-                        email: "mary@example.com",
-                        people: 2,
-                        status: "Confirmed",
-                      },
-                      {
-                        time: "20:15",
-                        customer: "July Dooley",
-                        email: "july@example.com",
-                        people: 4,
-                        status: "Confirmed",
-                      },
-                    ].map((order, index) => (
-                      <tr key={index}>
-                        <td>
-                          <button
-                            className="btn btn-sm btn-outline-danger me-2"
-                            title="Cancel"
-                            style={{
-                              padding: "0.25rem 0.5rem",
-                              fontSize: "0.8rem",
-                            }}
-                          >
-                            <i className="fa fa-times"></i>
-                          </button>
-                          <button className="btn btn-sm btn-primary">
-                            Edit
-                          </button>
-                        </td>
-                        <td>{order.time}</td>
-                        <td>{order.customer}</td>
-                        <td>{order.email}</td>
-                        <td>{order.people}</td>
-                        <td>{order.status}</td>
-                        <td>
-                          {/* Sau khi bấm confirm thì nút này chuyển thành cancel.  */}
-                          {/* Chưa làm tính năng: Hiện bảng xác nhận khi bấm nút window.notify... */}
-                          <button
-                            style={{
-                              backgroundColor: "darkgreen",
-                              color: "white",
-                              border: "transparent",
-                            }}
-                          >
-                            Confirm
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
             </div>
 
             {/* <!-- Modal footer --> */}
@@ -148,7 +95,10 @@ function AdminReservation() {
                 alignItems: "center",
               }}
             >
-              <button className="btn-select">Delete table</button>
+              <div className="d-flex gap-3">
+                <button className="btn-select">Delete table</button>
+                <button> Edit table</button>
+              </div>
               <button type="button" data-bs-dismiss="modal">
                 Close
               </button>
@@ -156,8 +106,74 @@ function AdminReservation() {
           </div>
         </div>
       </div>
+
+      {/* Modal xem các đơn đặt bàn chưa được duyệt theo ngày */}
+      <div className="modal fade" id="viewReservationsModal">
+        <div className="modal-dialog modal-xl">
+          <div className="modal-content">
+            {/* <!-- Modal Header --> */}
+            <div className="modal-header">
+              <h4 className="modal-title" style={{ fontSize: "30px" }}>
+                View Reservations
+              </h4>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            {/* <!-- Modal body --> */}
+            <div className="modal-body">
+              <ReservationsModal />
+            </div>
+
+            {/* <!-- Modal footer --> */}
+            <div className="modal-footer">
+              <button data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal tạo đơn đặt bàn mới */}
+      <div class="modal fade" id="addReservationModal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            {/* <!-- Modal Header --> */}
+            <div class="modal-header">
+              <h4 class="modal-title">Add new Reservation</h4>
+              <button
+                type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            {/* <!-- Modal body --> */}
+            <div class="modal-body">
+              <ReservationForm />
+            </div>
+
+            {/* <!-- Modal footer --> */}
+            <div class="modal-footer">
+              <button
+                type="button"
+                class="btn btn-danger"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Giao diện start */}
       <div className="section">
+        <div className="mb-5">
+          <h2>Admin Reservations</h2>
+        </div>
         {/* Thông tin về các bàn trong ngày đã chọn: có thể làm thống kê  */}
         <div>
           <div className="row">
@@ -169,10 +185,18 @@ function AdminReservation() {
             <div className="col-6">
               <div className="d-flex " style={{ gap: "20px" }}>
                 {/* Thêm bàn mới */}
-                <button>Add new table</button>
+                <button> Add new table</button>
 
                 {/* Hiển thị danh sách các yêu cầu đặt bàn chưa được xác nhận */}
-                <button>Unconfirmed orders</button>
+                <button
+                  data-bs-toggle="modal"
+                  data-bs-target="#viewReservationsModal"
+                >
+                  View Reservations
+                </button>
+              </div>
+              <div className="d-flex justify-content-end mt-5">
+                <p style={{ fontSize: "30px" }}>Curent view: 23/2/2025</p>
               </div>
             </div>
           </div>

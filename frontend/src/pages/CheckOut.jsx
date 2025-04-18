@@ -103,7 +103,7 @@ function CheckOut() {
 
     try {
       // Tạo đối tượng đặt hàng với cấu trúc phù hợp
-      const reservation = {
+      const order = {
         ...data,
         items: items
           .filter((item) => selectedItems.includes(item._id)) // Chỉ lấy các món đã chọn
@@ -117,10 +117,7 @@ function CheckOut() {
         createdAt: new Date().toISOString(),
       };
 
-      await axios.post(
-        "http://localhost:3001/api/reservations/add",
-        reservation
-      );
+      await axios.post("http://localhost:3001/api/orders/add", order);
 
       // Cập nhật localStorage - chỉ xóa các món đã chọn
       const cart = JSON.parse(localStorage.getItem("cart")) || {};

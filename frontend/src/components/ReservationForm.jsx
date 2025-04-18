@@ -1,0 +1,140 @@
+import React, { useState } from "react";
+import TextField from "@mui/material/TextField";
+import "bootstrap/dist/css/bootstrap.min.css";
+import axios from "axios";
+
+const ReservationTable = () => {
+  const [formData, setFormData] = useState({
+    customerName: "",
+    emailAddress: "",
+    phoneNumber: "",
+    numberOfGuest: "",
+    seatingArea: "", // Để chọn từ dropdown
+    status: "pending",
+    note: "",
+    dateTime: "", // for date
+    createdAt: new Date().toISOString(),
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      console.log("Form Data Preview:", JSON.stringify(formData, null, 2));
+      const response = await axios.post(
+        "http://localhost:3001/api/reservations/add",
+        formData
+      );
+      console.log("Reservation Created:", response.data);
+
+      //Gửi thông báo đến component khác
+      window.dispatchEvent(new Event("reservationsUpdated"));
+      //Hiện lên màn hình thông báo đã tạo thành công
+      alert(`Đã tạo mới thành công`);
+    } catch (error) {
+      console.error("Error:", error);
+      alert(`Đã tạo mới thất bại`);
+    }
+  };
+
+  return (
+    <div className="container mt-5">
+      <form onSubmit={handleSubmit} className="bg-light p-4 rounded shadow-sm">
+        <div className="mb-3">
+          <label className="form-label">Customer Name</label>
+          <input
+            type="text"
+            className="form-control"
+            name="customerName"
+            value={formData.customerName}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Email Address</label>
+          <input
+            type="email"
+            className="form-control"
+            name="emailAddress"
+            value={formData.emailAddress}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Phone Number</label>
+          <input
+            type="text"
+            className="form-control"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Number of Guests</label>
+          <input
+            type="number"
+            className="form-control"
+            name="numberOfGuest"
+            value={formData.numberOfGuest}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Seating Area</label>
+          <select
+            className="form-control"
+            name="seatingArea"
+            value={formData.seatingArea}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select a seating area</option>
+            <option value="Indoor Area A">Indoor Area A</option>
+            <option value="Indoor Area B">Indoor Area B</option>
+            <option value="Outdoor Area A">Outdoor Area A</option>
+          </select>
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Note</label>
+          <input
+            type="text"
+            className="form-control"
+            name="note"
+            value={formData.note}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="mb-3">
+          <label className="form-label">Reservation Date</label>
+          <TextField
+            type="datetime-local"
+            name="dateTime"
+            value={formData.dateTime}
+            onChange={handleChange}
+            fullWidth
+            InputLabelProps={{
+              shrink: true,
+            }}
+            required
+          />
+        </div>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+};
+
+export default ReservationTable;

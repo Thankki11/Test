@@ -5,8 +5,9 @@ const connectDB = require("./config/db");
 const menuRoutes = require("./routes/menuRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const chefRoutes = require("./routes/chefRoutes");
+const orderRoutes = require("./routes/orderRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
-const uploadRoutes = require("./routes/uploadRoutes"); // Thêm import upload route
 
 const app = express();
 require("dotenv").config();
@@ -16,13 +17,14 @@ connectDB();
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json({ limit: '10mb' })); // Giới hạn 10MB
-app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }));
+app.use(bodyParser.json({ limit: "10mb" })); // Giới hạn 10MB
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 
 // Routes
 app.use("/api/menus", menuRoutes);
 app.use("/api/carts", cartRoutes);
 app.use("/api/chefs", chefRoutes);
+app.use("/api/orders", orderRoutes);
 app.use("/api/reservations", reservationRoutes);
 
 // Thêm route upload ảnh

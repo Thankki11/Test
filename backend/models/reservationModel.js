@@ -1,17 +1,46 @@
 const mongoose = require("mongoose");
 
+// Định nghĩa schema cho Reservation
 const reservationSchema = new mongoose.Schema({
-  customerName: { type: String, required: true },
-  phoneNumber: { type: String, required: true },
-  emailAddress: { type: String },
-  address: { type: String },
-  paymentMethod: { type: String },
-  note: { type: String },
-  agreeTerms: { type: Boolean, default: false },
-  items: [{ type: mongoose.Schema.Types.Mixed }],
-  totalPrice: { type: Number, required: true },
-  date: { type: Date, default: Date.now },
+  customerName: {
+    type: String,
+    required: true,
+  },
+  emailAddress: {
+    type: String,
+    required: true,
+  },
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+  numberOfGuest: {
+    type: Number,
+    required: true,
+  },
+  seatingArea: {
+    type: String,
+    required: true,
+  },
+  note: {
+    type: String,
+    required: false,
+  },
+  dateTime: {
+    type: Date, // Đảm bảo rằng dateTime là kiểu Date
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now, // Mặc định sẽ lưu thời gian hiện tại khi tạo mới
+  },
+  status: {
+    type: String,
+    default: "pending",
+  },
 });
 
-// Export model
-module.exports = mongoose.model("Reservation", reservationSchema);
+// Tạo model từ schema
+const Reservation = mongoose.model("Reservation", reservationSchema);
+
+module.exports = Reservation;

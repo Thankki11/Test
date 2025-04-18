@@ -36,6 +36,14 @@ function AdminLayout({ children }) {
               Manage Chefs
             </Link>
           </li>
+          <li style={{ marginBottom: "10px" }}>
+            <Link
+              to="/admin/orders"
+              style={{ color: "#fff", textDecoration: "none" }}
+            >
+              Manage Orders
+            </Link>
+          </li>
           <li>
             <Link
               to="/admin/reservations"

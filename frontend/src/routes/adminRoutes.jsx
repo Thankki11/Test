@@ -3,6 +3,7 @@ import AdminChefs from "../pages/admin/AdminChefs";
 import AdminMenus from "../pages/admin/AdminMenus";
 import AdminLayout from "../layouts/AdminLayout";
 import AdminReservation from "../pages/admin/AdminReservation";
+import AdminOrder from "../pages/admin/AdminOrder";
 
 const adminRoutes = [
   {
@@ -34,6 +35,14 @@ const adminRoutes = [
     element: (
       <AdminLayout>
         <AdminReservation />
+      </AdminLayout>
+    ),
+  },
+  {
+    path: "/admin/orders",
+    element: (
+      <AdminLayout>
+        <AdminOrder />
       </AdminLayout>
     ),
   },
