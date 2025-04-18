@@ -20,23 +20,23 @@ function AdminReservation() {
   return (
     <>
       {/* Modal xem thông tin chi tiết của bàn gồm danh sách các đơn đã được đặt ở bàn đó theo ngày */}
-      <div class="modal  fade" id="tableDetail">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
+      <div className="modal  fade" id="tableDetail">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
             {/* <!-- Modal Header --> */}
-            <div class="modal-header">
-              <h4 class="modal-title" style={{ fontSize: "30px" }}>
+            <div className="modal-header">
+              <h4 className="modal-title" style={{ fontSize: "30px" }}>
                 Table 1 Detail
               </h4>
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
               ></button>
             </div>
 
             {/* <!-- Modal body --> */}
-            <div class="modal-body">
+            <div className="modal-body">
               <p>Table number: 5</p>
               <p>Area: Indoor Area A</p>
               <p>Sức chứa: 4</p>
@@ -141,7 +141,7 @@ function AdminReservation() {
 
             {/* <!-- Modal footer --> */}
             <div
-              class="modal-footer"
+              className="modal-footer"
               style={{
                 display: "flex",
                 justifyContent: "space-between",
