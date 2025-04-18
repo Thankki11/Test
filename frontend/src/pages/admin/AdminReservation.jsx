@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
+import { Modal } from "bootstrap";
+
 //MUI
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
@@ -23,6 +25,39 @@ function AdminReservation() {
   //Lưu thông tin các đơn đặt bàn
   const [reservations, setReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
+
+  //Lưu thông tin chi tiết của 1 đơn đặt bàn
+  const [reservationDetail, setReservationDetail] = useState(null);
+
+  const handleReservationDetail = (detail) => {
+    setReservationDetail(detail);
+  };
+
+  //Thứ tự hiển thị modal
+  useEffect(() => {
+    // Lấy cả hai modal
+    const detailModal = document.getElementById("detailReservationModal");
+    const addModal = document.getElementById("addReservationModal");
+
+    const handleHidden = () => {
+      // Khi một trong hai modal đóng, mở lại modal viewReservations
+      const viewModalElement = document.getElementById("viewReservationsModal");
+      if (viewModalElement) {
+        const viewModal = new Modal(viewModalElement);
+        viewModal.show();
+      }
+    };
+
+    // Thêm event listener cho cả hai modal
+    detailModal?.addEventListener("hidden.bs.modal", handleHidden);
+    addModal?.addEventListener("hidden.bs.modal", handleHidden);
+
+    return () => {
+      // Cleanup listener khi component unmount
+      detailModal?.removeEventListener("hidden.bs.modal", handleHidden);
+      addModal?.removeEventListener("hidden.bs.modal", handleHidden);
+    };
+  }, []);
 
   //xem dữ liệu toàn bộ hoặc theo ngàyngày
   useEffect(() => {
@@ -107,7 +142,7 @@ function AdminReservation() {
         </div>
       </div>
 
-      {/* Modal xem các đơn đặt bàn chưa được duyệt theo ngày */}
+      {/* Modal xem các đơn đặt bàn  */}
       <div className="modal fade" id="viewReservationsModal">
         <div className="modal-dialog modal-xl">
           <div className="modal-content">
@@ -125,7 +160,9 @@ function AdminReservation() {
 
             {/* <!-- Modal body --> */}
             <div className="modal-body">
-              <ReservationsModal />
+              <ReservationsModal
+                onReservationDetail={handleReservationDetail}
+              />
             </div>
 
             {/* <!-- Modal footer --> */}
@@ -137,12 +174,49 @@ function AdminReservation() {
       </div>
 
       {/* Modal tạo đơn đặt bàn mới */}
-      <div class="modal fade" id="addReservationModal">
-        <div class="modal-dialog modal-lg">
+      <div className="modal fade" id="addReservationModal">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            {/* <!-- Modal Header --> */}
+            <div className="modal-header">
+              <h4 className="modal-title">Add new Reservation</h4>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            {/* <!-- Modal body --> */}
+            <div className="modal-body">
+              <ReservationForm isInModal="true" />
+            </div>
+
+            {/* <!-- Modal footer --> */}
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-danger"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal xem detail của đơn đặt bàn */}
+      <div className="modal fade" id="detailReservationModal" tabIndex="-1">
+        <div class="modal-dialog">
           <div class="modal-content">
             {/* <!-- Modal Header --> */}
             <div class="modal-header">
-              <h4 class="modal-title">Add new Reservation</h4>
+              <h5 className="modal-title" style={{ fontSize: "30px" }}>
+                Reservation Details{" "}
+                {reservationDetail?._id &&
+                  `#${reservationDetail._id.substring(0, 8)}`}
+              </h5>
               <button
                 type="button"
                 class="btn-close"
@@ -152,7 +226,86 @@ function AdminReservation() {
 
             {/* <!-- Modal body --> */}
             <div class="modal-body">
-              <ReservationForm />
+              {reservationDetail ? (
+                <div className="row">
+                  <div className="col-md-6">
+                    <p>
+                      <strong>Customer:</strong>{" "}
+                      {reservationDetail.customerName}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {reservationDetail.emailAddress}
+                    </p>
+                    <p>
+                      <strong>Phone:</strong> {reservationDetail.phoneNumber}
+                    </p>
+                    <p>
+                      <strong>Number of Guests:</strong>{" "}
+                      {reservationDetail.numberOfGuest}
+                    </p>
+                    <p>
+                      <strong>Seating Area:</strong>{" "}
+                      {reservationDetail.seatingArea}
+                    </p>
+                  </div>
+
+                  <div className="col-md-6">
+                    <p>
+                      <strong>Reservation Date:</strong>{" "}
+                      {new Date(reservationDetail.dateTime).toLocaleDateString(
+                        "en-GB"
+                      )}
+                    </p>
+                    <p>
+                      <strong>Reservation Time:</strong>{" "}
+                      {new Date(reservationDetail.dateTime).toLocaleTimeString(
+                        [],
+                        {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }
+                      )}
+                    </p>
+                    <p>
+                      <strong>Created At:</strong>{" "}
+                      {new Date(reservationDetail.createdAt).toLocaleString(
+                        "en-GB"
+                      )}
+                    </p>
+                    <p>
+                      <strong>Status:</strong>{" "}
+                      <span
+                        className={`badge bg-${
+                          reservationDetail.status === "confirmed"
+                            ? "success"
+                            : reservationDetail.status === "pending"
+                            ? "warning"
+                            : reservationDetail.status === "cancelled"
+                            ? "danger"
+                            : "secondary"
+                        }`}
+                      >
+                        {reservationDetail.status}
+                      </span>
+                    </p>
+                  </div>
+
+                  {reservationDetail.note && (
+                    <div className="col-12 mt-3">
+                      <p>
+                        <strong>Note:</strong>
+                      </p>
+                      <p>{reservationDetail.note}</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <div className="spinner-border text-primary" role="status">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* <!-- Modal footer --> */}
@@ -189,8 +342,12 @@ function AdminReservation() {
 
                 {/* Hiển thị danh sách các yêu cầu đặt bàn chưa được xác nhận */}
                 <button
-                  data-bs-toggle="modal"
-                  data-bs-target="#viewReservationsModal"
+                  onClick={() => {
+                    const modal = new Modal(
+                      document.getElementById("viewReservationsModal")
+                    );
+                    modal.show();
+                  }}
                 >
                   View Reservations
                 </button>

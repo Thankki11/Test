@@ -2,12 +2,18 @@ import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { TextField } from "@mui/material";
 
-function ReservationsModal() {
+import { Modal } from "bootstrap";
+
+function ReservationsModal({ onReservationDetail }) {
   const [allReservations, setAllReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+
+  //Biến quản lý để xem chi tiết reservation
+  const [selectedReservationId, setSelectedReservationId] = useState(null);
+  const [reservationDetail, setReservationDetail] = useState(null);
 
   const fetchReservations = useCallback(async () => {
     try {
@@ -72,16 +78,191 @@ function ReservationsModal() {
     };
   }, [fetchReservations]);
 
-  const handleCancel = (id) => {
-    console.log("Cancel reservation with ID:", id);
+  //Bấm nút để xem chi tiết về đơn đặt
+  const handleEdit = async (id) => {
+    try {
+      setSelectedReservationId(id);
+
+      // Gọi API lấy thông tin chi tiết
+      const response = await axios.get(
+        `http://localhost:3001/api/reservations/get/${id}`
+      );
+      console.log(response.data.data);
+      setReservationDetail(response.data.data);
+      onReservationDetail(response.data.data);
+
+      // Đóng modal viewReservations trước
+      const viewModal = Modal.getInstance(
+        document.getElementById("viewReservationsModal")
+      );
+      viewModal.hide();
+
+      // Sau đó mở modal detail
+      const detailModal = new Modal(
+        document.getElementById("detailReservationModal")
+      );
+      detailModal.show();
+    } catch (error) {
+      console.error("Error fetching reservation details:", error);
+      alert("Failed to load reservation details");
+    }
   };
 
-  const handleEdit = (id) => {
-    console.log("Edit reservation with ID:", id);
+  //Bấm nút để xem chi tiết về đơn đặt
+  const handleAddNew = async (id) => {
+    // Đóng modal viewReservations trước
+    const viewModal = Modal.getInstance(
+      document.getElementById("viewReservationsModal")
+    );
+    viewModal.hide();
+
+    // Sau đó mở modal detail
+    const detailModal = new Modal(
+      document.getElementById("addReservationModal")
+    );
+    detailModal.show();
+  };
+
+  //Bấm nút để xóa đơn
+  const handleDelete = async (id) => {
+    try {
+      // Tìm reservation cần xóa để hiển thị thông tin xác nhận
+      const reservationToDelete = allReservations.find((r) => r._id === id);
+
+      if (!reservationToDelete) {
+        alert("Reservation not found!");
+        return;
+      }
+
+      // Hiển thị hộp thoại xác nhận
+      const isConfirmed = window.confirm(
+        `Are you sure you want to DELETE this reservation?\n\n` +
+          `Customer: ${reservationToDelete.customerName}\n` +
+          `Date: ${formatDateFromISO(reservationToDelete.dateTime)}\n` +
+          `Time: ${new Date(reservationToDelete.dateTime).toLocaleTimeString(
+            [],
+            { hour: "2-digit", minute: "2-digit" }
+          )}\n` +
+          `Guests: ${reservationToDelete.numberOfGuest}\n` +
+          `Status: ${reservationToDelete.status}`
+      );
+
+      if (isConfirmed) {
+        // Gọi API xóa
+        await axios.delete(
+          `http://localhost:3001/api/reservations/delete/${id}`
+        );
+
+        // Cập nhật state (xóa khỏi danh sách)
+        setAllReservations((prev) => prev.filter((r) => r._id !== id));
+
+        alert("Reservation deleted successfully!");
+      }
+    } catch (error) {
+      console.error("Error deleting reservation:", error);
+      alert("Failed to delete reservation. Please try again.");
+    }
+  };
+
+  //Bấm nút để hủy đơn đã xác nhận
+  const handleCancel = async (id) => {
+    try {
+      // Tìm reservation cần hủy
+      const reservationToCancel = allReservations.find((r) => r._id === id);
+
+      if (!reservationToCancel) {
+        console.error("Reservation not found");
+        return;
+      }
+
+      // Kiểm tra nếu reservation chưa được confirmed thì không cho hủy
+      if (reservationToCancel.status !== "confirmed") {
+        alert("Only confirmed reservations can be cancelled!");
+        return;
+      }
+
+      // Hiển thị hộp thoại xác nhận
+      const isConfirmed = window.confirm(
+        `Are you sure you want to cancel this reservation?\n\n` +
+          `Customer: ${reservationToCancel.customerName}\n` +
+          `Date: ${formatDateFromISO(reservationToCancel.dateTime)}\n` +
+          `Time: ${new Date(reservationToCancel.dateTime).toLocaleTimeString(
+            [],
+            { hour: "2-digit", minute: "2-digit" }
+          )}\n` +
+          `Guests: ${reservationToCancel.numberOfGuest}`
+      );
+
+      if (isConfirmed) {
+        // Gọi API để hủy reservation
+        const response = await axios.put(
+          `http://localhost:3001/api/reservations/update/${id}`,
+          { status: "cancelled" }
+        );
+
+        // Cập nhật state
+        setAllReservations((prev) =>
+          prev.map((r) => (r._id === id ? { ...r, status: "cancelled" } : r))
+        );
+
+        console.log("Cancelled reservation:", response.data);
+        alert("Reservation cancelled successfully!");
+      }
+    } catch (error) {
+      console.error("Error cancelling reservation:", error);
+      alert("Failed to cancel reservation. Please try again.");
+    }
+  };
+
+  //Bấm nút confirm
+  const confirmReservation = async (id) => {
+    try {
+      // Tìm reservation cần xác nhận
+      const reservationToConfirm = allReservations.find((r) => r._id === id);
+
+      if (!reservationToConfirm) {
+        console.error("Reservation not found");
+        return;
+      }
+
+      // Hiển thị hộp thoại xác nhận
+      const isConfirmed = window.confirm(
+        `Are you sure you want to confirm this reservation?\n\n` +
+          `Customer: ${reservationToConfirm.customerName}\n` +
+          `Date: ${formatDateFromISO(reservationToConfirm.dateTime)}\n` +
+          `Time: ${new Date(reservationToConfirm.dateTime).toLocaleTimeString(
+            [],
+            { hour: "2-digit", minute: "2-digit" }
+          )}\n` +
+          `Guests: ${reservationToConfirm.numberOfGuest}`
+      );
+
+      if (isConfirmed) {
+        // Gọi API để cập nhật trạng thái
+        const response = await axios.put(
+          `http://localhost:3001/api/reservations/update/${id}`,
+          { status: "confirmed" }
+        );
+
+        // Cập nhật state với reservation đã được xác nhận
+        setAllReservations((prev) =>
+          prev.map((r) => (r._id === id ? { ...r, status: "confirmed" } : r))
+        );
+
+        // Log thông tin reservation đã xác nhận
+        console.log("Confirmed reservation:", response.data);
+
+        // Có thể thêm thông báo thành công ở đây
+        alert("Reservation confirmed successfully!");
+      }
+    } catch (error) {
+      console.error("Error confirming reservation:", error);
+      alert("Failed to confirm reservation. Please try again.");
+    }
   };
 
   const handleConfirm = (id) => {
-    console.log("Confirm reservation with ID:", id);
+    confirmReservation(id);
   };
 
   const toggleShowAll = () => {
@@ -96,6 +277,7 @@ function ReservationsModal() {
 
   return (
     <>
+      {/* Bắt đầu giao diện chính */}
       <div
         style={{
           display: "flex",
@@ -144,8 +326,7 @@ function ReservationsModal() {
           </p>
           <button
             style={{ fontSize: "12px", height: "auto", width: "auto" }}
-            data-bs-toggle="modal"
-            data-bs-target="#addReservationModal"
+            onClick={() => handleAddNew()}
           >
             Add new reservation
           </button>
@@ -179,7 +360,7 @@ function ReservationsModal() {
                     <button
                       className="btn btn-sm btn-outline-danger me-2"
                       title="Cancel"
-                      onClick={() => handleCancel(reservation._id)}
+                      onClick={() => handleDelete(reservation._id)}
                       style={{ padding: "0.25rem 0.5rem", fontSize: "0.8rem" }}
                     >
                       <i className="fa fa-times"></i>
@@ -189,7 +370,7 @@ function ReservationsModal() {
                       onClick={() => handleEdit(reservation._id)}
                       style={{ padding: "0.25rem 0.5rem", fontSize: "0.8rem" }}
                     >
-                      <i class="fa-solid fa-info"></i>
+                      <i className="fa-solid fa-info"></i>
                     </button>
                   </td>
                   <td>{reservationTime}</td>
@@ -198,12 +379,28 @@ function ReservationsModal() {
                   <td>{reservation.emailAddress}</td>
                   <td>{reservation.phoneNumber}</td>
                   <td>{reservation.numberOfGuest}</td>
-                  <td>{reservation.status}</td>
+                  <td>
+                    <span
+                      style={{
+                        color:
+                          reservation.status === "confirmed"
+                            ? "green"
+                            : reservation.status === "pending"
+                            ? "orange"
+                            : reservation.status === "cancelled"
+                            ? "red"
+                            : "black",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {reservation.status}
+                    </span>
+                  </td>
                   <td>
                     {reservation.status === "pending" ? (
                       <button
                         style={{
-                          backgroundColor: "darkgreen",
+                          backgroundColor: "orange",
                           color: "white",
                           border: "transparent",
                         }}
@@ -211,7 +408,7 @@ function ReservationsModal() {
                       >
                         Confirm
                       </button>
-                    ) : (
+                    ) : reservation.status === "confirmed" ? (
                       <button
                         style={{
                           backgroundColor: "darkred",
@@ -222,7 +419,7 @@ function ReservationsModal() {
                       >
                         Cancel
                       </button>
-                    )}
+                    ) : null}
                   </td>
                 </tr>
               );
