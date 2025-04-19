@@ -170,9 +170,12 @@ function AdminReservation() {
           <div className="modal-content">
             {/* <!-- Modal Header --> */}
             <div className="modal-header">
-              <h4 className="modal-title" style={{ fontSize: "30px" }}>
-                View Reservations
-              </h4>
+              <div className="d-flex gap-3 align-items-center">
+                <h4 className="modal-title" style={{ fontSize: "30px" }}>
+                  View Reservations
+                </h4>
+                <p className=" mb-0">Default is showing today</p>
+              </div>
               <button
                 type="button"
                 className="btn-close"
@@ -483,17 +486,23 @@ function AdminReservation() {
         {/* Thông tin về các bàn trong ngày đã chọn: có thể làm thống kê  */}
         <div>
           <div className="row">
-            <div className="col-6">
+            <div className="col-4">
               <p>Total table: 50</p>
               <p>Total table registered: 20</p>
               <p>Total table empty:5</p>
             </div>
-            <div className="col-6">
-              <div className="d-flex " style={{ gap: "20px" }}>
+            <div className="col-8">
+              <div
+                className="d-flex justify-content-end"
+                style={{ gap: "20px" }}
+              >
+                {/* Thêm khu vực mới */}
+                <button> Add new area</button>
                 {/* Thêm bàn mới */}
                 <button> Add new table</button>
-
-                {/* Hiển thị danh sách các yêu cầu đặt bàn chưa được xác nhận */}
+              </div>
+              <div className="d-flex justify-content-end mt-3">
+                {/* Hiển thị danh sách các yêu cầu đặt bàn */}
                 <button
                   onClick={() => {
                     const modal = new Modal(
@@ -505,6 +514,7 @@ function AdminReservation() {
                   View Reservations
                 </button>
               </div>
+
               <div className="d-flex justify-content-end mt-5">
                 <p style={{ fontSize: "30px" }}>Curent view: 23/2/2025</p>
               </div>
@@ -585,6 +595,9 @@ function AdminReservation() {
             <TabPanel value="3">Item Three</TabPanel>
           </TabContext>
         </Box>
+        <div className="section">
+          <p></p>
+        </div>
       </div>
     </>
   );

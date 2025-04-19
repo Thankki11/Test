@@ -7,7 +7,10 @@ import { Modal } from "bootstrap";
 function ReservationsModal({ onReservationDetail }) {
   const [allReservations, setAllReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
+
+  //Các nút filter
   const [showAll, setShowAll] = useState(false);
+  const [showPending, setShowPending] = useState(false);
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
@@ -34,32 +37,42 @@ function ReservationsModal({ onReservationDetail }) {
     return date.toISOString().split("T")[0];
   };
 
+  //Hàm xử lý lọc filter
   const filterReservations = (
     reservations,
     showAllFlag,
+    showPendingFlag,
     startDate,
     endDate
   ) => {
-    if (showAllFlag) {
-      setFilteredReservations(reservations);
-      return;
+    let filtered = [...reservations];
+
+    // Bước 1: Lọc theo ngày (nếu không chọn showAll)
+    if (!showAllFlag) {
+      const today = new Date().toISOString().split("T")[0];
+      const start = startDate || today;
+      const end = endDate || today;
+
+      filtered = filtered.filter((reservation) => {
+        const resDate = formatDateFromISO(reservation.dateTime);
+        return resDate >= start && resDate <= end;
+      });
     }
 
-    const today = new Date().toISOString().split("T")[0];
-    const start = startDate || today;
-    const end = endDate || today;
-
-    const filtered = reservations.filter((reservation) => {
-      const resDate = formatDateFromISO(reservation.dateTime);
-      return resDate >= start && resDate <= end;
-    });
+    // Bước 2: Lọc pending (nếu chọn showPending)
+    if (showPendingFlag) {
+      filtered = filtered.filter(
+        (reservation) => reservation.status === "pending"
+      );
+    }
 
     setFilteredReservations(filtered);
   };
 
+  //Xử lý khi các filter thay đổi
   useEffect(() => {
-    filterReservations(allReservations, showAll, fromDate, toDate);
-  }, [allReservations, showAll, fromDate, toDate]);
+    filterReservations(allReservations, showAll, showPending, fromDate, toDate);
+  }, [allReservations, showAll, showPending, fromDate, toDate]);
 
   useEffect(() => {
     fetchReservations();
@@ -273,6 +286,10 @@ function ReservationsModal({ onReservationDetail }) {
     }
   };
 
+  const toggleShowPending = () => {
+    setShowPending((prev) => !prev);
+  };
+
   const today = new Date().toISOString().split("T")[0];
 
   return (
@@ -316,6 +333,18 @@ function ReservationsModal({ onReservationDetail }) {
             />
             <label className="form-check-label" htmlFor="showAll">
               Show all
+            </label>
+          </div>
+          <div className="form-check">
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="showPending"
+              checked={showPending}
+              onChange={toggleShowPending}
+            />
+            <label className="form-check-label" htmlFor="showPending">
+              Show pending only
             </label>
           </div>
         </div>
