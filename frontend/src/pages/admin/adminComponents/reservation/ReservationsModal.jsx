@@ -121,7 +121,7 @@ function ReservationsModal({ onReservationDetail }) {
     }
   };
 
-  //Bấm nút để xem chi tiết về đơn đặt
+  //Bấm nút để tạo đơn đặt mới
   const handleAddNew = async (id) => {
     // Đóng modal viewReservations trước
     const viewModal = Modal.getInstance(
@@ -229,53 +229,75 @@ function ReservationsModal({ onReservationDetail }) {
 
   //Bấm nút confirm
   const confirmReservation = async (id) => {
-    try {
-      // Tìm reservation cần xác nhận
-      const reservationToConfirm = allReservations.find((r) => r._id === id);
-
-      if (!reservationToConfirm) {
-        console.error("Reservation not found");
-        return;
-      }
-
-      // Hiển thị hộp thoại xác nhận
-      const isConfirmed = window.confirm(
-        `Are you sure you want to confirm this reservation?\n\n` +
-          `Customer: ${reservationToConfirm.customerName}\n` +
-          `Date: ${formatDateFromISO(reservationToConfirm.dateTime)}\n` +
-          `Time: ${new Date(reservationToConfirm.dateTime).toLocaleTimeString(
-            [],
-            { hour: "2-digit", minute: "2-digit" }
-          )}\n` +
-          `Guests: ${reservationToConfirm.numberOfGuest}`
-      );
-
-      if (isConfirmed) {
-        // Gọi API để cập nhật trạng thái
-        const response = await axios.put(
-          `http://localhost:3001/api/reservations/update/${id}`,
-          { status: "confirmed" }
-        );
-
-        // Cập nhật state với reservation đã được xác nhận
-        setAllReservations((prev) =>
-          prev.map((r) => (r._id === id ? { ...r, status: "confirmed" } : r))
-        );
-
-        // Log thông tin reservation đã xác nhận
-        console.log("Confirmed reservation:", response.data);
-
-        // Có thể thêm thông báo thành công ở đây
-        alert("Reservation confirmed successfully!");
-      }
-    } catch (error) {
-      console.error("Error confirming reservation:", error);
-      alert("Failed to confirm reservation. Please try again.");
-    }
+    // try {
+    //   // Tìm reservation cần xác nhận
+    //   const reservationToConfirm = allReservations.find((r) => r._id === id);
+    //   if (!reservationToConfirm) {
+    //     console.error("Reservation not found");
+    //     return;
+    //   }
+    //   // Hiển thị hộp thoại xác nhận
+    //   const isConfirmed = window.confirm(
+    //     `Are you sure you want to confirm this reservation?\n\n` +
+    //       `Customer: ${reservationToConfirm.customerName}\n` +
+    //       `Date: ${formatDateFromISO(reservationToConfirm.dateTime)}\n` +
+    //       `Time: ${new Date(reservationToConfirm.dateTime).toLocaleTimeString(
+    //         [],
+    //         { hour: "2-digit", minute: "2-digit" }
+    //       )}\n` +
+    //       `Guests: ${reservationToConfirm.numberOfGuest}`
+    //   );
+    //   if (isConfirmed) {
+    //     // Gọi API để cập nhật trạng thái
+    //     const response = await axios.put(
+    //       `http://localhost:3001/api/reservations/update/${id}`,
+    //       { status: "confirmed" }
+    //     );
+    //     // Cập nhật state với reservation đã được xác nhận
+    //     setAllReservations((prev) =>
+    //       prev.map((r) => (r._id === id ? { ...r, status: "confirmed" } : r))
+    //     );
+    //     // Log thông tin reservation đã xác nhận
+    //     console.log("Confirmed reservation:", response.data);
+    //     // Có thể thêm thông báo thành công ở đây
+    //     alert("Reservation confirmed successfully!");
+    //   }
+    // } catch (error) {
+    //   console.error("Error confirming reservation:", error);
+    //   alert("Failed to confirm reservation. Please try again.");
+    // }
   };
 
-  const handleConfirm = (id) => {
-    confirmReservation(id);
+  const handleConfirm = async (id) => {
+    try {
+      setSelectedReservationId(id);
+
+      // Gọi API lấy thông tin chi tiết
+      const response = await axios.get(
+        `http://localhost:3001/api/reservations/get/${id}`
+      );
+      console.log(response.data.data);
+      setReservationDetail(response.data.data);
+      onReservationDetail(response.data.data);
+
+      // Đóng modal viewReservations trước
+      const viewModal = Modal.getInstance(
+        document.getElementById("viewReservationsModal")
+      );
+      viewModal.hide();
+
+      // Sau đó mở modal confirm
+      const confirmModal = new Modal(
+        document.getElementById("confirmReservationModal")
+      );
+      confirmModal.show();
+    } catch (error) {
+      console.error(
+        "Error fetching reservation details:",
+        error.response?.data || error.message || error
+      );
+      alert("Failed to load reservation details");
+    }
   };
 
   const toggleShowAll = () => {
