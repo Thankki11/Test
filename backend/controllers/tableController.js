@@ -200,3 +200,37 @@ exports.deleteTable = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+//Cập nhật bàn: Chỉ sửa note và capacity
+exports.updateTable = async (req, res) => {
+  try {
+    // Lấy dữ liệu từ yêu cầu
+    const { capacity, note } = req.body;
+    const tableId = req.params.id; // ID của bàn từ tham số URL
+
+    // Kiểm tra xem có dữ liệu capacity và note trong yêu cầu không
+    if (capacity === undefined || note === undefined) {
+      return res
+        .status(400)
+        .json({ message: "Capacity and note are required" });
+    }
+
+    // Tìm bàn theo ID và cập nhật
+    const updatedTable = await Table.findByIdAndUpdate(
+      tableId,
+      { capacity, note },
+      { new: true } // Trả về tài nguyên đã được cập nhật
+    );
+
+    // Nếu không tìm thấy bàn với ID đó
+    if (!updatedTable) {
+      return res.status(404).json({ message: "Table not found" });
+    }
+
+    // Trả về dữ liệu bàn đã được cập nhật
+    res.status(200).json(updatedTable);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

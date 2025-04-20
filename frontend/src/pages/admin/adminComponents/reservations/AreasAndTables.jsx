@@ -10,12 +10,8 @@ import axios from "axios";
 import { Modal } from "bootstrap";
 
 function AreasAndTables({ tables, reservations, onTableUpdated }) {
+  //Các state
   const [value, setValue] = useState("1");
-  const todayStr = new Date().toISOString().split("T")[0];
-  const [selectedDate, setSelectedDate] = useState(() => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  });
   const [areas, setAreas] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
   const [editedTable, setEditedTable] = useState(null); // 👈 State để lưu thông tin chỉnh sửa
@@ -32,6 +28,10 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
   const handleDetailClick = (table) => {
     const modal = new Modal(document.getElementById("tableDetailModal"));
     modal.show();
+
+    const bookingHistoryArray = table.bookingHistory;
+    // console.log(bookingHistoryArray);
+
     setSelectedTable(table);
     setEditedTable({ ...table }); // Tạo bản sao để chỉnh sửa
   };
@@ -80,10 +80,30 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
   //Sửa lại thông tin của bàn
   const handleSubmit = (e) => {
     e.preventDefault();
-    //Bỏ phần bookingHistory
-    const { bookingHistory, ...sendingTable } = editedTable;
-    console.log("Updated table data:", sendingTable);
-    // Ở đây bạn có thể thêm logic gửi dữ liệu lên server
+
+    // Chỉ lấy note và capacity để gửi
+    const updatedData = {
+      note: editedTable.note,
+      capacity: editedTable.capacity,
+    };
+
+    console.log("Updated table data:", updatedData);
+
+    // Gửi yêu cầu PUT hoặc POST đến server với axios
+    axios
+      .put(
+        `http://localhost:3001/api/tables/update/${editedTable._id}`,
+        updatedData
+      )
+      .then((response) => {
+        console.log("Data successfully updated:", response.data);
+        // Bạn có thể thêm hành động sau khi gửi thành công (ví dụ: thông báo, cập nhật lại UI, v.v.)
+        alert("Update table information successful!");
+      })
+      .catch((error) => {
+        alert("Update table information Failed!");
+        // Xử lý lỗi (ví dụ: hiển thị thông báo lỗi)
+      });
   };
 
   return (
@@ -94,7 +114,7 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" style={{ fontSize: "30px" }}>
-                Edit Table {selectedTable?.tableNumber}
+                Booking history & Edit Table {selectedTable?.tableNumber}
               </h5>
               <button
                 type="button"
@@ -107,81 +127,103 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
               {editedTable ? (
                 <div className="row">
                   <div className="col-xl-8">
-                    <h5 style={{ fontSize: "30px" }}>Booking history</h5>
                     {selectedTable.bookingHistory?.length > 0 ? (
-                      <div
-                        className="table-responsive"
-                        style={{
-                          maxHeight: "400px",
-                          overflowY: "auto",
-                          border: "1px solid #dee2e6",
-                          borderRadius: "4px",
-                        }}
-                      >
-                        <table className="table table-striped mb-0">
-                          <thead
-                            style={{
-                              position: "sticky",
-                              top: 0,
-                              backgroundColor: "white",
-                              zIndex: 1,
-                            }}
-                          >
-                            <tr>
-                              <th>Date</th>
-                              <th>Time</th>
-                              <th>Reservation ID</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {selectedTable.bookingHistory
-                              .sort(
-                                (a, b) =>
-                                  new Date(b.startTime) - new Date(a.startTime)
-                              )
-                              .map((booking) => {
-                                const bookingDateStr =
-                                  booking.startTime.split("T")[0];
-                                const isToday = bookingDateStr === todayStr;
+                      <>
+                        <p>
+                          The entries with{" "}
+                          <span style={{ color: "red", fontWeight: "bold" }}>
+                            red background
+                          </span>{" "}
+                          indicate bookings that are scheduled for today.
+                        </p>
+                        <div
+                          className="table-responsive"
+                          style={{
+                            maxHeight: "400px",
+                            overflowY: "auto",
+                            border: "1px solid #dee2e6",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          <table className="table table-striped mb-0">
+                            <thead
+                              style={{
+                                position: "sticky",
+                                top: 0,
+                                backgroundColor: "white",
+                                zIndex: 1,
+                              }}
+                            >
+                              <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Reservation ID</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {selectedTable.bookingHistory
+                                .sort(
+                                  (a, b) =>
+                                    new Date(b.startTime) -
+                                    new Date(a.startTime)
+                                )
+                                .map((booking) => {
+                                  const bookingDate = new Date(
+                                    booking.startTime
+                                  ).toLocaleDateString();
+                                  const today = new Date().toLocaleDateString();
+                                  const isToday = bookingDate === today;
 
-                                return (
-                                  <tr
-                                    key={booking._id}
-                                    style={
-                                      isToday
-                                        ? { backgroundColor: "#ffdddd" }
-                                        : {}
-                                    }
-                                  >
-                                    <td>
-                                      {new Date(
-                                        booking.startTime
-                                      ).toLocaleDateString()}
-                                    </td>
-                                    <td>
-                                      {new Date(
-                                        booking.startTime
-                                      ).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}{" "}
-                                      -{" "}
-                                      {new Date(
-                                        booking.endTime
-                                      ).toLocaleTimeString([], {
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                      })}
-                                    </td>
-                                    <td>
-                                      {booking.reservationId.toString()}...
-                                    </td>
-                                  </tr>
-                                );
-                              })}
-                          </tbody>
-                        </table>
-                      </div>
+                                  return (
+                                    <tr key={booking._id}>
+                                      <td
+                                        style={
+                                          isToday
+                                            ? { backgroundColor: "#ffdddd" }
+                                            : {}
+                                        }
+                                      >
+                                        {new Date(
+                                          booking.startTime
+                                        ).toLocaleDateString()}
+                                      </td>
+                                      <td
+                                        style={
+                                          isToday
+                                            ? { backgroundColor: "#ffdddd" }
+                                            : {}
+                                        }
+                                      >
+                                        {new Date(
+                                          booking.startTime
+                                        ).toLocaleTimeString([], {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}{" "}
+                                        -{" "}
+                                        {new Date(
+                                          booking.endTime
+                                        ).toLocaleTimeString([], {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
+                                      </td>
+                                      <td
+                                        style={
+                                          isToday
+                                            ? { backgroundColor: "#ffdddd" }
+                                            : {}
+                                        }
+                                      >
+                                        {booking.reservationId.toString()}...
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                            </tbody>
+                          </table>
+                        </div>
+                      </>
                     ) : (
                       <p className="text-muted">No booking history</p>
                     )}
@@ -206,6 +248,7 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                                 value={editedTable.seatingArea}
                                 onChange={handleInputChange}
                                 className="form-control"
+                                disabled
                               />
                             </td>
                           </tr>
@@ -218,6 +261,7 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                                 value={editedTable.tableType}
                                 onChange={handleInputChange}
                                 className="form-control"
+                                disabled
                               />
                             </td>
                           </tr>
@@ -256,6 +300,7 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                                   .slice(0, 16)}
                                 onChange={handleInputChange}
                                 className="form-control"
+                                disabled
                               />
                             </td>
                           </tr>
@@ -269,18 +314,8 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                         >
                           Delete
                         </button>
-                        {/* //Nút bấm để gửi api cập nhật lại thông tin bàn: hiện tại không nên cho sửa thông tin bàn vì thông tin đặt bàn sẽ bị sai  */}
-                        <button
-                          type="submit"
-                          disabled
-                          style={{
-                            backgroundColor: "#333",
-                            color: "white",
-                            border: "0px",
-                            opacity: 0.3,
-                            cursor: "not-allowed",
-                          }}
-                        >
+                        {/* //Nút bấm để gửi api cập nhật lại thông tin bàn: hiện tại không nên cho sửa nhiều thông tin bàn vì thông tin đặt bàn sẽ bị sai  */}
+                        <button type="submit" className="btn-select selected">
                           Save Changes
                         </button>
                       </div>
@@ -319,7 +354,26 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                 <Tab key={area} label={area} value={(index + 1).toString()} />
               ))}
             </Tabs>
-            <TextField
+            <p
+              style={{
+                fontFamily: "josefinSans",
+                fontSize: "16px",
+                marginBottom: "0px",
+              }}
+            >
+              <span style={{ backgroundColor: "#FFDDDD", padding: "2px 6px" }}>
+                Red background
+              </span>{" "}
+              bookings scheduled <strong>today</strong>.
+              <br />
+              <span style={{ backgroundColor: "#DDFFDD", padding: "2px 6px" }}>
+                Green background
+              </span>{" "}
+              bookings scheduled <strong>future</strong>.
+            </p>
+
+            {/* //Bộ lọc theo ngày */}
+            {/* <TextField
               id="date"
               label="Choose date"
               type="date"
@@ -329,34 +383,74 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
               InputLabelProps={{
                 shrink: true,
               }}
-            />
+            /> */}
           </Box>
 
           {areas.map((area, index) => (
             <TabPanel key={area} value={(index + 1).toString()}>
               <div className="row">
-                {getTablesByArea(area).map((table) => (
-                  <div key={table._id} className="col-4 mb-3">
-                    <div className="card h-100">
-                      <div className="card-body">
-                        <h5 className="card-title" style={{ fontSize: "30px" }}>
-                          Table {table.tableNumber}
-                        </h5>
-                        <p
-                          className="card-text"
-                          style={{ fontFamily: "josefinSans" }}
-                        >
-                          Type: {table.tableType}
-                          <br />
-                          Capacity: {table.capacity}
-                        </p>
-                        <button onClick={() => handleDetailClick(table)}>
-                          Edit Table
-                        </button>
+                {getTablesByArea(area).map((table) => {
+                  const today = new Date();
+                  const todayStr = today.toLocaleDateString();
+
+                  const hasBookingToday = table.bookingHistory.some(
+                    (booking) => {
+                      const bookingDate = new Date(
+                        booking.startTime
+                      ).toLocaleDateString();
+                      return bookingDate === todayStr;
+                    }
+                  );
+
+                  const hasFutureBooking = table.bookingHistory.some(
+                    (booking) => {
+                      const bookingDate = new Date(booking.startTime);
+                      // So sánh ngày (không tính giờ)
+                      return (
+                        bookingDate.setHours(0, 0, 0, 0) >
+                        today.setHours(0, 0, 0, 0)
+                      );
+                    }
+                  );
+
+                  let bgColor = "white";
+                  if (hasBookingToday) {
+                    bgColor = "#FFDDDD";
+                  } else if (hasFutureBooking) {
+                    bgColor = "#DDFFDD";
+                  }
+
+                  return (
+                    <div key={table._id} className="col-4 mb-3">
+                      <div
+                        className="card h-100"
+                        style={{ backgroundColor: bgColor }}
+                      >
+                        <div className="card-body">
+                          <h5
+                            className="card-title"
+                            style={{ fontSize: "30px" }}
+                          >
+                            Table {table.tableNumber}
+                          </h5>
+                          <p
+                            className="card-text"
+                            style={{ fontFamily: "josefinSans" }}
+                          >
+                            Type: {table.tableType}
+                            <br />
+                            Capacity: {table.capacity}
+                            <br />
+                            Note: {table.note}
+                          </p>
+                          <button onClick={() => handleDetailClick(table)}>
+                            Edit Table
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </TabPanel>
           ))}

@@ -105,23 +105,28 @@ function AdminReservation() {
       {/* Giao diện start */}
       <div className="section">
         <div className="mb-5">
-          <h2>Admin Reservations</h2>
+          <h2 className="text-center">Admin Reservations</h2>
         </div>
         {/* Thông tin về các bàn trong ngày đã chọn: có thể làm thống kê  */}
         <div>
           <div className="row">
-            <div className="col-4">
-              <p>Total table: 50</p>
-              <p>Total table registered: 20</p>
-              <p>Total table empty:5</p>
+            <div className="col-4 ps-4">
+              <div className="card">
+                <div className="card-body">
+                  <p className="mb-1 card-text">
+                    Total tables: {tables.length}
+                  </p>
+                  <p className="mb-1 card-text">
+                    Total reservations: {reservations.length}
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="col-8">
               <div
                 className="d-flex justify-content-end"
                 style={{ gap: "20px" }}
               >
-                {/* Thêm khu vực mới */}
-                <button> Add new area</button>
                 {/* Thêm bàn mới */}
                 <button
                   onClick={() => {
@@ -131,11 +136,8 @@ function AdminReservation() {
                     modal.show();
                   }}
                 >
-                  {" "}
                   Add new table
                 </button>
-              </div>
-              <div className="d-flex justify-content-end mt-3">
                 {/* Hiển thị danh sách các yêu cầu đặt bàn */}
                 <button
                   onClick={() => {
