@@ -4,19 +4,18 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import { TextField, Tabs } from "@mui/material";
+import { TextField, Tabs, Button } from "@mui/material";
 
 function AreasAndTables({ tables, reservations }) {
   const [value, setValue] = useState("1");
-
   const todayStr = new Date().toISOString().split("T")[0];
-
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
-    return today.toISOString().split("T")[0]; // YYYY-MM-DD
+    return today.toISOString().split("T")[0];
   });
   const [areas, setAreas] = useState([]);
-  const [selectedTable, setSelectedTable] = useState(null); // 👈 Table được chọn
+  const [selectedTable, setSelectedTable] = useState(null);
+  const [editedTable, setEditedTable] = useState(null); // 👈 State để lưu thông tin chỉnh sửa
 
   useEffect(() => {
     const uniqueAreas = [
@@ -24,6 +23,12 @@ function AreasAndTables({ tables, reservations }) {
     ];
     setAreas(uniqueAreas);
   }, [tables]);
+
+  // Khi chọn bàn, copy dữ liệu vào editedTable
+  const handleDetailClick = (table) => {
+    setSelectedTable(table);
+    setEditedTable({ ...table }); // Tạo bản sao để chỉnh sửa
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -33,24 +38,29 @@ function AreasAndTables({ tables, reservations }) {
     return tables.filter((table) => table.seatingArea.trim() === area);
   };
 
-  const formatDate = (date) => date.toISOString().split("T")[0]; // Trả về "YYYY-MM-DD"
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedTable((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
-  const handleDetailClick = (table) => {
-    setSelectedTable(table);
-    console.log(table);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Updated table data:", editedTable);
+    // Ở đây bạn có thể thêm logic gửi dữ liệu lên server
   };
 
   return (
     <>
-      {/* Modal hiển thị chi tiết table */}
+      {/* Modal hiển thị và chỉnh sửa chi tiết table */}
       <div className="modal fade" id="tableDetailModal" tabIndex="-1">
-        <div className="modal-dialog modal-lg">
-          {" "}
-          {/* Thêm modal-lg để rộng hơn */}
+        <div className="modal-dialog modal-xl">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title" style={{ fontSize: "30px" }}>
-                Table {selectedTable?.tableNumber} Detail
+                Edit Table {selectedTable?.tableNumber}
               </h5>
               <button
                 type="button"
@@ -60,60 +70,110 @@ function AreasAndTables({ tables, reservations }) {
               ></button>
             </div>
             <div className="modal-body">
-              {selectedTable ? (
+              {editedTable ? (
                 <div className="row">
-                  <div className="col-md-4">
-                    <h5 style={{ fontSize: "30px" }}></h5>
-                    <table className="table table-bordered">
-                      <tbody>
-                        <tr>
-                          <th>Area</th>
-                          <td>{selectedTable.seatingArea}</td>
-                        </tr>
-                        <tr>
-                          <th>Table type</th>
-                          <td>{selectedTable.tableType}</td>
-                        </tr>
-                        <tr>
-                          <th>Capacity</th>
-                          <td>{selectedTable.capacity}</td>
-                        </tr>
-                        <tr>
-                          <th>Note</th>
-                          <td>{selectedTable.note || "Currently no note"}</td>
-                        </tr>
-                        <tr>
-                          <th>Date created</th>
-                          <td>
-                            {new Date(selectedTable.createdAt).toLocaleString()}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <button>Click me</button>
+                  <div className="col-xl-4">
+                    <form onSubmit={handleSubmit}>
+                      <table className="table table-bordered">
+                        <tbody>
+                          <tr>
+                            <th>Area</th>
+                            <td>
+                              <input
+                                type="text"
+                                name="seatingArea"
+                                value={editedTable.seatingArea}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Table type</th>
+                            <td>
+                              <input
+                                type="text"
+                                name="tableType"
+                                value={editedTable.tableType}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Capacity</th>
+                            <td>
+                              <input
+                                type="number"
+                                name="capacity"
+                                value={editedTable.capacity}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Note</th>
+                            <td>
+                              <textarea
+                                name="note"
+                                value={editedTable.note}
+                                onChange={handleInputChange}
+                                className="form-control"
+                                placeholder="Currently no note"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Date created</th>
+                            <td>
+                              <input
+                                type="datetime-local"
+                                name="createdAt"
+                                value={new Date(editedTable.createdAt)
+                                  .toISOString()
+                                  .slice(0, 16)}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div className="d-flex justify-content-between">
+                        <button
+                          type="button"
+                          className="btn btn-secondary"
+                          data-bs-dismiss="modal"
+                        >
+                          Cancel
+                        </button>
+                        <button type="submit" className="btn btn-primary">
+                          Save Changes
+                        </button>
+                      </div>
+                    </form>
                   </div>
 
-                  <div className="col-md-8">
+                  <div className="col-xl-8">
                     <h5 style={{ fontSize: "30px" }}>Booking history</h5>
                     {selectedTable.bookingHistory?.length > 0 ? (
                       <div
                         className="table-responsive"
                         style={{
-                          maxHeight: "400px", // Giới hạn chiều cao tối đa
-                          overflowY: "auto", // Cho phép cuộn dọc khi cần
-                          border: "1px solid #dee2e6", // Thêm viền cho đẹp
-                          borderRadius: "4px", // Bo góc
+                          maxHeight: "400px",
+                          overflowY: "auto",
+                          border: "1px solid #dee2e6",
+                          borderRadius: "4px",
                         }}
                       >
                         <table className="table table-striped mb-0">
-                          {" "}
-                          {/* mb-0 để xóa margin bottom */}
                           <thead
                             style={{
-                              position: "sticky", // Giữ tiêu đề khi cuộn
+                              position: "sticky",
                               top: 0,
-                              backgroundColor: "white", // Nền trắng cho tiêu đề
-                              zIndex: 1, // Đảm bảo hiển thị trên nội dung
+                              backgroundColor: "white",
+                              zIndex: 1,
                             }}
                           >
                             <tr>
@@ -130,14 +190,16 @@ function AreasAndTables({ tables, reservations }) {
                               )
                               .map((booking) => {
                                 const bookingDateStr =
-                                  booking.startTime.split("T")[0]; // "2025-07-17"
+                                  booking.startTime.split("T")[0];
                                 const isToday = bookingDateStr === todayStr;
 
                                 return (
                                   <tr
                                     key={booking._id}
                                     style={
-                                      isToday ? { backgroundColor: "red" } : {}
+                                      isToday
+                                        ? { backgroundColor: "#ffdddd" }
+                                        : {}
                                     }
                                   >
                                     <td>
@@ -178,20 +240,11 @@ function AreasAndTables({ tables, reservations }) {
                 <p>Loading...</p>
               )}
             </div>
-            <div className="modal-footer d-flex justify-content-start">
-              <button
-                type="button"
-                className="btn-select"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-            </div>
           </div>
         </div>
       </div>
 
-      {/* Giao diện chính */}
+      {/* Giao diện chính (giữ nguyên) */}
       <Box sx={{ width: "100%", typography: "body1" }}>
         <TabContext value={value}>
           <Box
@@ -250,9 +303,9 @@ function AreasAndTables({ tables, reservations }) {
                           className="btn btn-primary"
                           data-bs-toggle="modal"
                           data-bs-target="#tableDetailModal"
-                          onClick={() => handleDetailClick(table)} // 👈 Gán table được chọn
+                          onClick={() => handleDetailClick(table)}
                         >
-                          Detail
+                          Edit Table
                         </button>
                       </div>
                     </div>
