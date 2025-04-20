@@ -16,6 +16,9 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
   const [selectedTable, setSelectedTable] = useState(null);
   const [editedTable, setEditedTable] = useState(null); // 👈 State để lưu thông tin chỉnh sửa
 
+  //Chọn tùy chọn sắp xếp thứ tự hiển thị cho các bàn
+  const [sortOption, setSortOption] = useState("tableNumber");
+
   useEffect(() => {
     const uniqueAreas = [
       ...new Set(tables.map((table) => table.seatingArea.trim())),
@@ -354,23 +357,6 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                 <Tab key={area} label={area} value={(index + 1).toString()} />
               ))}
             </Tabs>
-            <p
-              style={{
-                fontFamily: "josefinSans",
-                fontSize: "16px",
-                marginBottom: "0px",
-              }}
-            >
-              <span style={{ backgroundColor: "#FFDDDD", padding: "2px 6px" }}>
-                Red background
-              </span>{" "}
-              bookings scheduled <strong>today</strong>.
-              <br />
-              <span style={{ backgroundColor: "#DDFFDD", padding: "2px 6px" }}>
-                Green background
-              </span>{" "}
-              bookings scheduled <strong>future</strong>.
-            </p>
 
             {/* //Bộ lọc theo ngày */}
             {/* <TextField
@@ -386,71 +372,165 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
             /> */}
           </Box>
 
+          <div className="row mt-3">
+            <div className="col-8 ">
+              <p
+                style={{
+                  fontFamily: "josefinSans",
+                  fontSize: "16px",
+                  marginBottom: "0px",
+                }}
+              >
+                <span
+                  style={{ backgroundColor: "#FFDDDD", padding: "2px 6px" }}
+                >
+                  Red background
+                </span>{" "}
+                bookings scheduled <strong>today</strong>.
+                <br />
+                <span
+                  style={{ backgroundColor: "#DDFFDD", padding: "2px 6px" }}
+                >
+                  Green background
+                </span>{" "}
+                bookings scheduled <strong>future</strong>.
+              </p>
+            </div>
+            <div className="col-4">
+              <label
+                htmlFor="sortOption"
+                className="form-label fw-bold mb-0"
+                style={{ fontFamily: "josefinSans, sans-serif" }}
+              >
+                Sort by:
+              </label>
+              <select
+                id="sortOption"
+                className="form-select"
+                value={sortOption}
+                onChange={(e) => setSortOption(e.target.value)}
+                style={{ fontFamily: "josefinSans, sans-serif" }}
+              >
+                <option
+                  value="tableNumber"
+                  style={{ fontFamily: "josefinSans, sans-serif" }}
+                >
+                  Table Number
+                </option>
+                <option
+                  value="tableType"
+                  style={{ fontFamily: "josefinSans, sans-serif" }}
+                >
+                  Table Type
+                </option>
+                <option
+                  value="capacity"
+                  style={{ fontFamily: "josefinSans, sans-serif" }}
+                >
+                  Capacity
+                </option>
+              </select>
+            </div>
+          </div>
+
           {areas.map((area, index) => (
             <TabPanel key={area} value={(index + 1).toString()}>
               <div className="row">
-                {getTablesByArea(area).map((table) => {
-                  const today = new Date();
-                  const todayStr = today.toLocaleDateString();
+                {getTablesByArea(area)
+                  .sort((a, b) => {
+                    if (sortOption === "tableNumber")
+                      return a.tableNumber - b.tableNumber;
+                    if (sortOption === "tableType")
+                      return a.tableType.localeCompare(b.tableType);
+                    if (sortOption === "capacity")
+                      return a.capacity - b.capacity;
+                    return 0;
+                  })
+                  .map((table) => {
+                    const today = new Date();
+                    const todayStr = today.toLocaleDateString();
 
-                  const hasBookingToday = table.bookingHistory.some(
-                    (booking) => {
-                      const bookingDate = new Date(
-                        booking.startTime
-                      ).toLocaleDateString();
-                      return bookingDate === todayStr;
+                    const hasBookingToday = table.bookingHistory.some(
+                      (booking) => {
+                        const bookingDate = new Date(
+                          booking.startTime
+                        ).toLocaleDateString();
+                        return bookingDate === todayStr;
+                      }
+                    );
+
+                    const hasFutureBooking = table.bookingHistory.some(
+                      (booking) => {
+                        const bookingDate = new Date(booking.startTime);
+                        // So sánh ngày (không tính giờ)
+                        return (
+                          bookingDate.setHours(0, 0, 0, 0) >
+                          today.setHours(0, 0, 0, 0)
+                        );
+                      }
+                    );
+
+                    let bgColor = "white";
+                    if (hasBookingToday) {
+                      bgColor = "#FFDDDD";
+                    } else if (hasFutureBooking) {
+                      bgColor = "#DDFFDD";
                     }
-                  );
 
-                  const hasFutureBooking = table.bookingHistory.some(
-                    (booking) => {
-                      const bookingDate = new Date(booking.startTime);
-                      // So sánh ngày (không tính giờ)
-                      return (
-                        bookingDate.setHours(0, 0, 0, 0) >
-                        today.setHours(0, 0, 0, 0)
-                      );
-                    }
-                  );
+                    return (
+                      <div key={table._id} className="col-4 mb-3">
+                        <div
+                          className="card h-100"
+                          style={{ backgroundColor: bgColor }}
+                        >
+                          <div className="card-header bg-light">
+                            <h5
+                              className="card-title mb-0"
+                              style={{ fontSize: "30px" }}
+                            >
+                              Table {table.tableNumber}
+                            </h5>
+                          </div>
+                          <div className="card-body">
+                            <p
+                              className="card-text"
+                              style={{ fontFamily: "josefinSans" }}
+                            >
+                              {/* Table Type màu mè tý */}
+                              <span>Type: </span>
+                              <span
+                                style={{
+                                  color:
+                                    table.tableType.toLowerCase() === "vip"
+                                      ? "#D32F2F"
+                                      : table.tableType.toLowerCase() ===
+                                        "standard"
+                                      ? "#1976D2"
+                                      : table.tableType.toLowerCase() ===
+                                        "family"
+                                      ? "#388E3C"
+                                      : table.tableType.toLowerCase() === "bar"
+                                      ? "#F57C00"
+                                      : "black",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {table.tableType}
+                              </span>
+                              <br />
+                              Capacity: {table.capacity}
+                              <br />
+                              Note: {table.note}
+                            </p>
 
-                  let bgColor = "white";
-                  if (hasBookingToday) {
-                    bgColor = "#FFDDDD";
-                  } else if (hasFutureBooking) {
-                    bgColor = "#DDFFDD";
-                  }
-
-                  return (
-                    <div key={table._id} className="col-4 mb-3">
-                      <div
-                        className="card h-100"
-                        style={{ backgroundColor: bgColor }}
-                      >
-                        <div className="card-body">
-                          <h5
-                            className="card-title"
-                            style={{ fontSize: "30px" }}
-                          >
-                            Table {table.tableNumber}
-                          </h5>
-                          <p
-                            className="card-text"
-                            style={{ fontFamily: "josefinSans" }}
-                          >
-                            Type: {table.tableType}
-                            <br />
-                            Capacity: {table.capacity}
-                            <br />
-                            Note: {table.note}
-                          </p>
-                          <button onClick={() => handleDetailClick(table)}>
-                            Edit Table
-                          </button>
+                            <button onClick={() => handleDetailClick(table)}>
+                              Edit Table
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
             </TabPanel>
           ))}

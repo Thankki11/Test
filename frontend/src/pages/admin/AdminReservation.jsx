@@ -122,7 +122,7 @@ function AdminReservation() {
                 </div>
               </div>
             </div>
-            <div className="col-8">
+            <div className="col-8 d-flex justify-content-center align-items-center">
               <div
                 className="d-flex justify-content-end"
                 style={{ gap: "20px" }}
