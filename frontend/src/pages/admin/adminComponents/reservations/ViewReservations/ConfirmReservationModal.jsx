@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-function ConfirmReservationModal({ reservationDetail, tables }) {
+import { Modal } from "bootstrap";
+
+function ConfirmReservationModal({
+  reservationDetail,
+  tables,
+  onReservationUpdated,
+}) {
   const [confirmReservation, setConfirmReservation] =
     useState(reservationDetail);
   const [tableList, setTableList] = useState(tables);
@@ -33,7 +39,8 @@ function ConfirmReservationModal({ reservationDetail, tables }) {
           table.seatingArea.toLowerCase() ===
             confirmReservation.seatingArea.toLowerCase() &&
           table.tableType.toLowerCase() ===
-            confirmReservation.tableType.toLowerCase();
+            confirmReservation.tableType.toLowerCase() &&
+          table.capacity >= confirmReservation.numberOfGuest;
 
         if (!isMatchAreaAndType) return false;
 
@@ -89,6 +96,13 @@ function ConfirmReservationModal({ reservationDetail, tables }) {
           console.log(responseReservation.data);
 
           //Callback để cập nhật lại danh sách
+          onReservationUpdated?.();
+
+          //Tắt modal này, mở modal cha
+          Modal.getInstance(
+            document.getElementById("confirmReservationModal")
+          )?.hide();
+          document.activeElement.blur(); // tránh warning accessibility
         }
 
         // Kiểm tra nếu có lỗi từ API
@@ -188,6 +202,11 @@ function ConfirmReservationModal({ reservationDetail, tables }) {
                           <p>
                             <strong>Table Type:</strong>{" "}
                             {confirmReservation.tableType}
+                          </p>
+                        </div>
+                        <div className="mb-3">
+                          <p>
+                            <strong>Note:</strong> {confirmReservation.note}
                           </p>
                         </div>
                       </div>

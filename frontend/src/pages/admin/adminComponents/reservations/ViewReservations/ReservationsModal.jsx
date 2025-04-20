@@ -9,7 +9,13 @@ import AddNewReservationModal from "./AddNewReservationModal";
 import DetailReservationModal from "./DetailReservationModal";
 import ConfirmReservationModal from "./ConfirmReservationModal";
 
-function ReservationsModal({ reservations, tables, onReloadReservations }) {
+function ReservationsModal({
+  reservations,
+  tables,
+  onReloadReservations,
+  onReloadTables,
+}) {
+  const [allTables, setAllTables] = useState([]);
   const [allReservations, setAllReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
 
@@ -24,10 +30,16 @@ function ReservationsModal({ reservations, tables, onReloadReservations }) {
 
   //Cập nhật reservation
   useEffect(() => {
-    if (reservations && reservations.length > 0) {
-      fetchReservations(reservations);
-    }
+    fetchReservations(reservations);
   }, [reservations]);
+
+  //Cập nhật table
+  useEffect(() => {
+    console.log("table đã được cập nhật", tables);
+    console.log("reservation đã được cập nhật", reservations);
+    setAllTables(tables);
+    fetchReservations(reservations);
+  }, [tables]);
 
   const fetchReservations = (data) => {
     setAllReservations(data);
@@ -36,6 +48,10 @@ function ReservationsModal({ reservations, tables, onReloadReservations }) {
 
   const reloadReservation = () => {
     onReloadReservations?.();
+  };
+
+  const reloadTable = () => {
+    onReloadTables?.();
   };
 
   // Hàm chuyển đổi ISO string sang date string (YYYY-MM-DD)
@@ -321,6 +337,10 @@ function ReservationsModal({ reservations, tables, onReloadReservations }) {
       <ConfirmReservationModal
         reservationDetail={reservationDetail}
         tables={tables}
+        onReservationUpdated={() => {
+          reloadReservation();
+          reloadTable();
+        }}
       />
       {/* Modal xem detail của đơn đặt bàn */}
       <DetailReservationModal

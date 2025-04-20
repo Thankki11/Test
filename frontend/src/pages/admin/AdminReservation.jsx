@@ -38,6 +38,7 @@ function AdminReservation() {
   //Lấy dữ liệu các đơn đặt bàn
   const fetchReservations = async () => {
     try {
+      console.log("Đang lấy dữ liệu từ trang cha");
       const response = await axios.post(
         "http://localhost:3001/api/reservations/get"
       );
@@ -89,6 +90,7 @@ function AdminReservation() {
         reservations={reservations}
         tables={tables}
         onReloadReservations={fetchReservations}
+        onReloadTables={fetchTables}
       />
 
       {/* Modal Tạo bàn mới */}

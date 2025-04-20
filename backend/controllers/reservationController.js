@@ -1,5 +1,5 @@
 const Reservation = require("../models/reservationModel");
-
+const Table = require("../models/tableModel");
 // Lấy danh sách các đặt bàn (reservations) từ cơ sở dữ liệu
 exports.getReservations = async (req, res) => {
   try {
@@ -101,6 +101,27 @@ exports.updateReservation = async (req, res) => {
     // Loại bỏ các trường không được phép cập nhật
     const { _id, __v, createdAt, ...updateData } = req.body;
 
+    //Nếu cancel đơn này --> Xóa lịch sử booking bên table
+    if (updateData.status.toLowerCase() == "cancelled") {
+      const reservation = await Reservation.findById(id);
+
+      if (reservation.selectedTable != null) {
+        //Lấy table mà có chứa lịch sử đặt bàn là đơn đặt bàn này
+        const table = await Table.findById(reservation.selectedTable._id);
+        const bookingHistory = table.bookingHistory;
+
+        //Duyệt mảng để tìm index
+        const index = bookingHistory.findIndex((entry) =>
+          entry.reservationId.equals(reservation._id)
+        );
+
+        if (index !== -1) {
+          table.bookingHistory.splice(index, 1); // xoá 1 phần tử tại vị trí index
+          await table.save(); // lưu lại table sau khi xoá
+        }
+      }
+    }
+
     // Cập nhật chỉ với dữ liệu hợp lệ
     const updated = await Reservation.findByIdAndUpdate(id, updateData, {
       new: true,
@@ -148,8 +169,6 @@ exports.confirmReservation = async (req, res) => {
     // Lưu vào DB
     const updatedReservation = await reservation.save();
 
-    console.log(updatedReservation);
-
     return res.status(200).json({
       success: true,
       message: "Cập nhật selectedTable thành công",
@@ -168,6 +187,25 @@ exports.confirmReservation = async (req, res) => {
 exports.deleteReservation = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const reservation = await Reservation.findById(id);
+
+    //Nếu đơn này đã confirm --> Bên table cũng có thông tin về đơn này --> Cần xóa
+    if (reservation.selectedTable != null) {
+      //Lấy table mà có chứa lịch sử đặt bàn là đơn đặt bàn này
+      const table = await Table.findById(reservation.selectedTable._id);
+      const bookingHistory = table.bookingHistory;
+
+      //Duyệt mảng để tìm index
+      const index = bookingHistory.findIndex((entry) =>
+        entry.reservationId.equals(reservation._id)
+      );
+
+      if (index !== -1) {
+        table.bookingHistory.splice(index, 1); // xoá 1 phần tử tại vị trí index
+        await table.save(); // lưu lại table sau khi xoá
+      }
+    }
 
     const deletedReservation = await Reservation.findByIdAndDelete(id);
 
