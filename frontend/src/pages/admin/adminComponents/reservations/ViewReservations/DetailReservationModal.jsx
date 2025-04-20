@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+import { Modal } from "bootstrap";
+
 function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
   const [editableReservation, setEditableReservation] =
     useState(reservationDetail);
@@ -37,6 +39,12 @@ function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
       if (response.status === 200) {
         alert("Reservation updated successfully!");
         onReservationUpdated?.();
+
+        //Đóng modal này, mở modal cha
+        Modal.getInstance(
+          document.getElementById("detailReservationModal")
+        )?.hide();
+        document.activeElement.blur(); // tránh warning accessibility
       }
     } catch (error) {
       console.error("Error updating reservation:", error);

@@ -4,10 +4,13 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import { TextField } from "@mui/material";
+import { TextField, Tabs } from "@mui/material";
 
-function AreasAndTables({ tables }) {
+function AreasAndTables({ tables, reservations }) {
   const [value, setValue] = useState("1");
+
+  const todayStr = new Date().toISOString().split("T")[0];
+
   const [selectedDate, setSelectedDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split("T")[0]; // YYYY-MM-DD
@@ -30,18 +33,23 @@ function AreasAndTables({ tables }) {
     return tables.filter((table) => table.seatingArea.trim() === area);
   };
 
+  const formatDate = (date) => date.toISOString().split("T")[0]; // Trả về "YYYY-MM-DD"
+
   const handleDetailClick = (table) => {
     setSelectedTable(table);
+    console.log(table);
   };
 
   return (
     <>
       {/* Modal hiển thị chi tiết table */}
       <div className="modal fade" id="tableDetailModal" tabIndex="-1">
-        <div className="modal-dialog">
+        <div className="modal-dialog modal-lg">
+          {" "}
+          {/* Thêm modal-lg để rộng hơn */}
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">
+              <h5 className="modal-title" style={{ fontSize: "30px" }}>
                 Table {selectedTable?.tableNumber} Detail
               </h5>
               <button
@@ -53,24 +61,127 @@ function AreasAndTables({ tables }) {
             </div>
             <div className="modal-body">
               {selectedTable ? (
-                <>
-                  <p>Area: {selectedTable.seatingArea}</p>
-                  <p>Type: {selectedTable.tableType}</p>
-                  <p>Capacity: {selectedTable.capacity}</p>
-                  <p>Note: {selectedTable.note || "No note"}</p>
-                  <p>
-                    Created at:{" "}
-                    {new Date(selectedTable.createdAt).toLocaleString()}
-                  </p>
-                </>
+                <div className="row">
+                  <div className="col-md-4">
+                    <h5 style={{ fontSize: "30px" }}></h5>
+                    <table className="table table-bordered">
+                      <tbody>
+                        <tr>
+                          <th>Area</th>
+                          <td>{selectedTable.seatingArea}</td>
+                        </tr>
+                        <tr>
+                          <th>Table type</th>
+                          <td>{selectedTable.tableType}</td>
+                        </tr>
+                        <tr>
+                          <th>Capacity</th>
+                          <td>{selectedTable.capacity}</td>
+                        </tr>
+                        <tr>
+                          <th>Note</th>
+                          <td>{selectedTable.note || "Currently no note"}</td>
+                        </tr>
+                        <tr>
+                          <th>Date created</th>
+                          <td>
+                            {new Date(selectedTable.createdAt).toLocaleString()}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <button>Click me</button>
+                  </div>
+
+                  <div className="col-md-8">
+                    <h5 style={{ fontSize: "30px" }}>Booking history</h5>
+                    {selectedTable.bookingHistory?.length > 0 ? (
+                      <div
+                        className="table-responsive"
+                        style={{
+                          maxHeight: "400px", // Giới hạn chiều cao tối đa
+                          overflowY: "auto", // Cho phép cuộn dọc khi cần
+                          border: "1px solid #dee2e6", // Thêm viền cho đẹp
+                          borderRadius: "4px", // Bo góc
+                        }}
+                      >
+                        <table className="table table-striped mb-0">
+                          {" "}
+                          {/* mb-0 để xóa margin bottom */}
+                          <thead
+                            style={{
+                              position: "sticky", // Giữ tiêu đề khi cuộn
+                              top: 0,
+                              backgroundColor: "white", // Nền trắng cho tiêu đề
+                              zIndex: 1, // Đảm bảo hiển thị trên nội dung
+                            }}
+                          >
+                            <tr>
+                              <th>Date</th>
+                              <th>Time</th>
+                              <th>Reservation ID</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {selectedTable.bookingHistory
+                              .sort(
+                                (a, b) =>
+                                  new Date(b.startTime) - new Date(a.startTime)
+                              )
+                              .map((booking) => {
+                                const bookingDateStr =
+                                  booking.startTime.split("T")[0]; // "2025-07-17"
+                                const isToday = bookingDateStr === todayStr;
+
+                                return (
+                                  <tr
+                                    key={booking._id}
+                                    style={
+                                      isToday ? { backgroundColor: "red" } : {}
+                                    }
+                                  >
+                                    <td>
+                                      {new Date(
+                                        booking.startTime
+                                      ).toLocaleDateString()}
+                                    </td>
+                                    <td>
+                                      {new Date(
+                                        booking.startTime
+                                      ).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}{" "}
+                                      -{" "}
+                                      {new Date(
+                                        booking.endTime
+                                      ).toLocaleTimeString([], {
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                      })}
+                                    </td>
+                                    <td>
+                                      {booking.reservationId.toString()}...
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <p className="text-muted">No booking history</p>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <p>Loading...</p>
               )}
             </div>
-            <div className="modal-footer">
+            <div className="modal-footer d-flex justify-content-start">
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn-select"
                 data-bs-dismiss="modal"
               >
                 Close
@@ -92,11 +203,18 @@ function AreasAndTables({ tables }) {
               alignItems: "center",
             }}
           >
-            <TabList onChange={handleChange} aria-label="lab API tabs example">
+            <Tabs
+              value={value}
+              onChange={handleChange}
+              variant="scrollable"
+              scrollButtons="auto"
+              aria-label="scrollable auto tabs example"
+              style={{ width: "600px" }}
+            >
               {areas.map((area, index) => (
                 <Tab key={area} label={area} value={(index + 1).toString()} />
               ))}
-            </TabList>
+            </Tabs>
             <TextField
               id="date"
               label="Choose date"

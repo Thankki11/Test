@@ -84,7 +84,7 @@ function AdminReservation() {
   }, []);
 
   return (
-    <>
+    <main>
       {/* Modal xem các đơn đặt bàn  */}
       <ReservationsModal
         reservations={reservations}
@@ -145,11 +145,11 @@ function AdminReservation() {
             </div>
           </div>
         </div>
-        <div className="section-fluid">
-          <AreasAndTables tables={tables} />
+        <div className="container">
+          <AreasAndTables tables={tables} reservations={reservations} />
         </div>
       </div>
-    </>
+    </main>
   );
 }
 
