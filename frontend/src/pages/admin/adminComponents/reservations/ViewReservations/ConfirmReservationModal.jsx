@@ -129,7 +129,61 @@ function ConfirmReservationModal({
     }
 
     if (tableSelectOption === "manual") {
-      // xử lý nếu chọn bàn thủ công
+      if (!selectedTable) {
+        alert("Vui lòng chọn một bàn từ danh sách");
+        return;
+      }
+
+      console.log("🆕 Reservation to save: table detail", selectedTable);
+
+      try {
+        // Gọi API xác nhận bàn, lưu vào table
+        const responseTable = await axios.put(
+          `http://localhost:3001/api/tables/confirm/${selectedTable._id}`,
+          {
+            confirmReservationId: confirmReservation._id,
+            dateTime: confirmReservation.dateTime,
+          }
+        );
+
+        console.log("Phản hồi từ api bàn", responseTable.data);
+        if (responseTable) {
+          // Gọi API xác nhận đặt bàn, lưu vào reservations
+          const responseReservation = await axios.put(
+            `http://localhost:3001/api/reservations/confirm/${confirmReservation._id}`,
+            { selected: selectedTable }
+          );
+          console.log(responseReservation.data);
+
+          //Callback để cập nhật lại danh sách
+          onReservationUpdated?.();
+
+          //Tắt modal này, mở modal cha
+          Modal.getInstance(
+            document.getElementById("confirmReservationModal")
+          )?.hide();
+          document.activeElement.blur();
+        }
+
+        if (responseTable.data.success === false) {
+          throw new Error(responseTable.data.message);
+        }
+
+        alert("Đặt bàn thành công và bàn đã được giữ trong 2 giờ.");
+      } catch (error) {
+        if (error.response) {
+          if (error.response.status === 400) {
+            alert(error.response.data.message);
+          } else if (error.response.status === 404) {
+            alert("Không tìm thấy bàn. Vui lòng thử lại.");
+          } else {
+            alert("Đã có lỗi xảy ra khi xác nhận đặt bàn.");
+          }
+        } else {
+          console.error("Lỗi không xác định:", error);
+          alert("Lỗi hệ thống, vui lòng thử lại sau.");
+        }
+      }
     }
   };
 
@@ -219,11 +273,37 @@ function ConfirmReservationModal({
                           <h2 style={{ fontSize: "20px" }}>Table Selection</h2>
                         </div>
                         <div className="card-body">
-                          <div className="mt-3">
-                            <p>
-                              👉 This is where the manual table selection
-                              interface will go.
-                            </p>
+                          <div className="available-tables-container mt-3">
+                            <div className="row ">
+                              {availableTables.map((table) => (
+                                <div className="col-6 d-flex justify-content-center mb-3">
+                                  <button
+                                    key={table._id}
+                                    className={`btn py-2 px-3 ${
+                                      selectedTable?._id === table._id
+                                        ? "btn-primary"
+                                        : "btn-outline-primary"
+                                    }`}
+                                    onClick={() => setSelectedTable(table)}
+                                  >
+                                    <div className="d-flex flex-column align-items-center">
+                                      <span
+                                        style={{
+                                          fontSize: "16px",
+                                          fontWeight: "bold",
+                                        }}
+                                      >
+                                        {table.tableNumber}
+                                      </span>
+
+                                      <small>
+                                        {table.capacity} seats {table.type}
+                                      </small>
+                                    </div>
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       </div>

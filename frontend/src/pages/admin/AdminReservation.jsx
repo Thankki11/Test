@@ -94,7 +94,12 @@ function AdminReservation() {
       />
 
       {/* Modal Tạo bàn mới */}
-      <AddTableModal onTableCreated={fetchTables} />
+      <AddTableModal
+        onTableCreated={() => {
+          fetchTables();
+          fetchReservations();
+        }}
+      />
 
       {/* Giao diện start */}
       <div className="section">

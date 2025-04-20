@@ -172,9 +172,6 @@ function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
                         ))}
                       </select>
                     </div>
-                  </div>
-
-                  <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">
                         <strong>Table type:</strong>
@@ -195,6 +192,9 @@ function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
                         <option value="Bar">Bar</option>
                       </select>
                     </div>
+                  </div>
+
+                  <div className="col-md-6">
                     <div className="mb-3">
                       <label className="form-label">
                         <strong>Reservation Date:</strong>
@@ -262,6 +262,27 @@ function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
                       </label>
                       <p style={{ fontSize: "14px" }}>
                         {editableReservation.status}
+                      </p>
+                    </div>
+                    <div className="mb-3">
+                      <label className="label mb-0">
+                        <strong>Table number selected:</strong>
+                      </label>
+                      <p style={{ fontSize: "14px" }}>
+                        {editableReservation.selectedTable
+                          ? editableReservation.selectedTable.tableNumber
+                          : "No table selected"}
+                      </p>
+                    </div>
+
+                    <div className="mb-3">
+                      <label className="label mb-0">
+                        <strong>Table capacity:</strong>
+                      </label>
+                      <p style={{ fontSize: "14px" }}>
+                        {editableReservation.selectedTable
+                          ? editableReservation.selectedTable.capacity
+                          : "No table selected"}
                       </p>
                     </div>
                   </div>
