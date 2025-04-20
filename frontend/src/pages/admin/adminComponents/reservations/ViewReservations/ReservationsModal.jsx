@@ -9,7 +9,7 @@ import AddNewReservationModal from "./AddNewReservationModal";
 import DetailReservationModal from "./DetailReservationModal";
 import ConfirmReservationModal from "./ConfirmReservationModal";
 
-function ReservationsModal({ reservations }) {
+function ReservationsModal({ reservations, tables, onReloadReservations }) {
   const [allReservations, setAllReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
 
@@ -22,17 +22,21 @@ function ReservationsModal({ reservations }) {
   //Biến quản lý để xem chi tiết reservation
   const [reservationDetail, setReservationDetail] = useState(null);
 
-  const fetchReservations = useCallback(async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:3001/api/reservations/get"
-      );
-      setAllReservations(response.data);
-      filterReservations(response.data, false, "", "");
-    } catch (error) {
-      console.error("Error fetching reservations:", error);
+  //Cập nhật reservation
+  useEffect(() => {
+    if (reservations && reservations.length > 0) {
+      fetchReservations(reservations);
     }
-  }, []);
+  }, [reservations]);
+
+  const fetchReservations = (data) => {
+    setAllReservations(data);
+    filterReservations(data, false, "", "");
+  };
+
+  const reloadReservation = () => {
+    onReloadReservations?.();
+  };
 
   // Hàm chuyển đổi ISO string sang date string (YYYY-MM-DD)
   const formatDateFromISO = (isoString) => {
@@ -78,22 +82,22 @@ function ReservationsModal({ reservations }) {
     filterReservations(allReservations, showAll, showPending, fromDate, toDate);
   }, [allReservations, showAll, showPending, fromDate, toDate]);
 
-  useEffect(() => {
-    fetchReservations();
+  // useEffect(() => {
+  //   fetchReservations();
 
-    const handleReservationCreated = () => {
-      fetchReservations();
-    };
+  //   const handleReservationCreated = () => {
+  //     fetchReservations();
+  //   };
 
-    window.addEventListener("reservationsUpdated", handleReservationCreated);
+  //   window.addEventListener("reservationsUpdated", handleReservationCreated);
 
-    return () => {
-      window.removeEventListener(
-        "reservationsUpdated",
-        handleReservationCreated
-      );
-    };
-  }, [fetchReservations]);
+  //   return () => {
+  //     window.removeEventListener(
+  //       "reservationsUpdated",
+  //       handleReservationCreated
+  //     );
+  //   };
+  // }, [fetchReservations]);
 
   //Bấm nút để xem chi tiết về đơn đặt
   const handleEdit = (id) => {
@@ -314,14 +318,17 @@ function ReservationsModal({ reservations }) {
   return (
     <>
       {/* Modal Confirm cho một đơn đặt  bàn */}
-      <ConfirmReservationModal reservationDetail={reservationDetail} />
+      <ConfirmReservationModal
+        reservationDetail={reservationDetail}
+        tables={tables}
+      />
       {/* Modal xem detail của đơn đặt bàn */}
       <DetailReservationModal
         reservationDetail={reservationDetail}
-        onReservationUpdated={fetchReservations}
+        onReservationUpdated={reloadReservation}
       />
       {/* Modal tạo đơn đặt bàn mới */}
-      <AddNewReservationModal onReservationUpdated={fetchReservations} />
+      <AddNewReservationModal onReservationUpdated={reloadReservation} />
       {/* Bắt đầu giao diện chính */}
       <div className="modal fade" id="viewReservationsModal">
         <div className="modal-dialog modal-xl">
@@ -424,9 +431,9 @@ function ReservationsModal({ reservations }) {
                         <th>Time</th>
                         <th>Date</th>
                         <th>Customer</th>
-                        <th>Email</th>
-                        <th>Phone number</th>
-                        <th>Number of Guests</th>
+                        <th>Guests</th>
+                        <th>Area</th>
+                        <th>Table Type</th>
                         <th>Status</th>
                         <th>Confirm</th>
                       </tr>
@@ -471,9 +478,9 @@ function ReservationsModal({ reservations }) {
                             <td>{reservationTime}</td>
                             <td>{reservationDate}</td>
                             <td>{reservation.customerName}</td>
-                            <td>{reservation.emailAddress}</td>
-                            <td>{reservation.phoneNumber}</td>
                             <td>{reservation.numberOfGuest}</td>
+                            <td>{reservation.seatingArea}</td>
+                            <td>{reservation.tableType}</td>
                             <td>
                               <span
                                 style={{

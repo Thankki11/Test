@@ -85,7 +85,11 @@ function AdminReservation() {
   return (
     <>
       {/* Modal xem các đơn đặt bàn  */}
-      <ReservationsModal reservations={reservations} />
+      <ReservationsModal
+        reservations={reservations}
+        tables={tables}
+        onReloadReservations={fetchReservations}
+      />
 
       {/* Modal Tạo bàn mới */}
       <AddTableModal onTableCreated={fetchTables} />

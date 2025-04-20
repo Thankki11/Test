@@ -40,7 +40,6 @@ const AddTableModal = ({ onTableCreated }) => {
         const response = await axios.get(
           "http://localhost:3001/api/tables/get/all"
         );
-        console.log("📋 Danh sách bàn:", response.data.data);
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu:", error);
       }

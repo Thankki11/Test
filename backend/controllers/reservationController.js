@@ -51,6 +51,7 @@ exports.addReservations = async (req, res) => {
     phoneNumber,
     numberOfGuest,
     seatingArea,
+    tableType,
     note,
     dateTime, // Lấy giá trị ngày từ người dùng
   } = req.body;
@@ -71,6 +72,7 @@ exports.addReservations = async (req, res) => {
       phoneNumber,
       numberOfGuest,
       seatingArea,
+      tableType,
       note,
       dateTime: date, // Lưu vào MongoDB dưới dạng đối tượng Date
       createdAt: new Date(), // Thời gian tạo được lưu dưới dạng đối tượng Date
@@ -111,6 +113,53 @@ exports.updateReservation = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+//confirm đơn đặt bàn
+exports.confirmReservation = async (req, res) => {
+  try {
+    const reservationId = req.params.id;
+    const { selected } = req.body;
+
+    if (!selected || !selected._id) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin bàn đã chọn",
+      });
+    }
+
+    const reservation = await Reservation.findById(reservationId);
+
+    if (!reservation) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy đơn đặt bàn",
+      });
+    }
+
+    // ✅ Kiểm tra và cập nhật hoặc thêm mới trường `selectedTable`
+    reservation.selectedTable = selected;
+
+    // Cập nhật thêm status nếu muốn
+    reservation.status = "confirmed";
+
+    // Lưu vào DB
+    const updatedReservation = await reservation.save();
+
+    console.log(updatedReservation);
+
+    return res.status(200).json({
+      success: true,
+      message: "Cập nhật selectedTable thành công",
+      data: updatedReservation,
+    });
+  } catch (error) {
+    console.error("❌ Lỗi xác nhận đặt bàn:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi server khi cập nhật selectedTable",
     });
   }
 };

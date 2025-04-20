@@ -5,6 +5,7 @@ const {
   getReservations,
   addReservations,
   updateReservation,
+  confirmReservation,
   deleteReservation,
   getReservationByID,
 } = require("../controllers/reservationController");
@@ -19,6 +20,9 @@ router.post("/add", addReservations);
 
 //Sửa lại thông tin đặt bàn
 router.put("/update/:id", updateReservation);
+
+//Xác nhận đơn đặt bàn (confirm)
+router.put("/confirm/:id", confirmReservation);
 
 //Xóa thông tin đặt bàn
 router.delete("/delete/:id", deleteReservation);

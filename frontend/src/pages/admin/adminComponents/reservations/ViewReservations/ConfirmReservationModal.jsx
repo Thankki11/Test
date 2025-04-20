@@ -1,13 +1,123 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-function ConfirmReservationModal({ reservationDetail }) {
+function ConfirmReservationModal({ reservationDetail, tables }) {
   const [confirmReservation, setConfirmReservation] =
     useState(reservationDetail);
+  const [tableList, setTableList] = useState(tables);
   const [tableSelectOption, setTableSelectOption] = useState("auto");
+
+  // Chọn bàn
+  const [selectedTable, setSelectedTable] = useState(null);
+  const [availableTables, setAvailableTables] = useState([]);
 
   useEffect(() => {
     setConfirmReservation(reservationDetail);
   }, [reservationDetail]);
+
+  useEffect(() => {
+    setTableList(tables);
+  }, [tables]);
+
+  //Lọc danh sách các bàn để lấy ra bàn phù hợp: Table Type, Area, Thời gian
+  useEffect(() => {
+    if (tableList.length > 0 && confirmReservation) {
+      const reservationStartTime = new Date(confirmReservation.dateTime);
+      const reservationEndTime = new Date(
+        reservationStartTime.getTime() + 2 * 60 * 60 * 1000
+      ); // +2 giờ
+
+      const filteredTables = tableList.filter((table) => {
+        // Kiểm tra khu vực và loại bàn
+        const isMatchAreaAndType =
+          table.seatingArea.toLowerCase() ===
+            confirmReservation.seatingArea.toLowerCase() &&
+          table.tableType.toLowerCase() ===
+            confirmReservation.tableType.toLowerCase();
+
+        if (!isMatchAreaAndType) return false;
+
+        // Kiểm tra xem bàn có bookingHistory không
+        if (!table.bookingHistory || table.bookingHistory.length === 0) {
+          return true; // Bàn trống hoàn toàn
+        }
+
+        // Kiểm tra trùng lịch
+        const hasTimeConflict = table.bookingHistory.some((booking) => {
+          const bookingStart = new Date(booking.startTime);
+          const bookingEnd = new Date(booking.endTime);
+
+          // Kiểm tra xem khoảng thời gian có trùng nhau không
+          return (
+            reservationStartTime < bookingEnd &&
+            reservationEndTime > bookingStart
+          );
+        });
+
+        return !hasTimeConflict; // Chỉ trả về true nếu không bị trùng
+      });
+
+      console.log("Danh sách bàn phù hợp (không trùng giờ):", filteredTables);
+      setAvailableTables(filteredTables);
+    }
+  }, [confirmReservation, tableList]);
+
+  const handleConfirm = async () => {
+    //Lấy bàn đầu tiên trong danh sách các bàn có thể chọn
+    if (tableSelectOption === "auto") {
+      const selected = availableTables[0];
+      setSelectedTable(selected);
+
+      console.log("🆕 Reservation to save: table detail", selected);
+
+      try {
+        // Gọi API xác nhận bàn, lưu vào table
+        const responseTable = await axios.put(
+          `http://localhost:3001/api/tables/confirm/${selected._id}`,
+          {
+            confirmReservationId: confirmReservation._id,
+            dateTime: confirmReservation.dateTime,
+          }
+        );
+        console.log("Phản hồi từ api bàn", responseTable.data);
+        if (responseTable) {
+          // Gọi API xác nhận đặt bàn, lưu vào reservations
+          const responseReservation = await axios.put(
+            `http://localhost:3001/api/reservations/confirm/${confirmReservation._id}`,
+            { selected }
+          );
+          console.log(responseReservation.data);
+
+          //Callback để cập nhật lại danh sách
+        }
+
+        // Kiểm tra nếu có lỗi từ API
+        if (responseTable.data.success === false) {
+          throw new Error(responseTable.data.message); // Ném lỗi để vào catch
+        }
+
+        alert("Đặt bàn thành công và bàn đã được giữ trong 2 giờ.");
+      } catch (error) {
+        if (error.response) {
+          // Kiểm tra các mã lỗi khác từ API
+          if (error.response.status === 400) {
+            alert(error.response.data.message); // Hiển thị thông báo lỗi từ API nếu là lỗi 400
+          } else if (error.response.status === 404) {
+            alert("Không tìm thấy bàn. Vui lòng thử lại.");
+          } else {
+            alert("Đã có lỗi xảy ra khi xác nhận đặt bàn.");
+          }
+        } else {
+          console.error("Lỗi không xác định:", error);
+          alert("Lỗi hệ thống, vui lòng thử lại sau.");
+        }
+      }
+    }
+
+    if (tableSelectOption === "manual") {
+      // xử lý nếu chọn bàn thủ công
+    }
+  };
 
   return (
     <>
@@ -72,6 +182,12 @@ function ConfirmReservationModal({ reservationDetail }) {
                           <p>
                             <strong>Area:</strong>{" "}
                             {confirmReservation.seatingArea}
+                          </p>
+                        </div>
+                        <div className="mb-3">
+                          <p>
+                            <strong>Table Type:</strong>{" "}
+                            {confirmReservation.tableType}
                           </p>
                         </div>
                       </div>
@@ -174,7 +290,21 @@ function ConfirmReservationModal({ reservationDetail }) {
               </button>
 
               {/* Confirm Button */}
-              <button className="btn-select selected">Confirm</button>
+              {availableTables.length == 0 ? (
+                <div className="alert alert-warning d-flex align-items-center">
+                  <i className="fas fa-exclamation-triangle me-2"></i>
+
+                  <p style={{ marginBottom: "0px" }}>No Table Available</p>
+                </div>
+              ) : (
+                <button
+                  className="btn-select selected"
+                  onClick={() => handleConfirm()}
+                  disabled={availableTables.length === 0}
+                >
+                  Confirm
+                </button>
+              )}
             </div>
           </div>
         </div>

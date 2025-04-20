@@ -1,21 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextField from "@mui/material/TextField";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { Modal } from "bootstrap";
 
 function AddNewReservationModal({ onReservationUpdated }) {
+  const [seatingAreas, setSeatingAreas] = useState([]);
   const [formData, setFormData] = useState({
     customerName: "",
     emailAddress: "",
     phoneNumber: "",
     numberOfGuest: "",
     seatingArea: "",
+    tableType: "",
     status: "pending",
     note: "",
     dateTime: "",
     createdAt: new Date().toISOString(),
   });
+
+  // Fetch seating areas when component mounts
+  useEffect(() => {
+    const fetchSeatingAreas = async () => {
+      try {
+        const areaRes = await axios.get(
+          "http://localhost:3001/api/tables/get/seating-areas"
+        );
+        setSeatingAreas(areaRes.data.data || []);
+      } catch (error) {
+        console.error("Lỗi khi tải khu vực ngồi:", error);
+      }
+    };
+
+    fetchSeatingAreas();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +56,7 @@ function AddNewReservationModal({ onReservationUpdated }) {
 
       // Đóng modal
       Modal.getInstance(document.getElementById("addReservationModal"))?.hide();
+      document.activeElement.blur(); // tránh warning accessibility
 
       // Reset form
       setFormData({
@@ -46,6 +65,7 @@ function AddNewReservationModal({ onReservationUpdated }) {
         phoneNumber: "",
         numberOfGuest: "",
         seatingArea: "",
+        tableType: "",
         status: "pending",
         note: "",
         dateTime: "",
@@ -56,9 +76,7 @@ function AddNewReservationModal({ onReservationUpdated }) {
       alert(`Đã tạo mới thành công`);
 
       // Gọi callback nếu có
-      if (onReservationUpdated) {
-        onReservationUpdated();
-      }
+      onReservationUpdated?.();
     } catch (error) {
       console.error("Error:", error);
       alert(`Đã tạo mới thất bại`);
@@ -71,7 +89,7 @@ function AddNewReservationModal({ onReservationUpdated }) {
       <div className="modal fade" id="addReservationModal">
         <div className="modal-dialog modal-lg">
           <div className="modal-content">
-            {/* <!-- Modal Header --> */}
+            {/* Modal Header */}
             <div className="modal-header">
               <h4 className="modal-title">Add new Reservation</h4>
               <button
@@ -81,7 +99,7 @@ function AddNewReservationModal({ onReservationUpdated }) {
               ></button>
             </div>
 
-            {/* <!-- Modal body --> */}
+            {/* Modal Body */}
             <div className="modal-body">
               <div className="container mt-3">
                 <form
@@ -141,10 +159,28 @@ function AddNewReservationModal({ onReservationUpdated }) {
                       onChange={handleChange}
                       required
                     >
-                      <option value="">Select a seating area</option>
-                      <option value="Indoor Area A">Indoor Area A</option>
-                      <option value="Indoor Area B">Indoor Area B</option>
-                      <option value="Outdoor Area A">Outdoor Area A</option>
+                      <option value="">----Select Area----</option>
+                      {seatingAreas.map((area) => (
+                        <option key={area} value={area}>
+                          {area}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Table Type</label>
+                    <select
+                      className="form-control"
+                      name="tableType"
+                      value={formData.tableType}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Select a table Type</option>
+                      <option value="Standard">Standard</option>
+                      <option value="Vip">Vip</option>
+                      <option value="Family">Family</option>
+                      <option value="Bar">Bar</option>
                     </select>
                   </div>
                   <div className="mb-3">
@@ -165,9 +201,7 @@ function AddNewReservationModal({ onReservationUpdated }) {
                       value={formData.dateTime}
                       onChange={handleChange}
                       fullWidth
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
+                      InputLabelProps={{ shrink: true }}
                       required
                     />
                   </div>

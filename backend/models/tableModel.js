@@ -7,6 +7,22 @@ const tableSchema = new mongoose.Schema({
   capacity: { type: Number, required: true },
   note: { type: String },
   createdAt: { type: Date, default: Date.now },
+
+  // Thêm trường bookingHistory là một mảng chứa các đối tượng
+  bookingHistory: {
+    type: [
+      {
+        reservationId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Reservation",
+          required: true,
+        },
+        startTime: { type: Date, required: true },
+        endTime: { type: Date, required: true },
+      },
+    ],
+    default: [],
+  },
 });
 
 const Table = mongoose.model("Table", tableSchema);

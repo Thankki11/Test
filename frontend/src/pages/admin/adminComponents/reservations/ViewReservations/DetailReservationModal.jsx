@@ -4,10 +4,28 @@ import { useEffect, useState } from "react";
 function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
   const [editableReservation, setEditableReservation] =
     useState(reservationDetail);
+  const [seatingAreas, setSeatingAreas] = useState([]);
 
+  // Cập nhật reservationDetail khi props thay đổi
   useEffect(() => {
     setEditableReservation(reservationDetail);
   }, [reservationDetail]);
+
+  // Fetch danh sách khu vực ngồi
+  useEffect(() => {
+    const fetchSeatingAreas = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:3001/api/tables/get/seating-areas"
+        );
+        setSeatingAreas(res.data.data || []);
+      } catch (error) {
+        console.error("Lỗi khi fetch khu vực ngồi:", error);
+      }
+    };
+
+    fetchSeatingAreas();
+  }, []);
 
   const handleUpdateReservation = async (id, updatedData) => {
     try {
@@ -18,9 +36,7 @@ function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
       );
       if (response.status === 200) {
         alert("Reservation updated successfully!");
-        if (onReservationUpdated) {
-          onReservationUpdated(); // Gọi lại hàm cha để refetch
-        }
+        onReservationUpdated?.();
       }
     } catch (error) {
       console.error("Error updating reservation:", error);
@@ -141,14 +157,36 @@ function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
                           })
                         }
                       >
-                        <option value="indoor">Indoor</option>
-                        <option value="outdoor">Outdoor</option>
-                        <option value="vip">VIP</option>
+                        {seatingAreas.map((area) => (
+                          <option key={area} value={area}>
+                            {area}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
 
                   <div className="col-md-6">
+                    <div className="mb-3">
+                      <label className="form-label">
+                        <strong>Table type:</strong>
+                      </label>
+                      <select
+                        className="form-select"
+                        value={editableReservation.tableType || ""}
+                        onChange={(e) =>
+                          setEditableReservation({
+                            ...editableReservation,
+                            tableType: e.target.value,
+                          })
+                        }
+                      >
+                        <option value="Standard">Standard</option>
+                        <option value="Vip">Vip</option>
+                        <option value="Family">Family</option>
+                        <option value="Bar">Bar</option>
+                      </select>
+                    </div>
                     <div className="mb-3">
                       <label className="form-label">
                         <strong>Reservation Date:</strong>

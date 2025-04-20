@@ -1,9 +1,11 @@
 const Table = require("../models/tableModel");
 
 // Lấy danh sách tất cả các khu vực (seatingArea) không trùng lặp
+// Thêm console.log để debug
 exports.getSeatingAreas = async (req, res) => {
   try {
-    // Sử dụng aggregation để lấy danh sách các seatingArea không trùng lặp
+    console.log("Bắt đầu truy vấn seating areas...");
+
     const areas = await Table.aggregate([
       {
         $group: {
@@ -11,30 +13,23 @@ exports.getSeatingAreas = async (req, res) => {
           count: { $sum: 1 },
         },
       },
-      {
-        $project: {
-          _id: 0,
-          name: "$_id",
-          count: 1,
-        },
-      },
-      {
-        $sort: { name: 1 }, // Sắp xếp theo tên khu vực
-      },
+      { $sort: { _id: 1 } },
     ]);
 
-    // Chỉ lấy mảng tên các khu vực
-    const areaNames = areas.map((area) => area.name);
+    console.log("Kết quả aggregation:", areas);
+
+    const areaNames = areas.map((area) => area._id).filter(Boolean);
+    console.log("Danh sách khu vực sau khi xử lý:", areaNames);
 
     res.status(200).json({
       success: true,
       data: areaNames,
     });
   } catch (error) {
-    console.error("Lỗi khi lấy danh sách khu vực:", error);
+    console.error("Lỗi chi tiết:", error);
     res.status(500).json({
       success: false,
-      message: "Lỗi server khi lấy danh sách khu vực",
+      message: "Lỗi server",
     });
   }
 };
@@ -104,5 +99,63 @@ exports.getAllTables = async (req, res) => {
   } catch (error) {
     console.error("Lỗi khi lấy danh sách bàn:", error);
     res.status(500).json({ success: false, message: "Lỗi máy chủ" });
+  }
+};
+
+//Thêm lịch sử đặt bàn vào bàn này theo id
+exports.addNewReservation = async (req, res) => {
+  try {
+    const tableId = req.params.id;
+    const { confirmReservationId, dateTime } = req.body;
+
+    // Kiểm tra nếu không có thông tin xác nhận
+    if (!confirmReservationId || !dateTime) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu thông tin xác nhận đơn đặt bàn",
+      });
+    }
+
+    // Tìm bàn theo ID
+    const table = await Table.findById(tableId);
+    if (!table) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy bàn",
+      });
+    }
+
+    // Đảm bảo bookingHistory là mảng (nếu chưa có, khởi tạo mảng trống)
+    table.bookingHistory = table.bookingHistory || [];
+
+    // Convert thời gian nhận từ client thành kiểu Date
+    const startTime = new Date(dateTime); // Thời gian bắt đầu giữ bàn
+    const endTime = new Date(startTime.getTime() + 2 * 60 * 60 * 1000); // Thời gian kết thúc (2 giờ sau)
+
+    // Thêm thông tin vào lịch sử đặt bàn (bookingHistory)
+    table.bookingHistory.push({
+      reservationId: confirmReservationId, // ID của đơn đặt bàn
+      startTime: startTime, // Thời gian bắt đầu giữ bàn
+      endTime: endTime, // Thời gian kết thúc giữ bàn (2 giờ sau)
+    });
+
+    // 🔄 Sắp xếp lại lịch sử đặt bàn theo thứ tự thời gian tăng dần
+    table.bookingHistory.sort(
+      (a, b) => new Date(a.startTime) - new Date(b.startTime)
+    );
+
+    // Cập nhật bàn và lưu vào cơ sở dữ liệu
+    await table.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Đặt bàn thành công và bàn đã bị khóa trong 2 giờ.",
+    });
+  } catch (error) {
+    console.error("❌ Lỗi khi thêm đơn đặt bàn:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Lỗi server khi thêm đơn đặt bàn",
+    });
   }
 };
