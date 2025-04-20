@@ -46,6 +46,7 @@ exports.getReservationByID = async (req, res) => {
 //Tạo đơn đặt hàng mới
 exports.addReservations = async (req, res) => {
   const {
+    createdBy,
     customerName,
     emailAddress,
     phoneNumber,
@@ -53,7 +54,8 @@ exports.addReservations = async (req, res) => {
     seatingArea,
     tableType,
     note,
-    dateTime, // Lấy giá trị ngày từ người dùng
+    dateTime,
+    // Lấy giá trị ngày từ người dùng
   } = req.body;
 
   try {
@@ -67,6 +69,7 @@ exports.addReservations = async (req, res) => {
 
     // Tạo đối tượng Reservation mới với dữ liệu từ formData
     const newReservation = new Reservation({
+      createdBy,
       customerName,
       emailAddress,
       phoneNumber,
@@ -99,7 +102,7 @@ exports.updateReservation = async (req, res) => {
     const { id } = req.params;
 
     // Loại bỏ các trường không được phép cập nhật
-    const { _id, __v, createdAt, ...updateData } = req.body;
+    const { _id, __v, createdAt, createdBy, ...updateData } = req.body;
 
     //Nếu cancel đơn này --> Xóa lịch sử booking bên table
     if (updateData.status.toLowerCase() == "cancelled") {

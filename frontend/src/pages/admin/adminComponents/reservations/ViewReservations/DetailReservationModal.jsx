@@ -247,12 +247,29 @@ function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
 
                     <div className="mb-3">
                       <label className="label mb-0">
-                        <strong>Created At:</strong>
+                        <strong>Created at:</strong>
                       </label>
                       <p style={{ fontSize: "14px" }}>
                         {new Date(editableReservation.createdAt).toLocaleString(
                           "en-GB"
                         )}
+                      </p>
+                    </div>
+                    <div className="mb-3">
+                      <label className="label mb-0">
+                        <strong>Created by:</strong>
+                      </label>
+                      <p
+                        style={{
+                          fontSize: "14px",
+                          color:
+                            editableReservation.createdBy === "admin"
+                              ? "red"
+                              : "green",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {editableReservation.createdBy}
                       </p>
                     </div>
 

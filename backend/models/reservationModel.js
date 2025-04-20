@@ -48,6 +48,11 @@ const reservationSchema = new mongoose.Schema({
     default: Date.now,
   },
 
+  createdBy: {
+    type: String,
+    required: true,
+  },
+
   status: {
     type: String,
     default: "pending",

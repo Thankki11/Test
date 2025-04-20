@@ -455,6 +455,7 @@ function ReservationsModal({
                         <th>Area</th>
                         <th>Table Type</th>
                         <th>Status</th>
+                        <th>Created by</th>
                         <th>Confirm</th>
                       </tr>
                     </thead>
@@ -517,6 +518,20 @@ function ReservationsModal({
                                 }}
                               >
                                 {reservation.status}
+                              </span>
+                            </td>
+                            <td>
+                              <span
+                                style={{
+                                  fontSize: "14px",
+                                  color:
+                                    reservation.createdBy === "admin"
+                                      ? "red"
+                                      : "green",
+                                  fontWeight: "bold",
+                                }}
+                              >
+                                {reservation.createdBy}
                               </span>
                             </td>
                             <td>

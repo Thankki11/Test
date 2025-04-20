@@ -33,7 +33,10 @@ const ReservationTable = ({ isInModal = false }) => {
       console.log("Form Data Preview:", JSON.stringify(formData, null, 2));
       const response = await axios.post(
         "http://localhost:3001/api/reservations/add",
-        formData
+        {
+          createdBy: "user",
+          ...formData,
+        }
       );
       console.log("Reservation Created:", response.data);
 
