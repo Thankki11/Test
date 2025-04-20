@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const AddTableModal = ({ onTableCreated }) => {
+import { Modal } from "bootstrap";
+
+const AddTableModal = ({ onTableCreated, tables }) => {
   const [seatingAreas, setSeatingAreas] = useState([]);
   const [nextTableNumber, setNextTableNumber] = useState(null);
   const tableTypes = ["Standard", "VIP", "Family", "Bar"];
@@ -46,7 +48,7 @@ const AddTableModal = ({ onTableCreated }) => {
     };
 
     fetchInitialData();
-  }, []);
+  }, [tables]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -105,6 +107,10 @@ const AddTableModal = ({ onTableCreated }) => {
       if (onTableCreated) {
         onTableCreated();
       }
+
+      //Tắt modal này
+      Modal.getInstance(document.getElementById("addTableModal"))?.hide();
+      document.activeElement.blur();
     } catch (error) {
       console.error(
         "❌ Lỗi khi tạo bàn:",
@@ -224,7 +230,11 @@ const AddTableModal = ({ onTableCreated }) => {
                 />
               </div>
               <div className=" d-flex justify-content-between  mt-5">
-                <button data-bs-dismiss="modal" className="btn-select">
+                <button
+                  type="button"
+                  data-bs-dismiss="modal"
+                  className="btn-select"
+                >
                   Close
                 </button>
                 <button type="submit" className="btn-select selected">

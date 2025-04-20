@@ -509,7 +509,8 @@ function ReservationsModal({
                                       ? "green"
                                       : reservation.status === "pending"
                                       ? "orange"
-                                      : reservation.status === "cancelled"
+                                      : reservation.status === "cancelled" ||
+                                        reservation.status === "table deleted"
                                       ? "red"
                                       : "black",
                                   fontWeight: "bold",

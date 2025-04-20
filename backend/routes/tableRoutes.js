@@ -6,6 +6,7 @@ const {
   getNextTableNumber,
   getAllTables,
   addNewReservation,
+  deleteTable,
 } = require("../controllers/tableController");
 
 // Route để lấy danh sách các seatingArea
@@ -22,5 +23,8 @@ router.get("/get/all", getAllTables);
 
 //Xác nhận đơn đặt bàn: Lưu lịch sử đặt bàn vào bàn đó
 router.put("/confirm/:id", addNewReservation);
+
+//Xóa bàn: Xóa cả lịch sử đặt bàn của bàn đó
+router.delete("/delete/:id", deleteTable);
 
 module.exports = router;

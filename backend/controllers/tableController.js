@@ -1,4 +1,5 @@
 const Table = require("../models/tableModel");
+const Reservation = require("../models/reservationModel");
 
 // Lấy danh sách tất cả các khu vực (seatingArea) không trùng lặp
 // Thêm console.log để debug
@@ -157,5 +158,45 @@ exports.addNewReservation = async (req, res) => {
       success: false,
       message: "Lỗi server khi thêm đơn đặt bàn",
     });
+  }
+};
+
+//Xóa bàn và sửa lịch sử đặt bàn liên quan đến bàn đó.
+exports.deleteTable = async (req, res) => {
+  try {
+    const { id } = req.params; // Lấy id từ tham số URL
+
+    const table = await Table.findById(id);
+
+    //Note các đơn đặt bàn đã từng đặt bàn này để biết bàn này đã xóa
+    for (let booking of table.bookingHistory) {
+      // Tìm đơn đặt bàn dựa trên reservationId
+      const reservation = await Reservation.findById(booking.reservationId);
+      if (!reservation) {
+        continue; // Nếu không tìm thấy đơn đặt bàn, tiếp tục với booking khác
+      }
+
+      // Cập nhật selectedTable.note thành "table deleted"
+      reservation.set("selectedTable.note", `table #${id} deleted`);
+      reservation.set("status", "table deleted");
+
+      // Lưu lại thông tin đã cập nhật
+      const updatedReservation = await reservation.save();
+      console.log("Dữ liệu mới của đơn", updatedReservation);
+    }
+
+    // Tìm bàn theo id và xóa
+    tableToDelete = await Table.findByIdAndDelete(id);
+
+    if (!tableToDelete) {
+      return res.status(404).json({ message: "Table not found." });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Table deleted successfully", data: table });
+  } catch (error) {
+    console.error("Error deleting table:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

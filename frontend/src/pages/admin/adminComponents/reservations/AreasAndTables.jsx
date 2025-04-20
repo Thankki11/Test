@@ -6,7 +6,10 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { TextField, Tabs, Button } from "@mui/material";
 
-function AreasAndTables({ tables, reservations }) {
+import axios from "axios";
+import { Modal } from "bootstrap";
+
+function AreasAndTables({ tables, reservations, onTableUpdated }) {
   const [value, setValue] = useState("1");
   const todayStr = new Date().toISOString().split("T")[0];
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -21,11 +24,14 @@ function AreasAndTables({ tables, reservations }) {
     const uniqueAreas = [
       ...new Set(tables.map((table) => table.seatingArea.trim())),
     ];
-    setAreas(uniqueAreas);
+    const sortedAreas = uniqueAreas.sort((a, b) => a.localeCompare(b));
+    setAreas(sortedAreas);
   }, [tables]);
 
   // Khi chọn bàn, copy dữ liệu vào editedTable
   const handleDetailClick = (table) => {
+    const modal = new Modal(document.getElementById("tableDetailModal"));
+    modal.show();
     setSelectedTable(table);
     setEditedTable({ ...table }); // Tạo bản sao để chỉnh sửa
   };
@@ -46,16 +52,44 @@ function AreasAndTables({ tables, reservations }) {
     }));
   };
 
+  const handleDelete = async (e) => {
+    e.preventDefault();
+
+    const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa bàn này?");
+    if (!isConfirmed) return;
+
+    try {
+      const response = await axios.delete(
+        `http://localhost:3001/api/tables/delete/${editedTable._id}`
+      );
+      console.log("✅ Deleted successfully:", response.data);
+
+      // Gọi callback để fetch lại dữ liệu
+      if (onTableUpdated) {
+        onTableUpdated();
+      }
+
+      // Tắt modal
+      Modal.getInstance(document.getElementById("tableDetailModal"))?.hide();
+      document.activeElement.blur();
+    } catch (error) {
+      console.error("❌ Error deleting table:", error);
+    }
+  };
+
+  //Sửa lại thông tin của bàn
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Updated table data:", editedTable);
+    //Bỏ phần bookingHistory
+    const { bookingHistory, ...sendingTable } = editedTable;
+    console.log("Updated table data:", sendingTable);
     // Ở đây bạn có thể thêm logic gửi dữ liệu lên server
   };
 
   return (
     <>
       {/* Modal hiển thị và chỉnh sửa chi tiết table */}
-      <div className="modal fade" id="tableDetailModal" tabIndex="-1">
+      <div className="modal fade" id="tableDetailModal">
         <div className="modal-dialog modal-xl">
           <div className="modal-content">
             <div className="modal-header">
@@ -72,89 +106,6 @@ function AreasAndTables({ tables, reservations }) {
             <div className="modal-body">
               {editedTable ? (
                 <div className="row">
-                  <div className="col-xl-4">
-                    <form onSubmit={handleSubmit}>
-                      <table className="table table-bordered">
-                        <tbody>
-                          <tr>
-                            <th>Area</th>
-                            <td>
-                              <input
-                                type="text"
-                                name="seatingArea"
-                                value={editedTable.seatingArea}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <th>Table type</th>
-                            <td>
-                              <input
-                                type="text"
-                                name="tableType"
-                                value={editedTable.tableType}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <th>Capacity</th>
-                            <td>
-                              <input
-                                type="number"
-                                name="capacity"
-                                value={editedTable.capacity}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <th>Note</th>
-                            <td>
-                              <textarea
-                                name="note"
-                                value={editedTable.note}
-                                onChange={handleInputChange}
-                                className="form-control"
-                                placeholder="Currently no note"
-                              />
-                            </td>
-                          </tr>
-                          <tr>
-                            <th>Date created</th>
-                            <td>
-                              <input
-                                type="datetime-local"
-                                name="createdAt"
-                                value={new Date(editedTable.createdAt)
-                                  .toISOString()
-                                  .slice(0, 16)}
-                                onChange={handleInputChange}
-                                className="form-control"
-                              />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <div className="d-flex justify-content-between">
-                        <button
-                          type="button"
-                          className="btn btn-secondary"
-                          data-bs-dismiss="modal"
-                        >
-                          Cancel
-                        </button>
-                        <button type="submit" className="btn btn-primary">
-                          Save Changes
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-
                   <div className="col-xl-8">
                     <h5 style={{ fontSize: "30px" }}>Booking history</h5>
                     {selectedTable.bookingHistory?.length > 0 ? (
@@ -234,6 +185,106 @@ function AreasAndTables({ tables, reservations }) {
                     ) : (
                       <p className="text-muted">No booking history</p>
                     )}
+                    <button
+                      type="button"
+                      className="btn-select mt-3"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                  <div className="col-xl-4">
+                    <form onSubmit={handleSubmit}>
+                      <table className="table table-bordered">
+                        <tbody>
+                          <tr>
+                            <th>Area</th>
+                            <td>
+                              <input
+                                type="text"
+                                name="seatingArea"
+                                value={editedTable.seatingArea}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Table type</th>
+                            <td>
+                              <input
+                                type="text"
+                                name="tableType"
+                                value={editedTable.tableType}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Capacity</th>
+                            <td>
+                              <input
+                                type="number"
+                                name="capacity"
+                                value={editedTable.capacity}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Note</th>
+                            <td>
+                              <textarea
+                                name="note"
+                                value={editedTable.note}
+                                onChange={handleInputChange}
+                                className="form-control"
+                                placeholder="Currently no note"
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <th>Date created</th>
+                            <td>
+                              <input
+                                type="datetime-local"
+                                name="createdAt"
+                                value={new Date(editedTable.createdAt)
+                                  .toISOString()
+                                  .slice(0, 16)}
+                                onChange={handleInputChange}
+                                className="form-control"
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <div className="d-flex justify-content-between">
+                        <button
+                          type="button"
+                          className="btn-select"
+                          onClick={handleDelete}
+                        >
+                          Delete
+                        </button>
+                        {/* //Nút bấm để gửi api cập nhật lại thông tin bàn: hiện tại không nên cho sửa thông tin bàn vì thông tin đặt bàn sẽ bị sai  */}
+                        <button
+                          type="submit"
+                          disabled
+                          style={{
+                            backgroundColor: "#333",
+                            color: "white",
+                            border: "0px",
+                            opacity: 0.3,
+                            cursor: "not-allowed",
+                          }}
+                        >
+                          Save Changes
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
               ) : (
@@ -299,12 +350,7 @@ function AreasAndTables({ tables, reservations }) {
                           <br />
                           Capacity: {table.capacity}
                         </p>
-                        <button
-                          className="btn btn-primary"
-                          data-bs-toggle="modal"
-                          data-bs-target="#tableDetailModal"
-                          onClick={() => handleDetailClick(table)}
-                        >
+                        <button onClick={() => handleDetailClick(table)}>
                           Edit Table
                         </button>
                       </div>

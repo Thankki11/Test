@@ -95,6 +95,7 @@ function AdminReservation() {
 
       {/* Modal Tạo bàn mới */}
       <AddTableModal
+        tables={tables}
         onTableCreated={() => {
           fetchTables();
           fetchReservations();
@@ -151,7 +152,14 @@ function AdminReservation() {
           </div>
         </div>
         <div className="container">
-          <AreasAndTables tables={tables} reservations={reservations} />
+          <AreasAndTables
+            tables={tables}
+            reservations={reservations}
+            onTableUpdated={() => {
+              fetchTables();
+              fetchReservations();
+            }}
+          />
         </div>
       </div>
     </main>

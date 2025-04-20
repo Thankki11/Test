@@ -260,10 +260,25 @@ function DetailReservationModal({ reservationDetail, onReservationUpdated }) {
                       <label className="label mb-0">
                         <strong>Status:</strong>
                       </label>
-                      <p style={{ fontSize: "14px" }}>
+                      <p
+                        style={{
+                          fontSize: "14px",
+                          color:
+                            editableReservation.status === "confirmed"
+                              ? "green"
+                              : editableReservation.status === "pending"
+                              ? "orange"
+                              : editableReservation.status === "cancelled" ||
+                                editableReservation.status === "table deleted"
+                              ? "red"
+                              : "black",
+                          fontWeight: "bold",
+                        }}
+                      >
                         {editableReservation.status}
                       </p>
                     </div>
+
                     <div className="mb-3">
                       <label className="label mb-0">
                         <strong>Table number selected:</strong>
