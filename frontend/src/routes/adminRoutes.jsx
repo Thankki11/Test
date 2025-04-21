@@ -4,48 +4,74 @@ import AdminMenus from "../pages/admin/AdminMenus";
 import AdminLayout from "../layouts/AdminLayout";
 import AdminReservation from "../pages/admin/AdminReservation";
 import AdminOrder from "../pages/admin/AdminOrder";
+import AdminLogin from "../pages/admin/AdminLogin";
+import { Navigate } from "react-router-dom";
 
 const adminRoutes = [
   {
+    path: "/admin/login",
+    element: <AdminLogin />,
+  },
+  {
     path: "/admin",
     element: (
-      <AdminLayout>
-        <AdminDashboard />
-      </AdminLayout>
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminDashboard />
+        </AdminLayout>
+      </AdminRouteWrapper>
     ),
   },
   {
     path: "/admin/chefs",
     element: (
-      <AdminLayout>
-        <AdminChefs />
-      </AdminLayout>
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminChefs />
+        </AdminLayout>
+      </AdminRouteWrapper>
     ),
   },
   {
     path: "/admin/menus",
     element: (
-      <AdminLayout>
-        <AdminMenus />
-      </AdminLayout>
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminMenus />
+        </AdminLayout>
+      </AdminRouteWrapper>
     ),
   },
   {
     path: "/admin/reservations",
     element: (
-      <AdminLayout>
-        <AdminReservation />
-      </AdminLayout>
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminReservation />
+        </AdminLayout>
+      </AdminRouteWrapper>
     ),
   },
   {
     path: "/admin/orders",
     element: (
-      <AdminLayout>
-        <AdminOrder />
-      </AdminLayout>
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminOrder />
+        </AdminLayout>
+      </AdminRouteWrapper>
     ),
   },
 ];
+
+function AdminRouteWrapper({ children }) {
+  const token = localStorage.getItem("adminToken");
+
+  if (!token) {
+    return <Navigate to="/admin/login" />;
+  }
+
+  return children;
+}
 
 export default adminRoutes;

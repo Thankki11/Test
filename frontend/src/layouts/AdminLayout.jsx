@@ -1,7 +1,14 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function AdminLayout({ children }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken"); // Xóa token khỏi localStorage
+    navigate("/admin/login"); // Điều hướng về trang đăng nhập
+  };
+
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       {/* Sidebar */}
@@ -51,6 +58,21 @@ function AdminLayout({ children }) {
             >
               Manage reservations
             </Link>
+          </li>
+          <li style={{ marginTop: "20px" }}>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: "transparent",
+                border: "1px solid #fff",
+                color: "#fff",
+                padding: "10px 20px",
+                cursor: "pointer",
+                borderRadius: "5px",
+              }}
+            >
+              Logout
+            </button>
           </li>
         </ul>
       </aside>

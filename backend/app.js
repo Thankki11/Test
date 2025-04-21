@@ -9,6 +9,10 @@ const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
 const tableRoutes = require("./routes/tableRoutes");
+const adminRoutes = require("./routes/adminRoutes");
+const authRoutes = require("./routes/authRoutes");
+
+
 
 const app = express();
 require("dotenv").config();
@@ -28,6 +32,9 @@ app.use("/api/chefs", chefRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reservations", reservationRoutes);
 app.use("/api/tables", tableRoutes);
+app.use("api/admin", adminRoutes);
+app.use("/api/auth", authRoutes);
+
 
 // Thêm route upload ảnh
 app.use("/api", uploadRoutes);
