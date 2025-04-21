@@ -8,6 +8,7 @@ const chefRoutes = require("./routes/chefRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
+const tableRoutes = require("./routes/tableRoutes");
 
 const app = express();
 require("dotenv").config();
@@ -26,6 +27,7 @@ app.use("/api/carts", cartRoutes);
 app.use("/api/chefs", chefRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/reservations", reservationRoutes);
+app.use("/api/tables", tableRoutes);
 
 // Thêm route upload ảnh
 app.use("/api", uploadRoutes);

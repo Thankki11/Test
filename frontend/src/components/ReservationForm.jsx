@@ -3,7 +3,9 @@ import TextField from "@mui/material/TextField";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 
-const ReservationTable = () => {
+import { Modal } from "bootstrap";
+
+const ReservationTable = ({ isInModal = false }) => {
   const [formData, setFormData] = useState({
     customerName: "",
     emailAddress: "",
@@ -31,12 +33,31 @@ const ReservationTable = () => {
       console.log("Form Data Preview:", JSON.stringify(formData, null, 2));
       const response = await axios.post(
         "http://localhost:3001/api/reservations/add",
-        formData
+        {
+          createdBy: "user",
+          ...formData,
+        }
       );
       console.log("Reservation Created:", response.data);
 
-      //Gửi thông báo đến component khác
-      window.dispatchEvent(new Event("reservationsUpdated"));
+      if (isInModal) {
+        Modal.getInstance(
+          document.getElementById("addReservationModal")
+        )?.hide();
+      }
+
+      setFormData({
+        customerName: "",
+        emailAddress: "",
+        phoneNumber: "",
+        numberOfGuest: "",
+        seatingArea: "",
+        status: "pending",
+        note: "",
+        dateTime: "",
+        createdAt: new Date().toISOString(),
+      });
+
       //Hiện lên màn hình thông báo đã tạo thành công
       alert(`Đã tạo mới thành công`);
     } catch (error) {

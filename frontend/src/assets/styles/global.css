@@ -159,12 +159,13 @@ button:hover {
 }
 
 .btn-select {
-  background-color: darkred; /* Nền xanh đậm khi hover */
+  background-color: rgb(157, 0, 0); /* Nền xanh đậm khi hover */
   color: white;
   border: 2px solid white;
 }
 
 .btn-select:hover {
+  background-color: rgb(124, 0, 0);
   color: white; /* Chữ trắng khi đã chọn */
 }
 

@@ -22,18 +22,37 @@ const reservationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  tableType: {
+    type: String,
+    required: true,
+  },
+
+  // ✅ Trường mới: selectedTable
+  selectedTable: {
+    type: Object,
+    default: null,
+  },
+
   note: {
     type: String,
     required: false,
   },
+
   dateTime: {
-    type: Date, // Đảm bảo rằng dateTime là kiểu Date
+    type: Date,
     required: true,
   },
+
   createdAt: {
     type: Date,
-    default: Date.now, // Mặc định sẽ lưu thời gian hiện tại khi tạo mới
+    default: Date.now,
   },
+
+  createdBy: {
+    type: String,
+    required: true,
+  },
+
   status: {
     type: String,
     default: "pending",
