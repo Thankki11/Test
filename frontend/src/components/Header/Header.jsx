@@ -5,6 +5,8 @@ import ButtonWhite from "../Buttons/ButtonWhite";
 
 import CartItem from "../CartItem";
 
+import { Offcanvas } from "bootstrap";
+
 import React, { useEffect, useState } from "react";
 
 function Header() {
@@ -189,8 +191,12 @@ function Header() {
                 <ButtonWhite
                   buttontext={`Cart (${items.length})`}
                   type="button"
-                  data-bs-toggle="offcanvas"
-                  data-bs-target="#cartSideBar"
+                  onClick={() => {
+                    const offCanvas = new Offcanvas(
+                      document.getElementById("cartSideBar")
+                    );
+                    offCanvas.show();
+                  }}
                 />
               </div>
               <ul className={styles.mainMenus}>
