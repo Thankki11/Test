@@ -137,9 +137,17 @@ function AdminChefs() {
   );
 
   return (
-    <div className="container mt-5">
-      <h2>Admin: Manage Chefs</h2>
-      <div className="d-flex align-items-center">
+    <div className="container">
+      <h2 className="text-center mb-3">Manage Chefs</h2>
+      <div className="d-flex align-items-center justify-content-center gap-3 mb-2 text-center">
+        <span style={{ fontWeight: "bold", marginRight: "10px" }}>Search:</span>
+        <input
+          type="text"
+          className="form-control w-50"
+          placeholder="Search by name or specialty..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+        />
         <button
           onClick={() => {
             setNewChef({
@@ -161,61 +169,69 @@ function AdminChefs() {
         >
           Add Chef
         </button>
-        <input
-          type="text"
-          className="form-control w-50"
-          placeholder="Search by name or specialty..."
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
-        />
       </div>
       {/* Danh sách chef */}
-      <table className="table table-striped">
-        <thead>
-          <tr>
-            <th className="text-center">Name</th>
-            <th className="text-center">Specialty</th>
-            <th className="text-center">Experience</th>
-            <th className="text-center">Contact</th>
-            <th className="text-center">Awards</th>
-            <th className="text-center">Description</th>
-            <th className="text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredChefs.map((chef) => (
-            <tr key={chef._id}>
-              <td className="text-center">{chef.name}</td>
-              <td className="text-center">{chef.specialty}</td>
-              <td className="text-center">{chef.experience} years</td>
-              <td>+{chef.contact}</td>
-              <td>
-                {chef.awards
-                  ?.split("\n") // Nếu bạn lưu bằng dấu xuống dòng, hoặc dùng .split(',') nếu phân cách bằng dấu phẩy
-                  .map((award, idx) => (
-                    <div key={idx}>{award}</div>
-                  ))}
-              </td>
-              <td>{chef.description}</td>
-              <td className="text-center">
-                <button
-                  onClick={() => {
-                    setEditChef({
-                      ...chef,
-                      previewUrl: chef.imageUrl, // Lưu imageUrl vào previewUrl nếu chưa upload mới
-                      file: null, // reset file mới
-                    });
-                    new Modal(document.getElementById("editChefModal")).show();
-                  }}
-                >
-                  Edit
-                </button>
-                <button onClick={() => handleDelete(chef._id)}>Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="card">
+        <div className="card-body">
+          <span style={{ fontWeight: "bold", fontSize: "20px" }}>
+            Chefs List
+          </span>
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Specialty</th>
+                <th>Experience</th>
+                <th>Contact</th>
+                <th>Awards</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredChefs.map((chef) => (
+                <tr key={chef._id}>
+                  <td>{chef.name}</td>
+                  <td>{chef.specialty}</td>
+                  <td>{chef.experience} years</td>
+                  <td>+{chef.contact}</td>
+                  <td>
+                    {chef.awards
+                      ?.split("\n") // Nếu bạn lưu bằng dấu xuống dòng, hoặc dùng .split(',') nếu phân cách bằng dấu phẩy
+                      .map((award, idx) => (
+                        <div key={idx}>{award}</div>
+                      ))}
+                  </td>
+                  <td>{chef.description}</td>
+                  <td>
+                    <button
+                      className="btn-select selected"
+                      onClick={() => {
+                        setEditChef({
+                          ...chef,
+                          previewUrl: chef.imageUrl, // Lưu imageUrl vào previewUrl nếu chưa upload mới
+                          file: null, // reset file mới
+                        });
+                        new Modal(
+                          document.getElementById("editChefModal")
+                        ).show();
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn-select"
+                      onClick={() => handleDelete(chef._id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Modal Thêm Chef */}
       <div className="modal fade" id="addChefModal" tabIndex="-1">
