@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import axios from "axios";
-import logo from '../assets/images/logo-black.png';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import logo from "../assets/images/logo-black.png";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
-function Login() {
+function Register() {
   const [formData, setFormData] = useState({
+    username: "",
     email: "",
+    phone: "",
     password: "",
   });
-  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -19,14 +20,13 @@ function Login() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/auth/user/login",
+        "http://localhost:3001/api/auth/user/register",
         formData
       );
-      localStorage.setItem("token", response.data.token);
-      alert("Login successful!");
+      alert(response.data.message);
     } catch (err) {
       console.error(err);
-      alert("Login failed. Please try again.");
+      alert("Registration failed. Please try again.");
     }
   };
 
@@ -35,11 +35,11 @@ function Login() {
       <div
         className="card shadow p-5"
         style={{
-          maxWidth: '800px',
-          width: '100%',
-          borderRadius: '1rem',
-          fontSize: '1.2rem',
-          backgroundColor: '#fff'
+          maxWidth: "800px",
+          width: "100%",
+          borderRadius: "1rem",
+          fontSize: "1.2rem",
+          backgroundColor: "#fff",
         }}
       >
         <div className="text-center mb-4">
@@ -47,15 +47,29 @@ function Login() {
             src={logo}
             alt="logo"
             className="rounded-circle"
-            style={{ width: '270px', height: '100px', objectFit: 'cover' }}
+            style={{ width: "270px", height: "100px", objectFit: "cover" }}
           />
         </div>
 
-        <h2 className="text-center mb-4 text-uppercase fw-semibold" style={{ letterSpacing: '2px' }}>
-          Login
+        <h2 className="text-center mb-4 text-uppercase fw-semibold" style={{ letterSpacing: "2px" }}>
+          Sign Up
         </h2>
 
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="username" className="form-label">Username</label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className="form-control form-control-lg"
+              id="username"
+              placeholder="Enter your username"
+              required
+            />
+          </div>
+
           <div className="mb-4">
             <label htmlFor="email" className="form-label">Email</label>
             <input
@@ -65,7 +79,21 @@ function Login() {
               onChange={handleChange}
               className="form-control form-control-lg"
               id="email"
-              placeholder="youremail@example.com"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="phone" className="form-label">Phone</label>
+            <input
+              type="text"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className="form-control form-control-lg"
+              id="phone"
+              placeholder="Enter your phone number"
               required
             />
           </div>
@@ -73,42 +101,29 @@ function Login() {
           <div className="mb-4 position-relative">
             <label htmlFor="password" className="form-label">Password</label>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
               className="form-control form-control-lg"
               id="password"
-              placeholder="Password"
+              placeholder="Enter your password"
               required
             />
-            <i
-              className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'} position-absolute`}
-              style={{ top: '50px', right: '15px', cursor: 'pointer', color: '#888' }}
-              onClick={() => setShowPassword(!showPassword)}
-            ></i>
-          </div>
-
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <div className="form-check">
-              <input className="form-check-input" type="checkbox" defaultChecked id="remember" />
-              <label className="form-check-label" htmlFor="remember">Remember me</label>
-            </div>
-            <a href="/" className="text-decoration-none text-danger">Forgot password?</a>
           </div>
 
           <button type="submit" className="btn btn-danger btn-lg w-100 fw-semibold">
-            Login
+            Sign Up
           </button>
         </form>
 
         <p className="text-center mt-4">
-          Don't have an account?{" "}
-          <a href="/register" className="text-decoration-none text-primary fw-semibold">Sign up now</a>
+          Already have an account?{" "}
+          <a href="/login" className="text-decoration-none text-primary fw-semibold">Login now</a>
         </p>
       </div>
     </div>
   );
 }
 
-export default Login;
+export default Register;

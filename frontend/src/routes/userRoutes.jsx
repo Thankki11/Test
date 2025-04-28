@@ -1,3 +1,5 @@
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 // Pages
 import Home from "../pages/Home";
 import Menus from "../pages/Menus";
@@ -10,6 +12,7 @@ import Detail from "../pages/Detail";
 import CheckOut from "../pages/CheckOut";
 import Login from "../pages/Login";
 import Test from "../pages/test";
+import Register from "../pages/Register";
 // Layout
 import UserLayout from "../layouts/UserLayout";
 import Reservation from "../pages/Reservation";
@@ -127,6 +130,26 @@ const routes = [
       </UserLayout>
     ),
   },
+  {
+    path: "/register",
+    element: (
+      <UserLayout>
+        <Register />
+      </UserLayout>
+    ),
+  },
 ];
 
-export default routes;
+function UserRoutes() {
+  return (
+    <Router>
+      <Routes>
+        {routes.map((route, index) => (
+          <Route key={index} path={route.path} element={route.element} />
+        ))}
+      </Routes>
+    </Router>
+  );
+}
+
+export { routes, UserRoutes };
