@@ -1,6 +1,6 @@
 // Routes
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-import routes from "./routes/userRoutes";
+import { routes } from "./routes/userRoutes";
 import adminRoutes from "./routes/adminRoutes";
 // CSS
 import "bootstrap/dist/css/bootstrap.min.css";

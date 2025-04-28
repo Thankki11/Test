@@ -1,7 +1,7 @@
 const moment = require("moment");
 const querystring = require("qs");
 const crypto = require("crypto");
-let { vnp_TmnCode, vnp_HashSecret, vnp_Url, vnp_ReturnUrl } = require("../config/db");
+let { vnp_TmnCode, vnp_HashSecret, vnp_Url, vnp_ReturnUrl } = require("../config/vnpConfig");
 const { sortObject } = require("../utils/vnpay");
 
 exports.createPayment = (req, res, next) => {    

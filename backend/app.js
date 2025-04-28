@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { connectDB } = require("./config/db");
+const connectDB = require("./config/db");
 const menuRoutes = require("./routes/menuRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const chefRoutes = require("./routes/chefRoutes");
@@ -12,8 +12,7 @@ const tableRoutes = require("./routes/tableRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const paymentRouter = require("./routes/paymentRoutes");
-
-
+const userAuthRoutes = require("./routes/userAuthRoutes");
 
 const app = express();
 require("dotenv").config();
@@ -36,7 +35,7 @@ app.use("/api/tables", tableRoutes);
 app.use("api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRouter);
-
+app.use("/api/auth/user", userAuthRoutes); 
 
 // Thêm route upload ảnh
 app.use("/api", uploadRoutes);
