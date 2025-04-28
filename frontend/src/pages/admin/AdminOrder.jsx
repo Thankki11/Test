@@ -110,7 +110,7 @@ function AdminOrders() {
           {filteredOrders.length > 0 && (
             <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
               <button
-                className="btn btn-secondary"
+                className=""
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
@@ -122,7 +122,7 @@ function AdminOrders() {
               </span>
 
               <button
-                className="btn btn-secondary"
+                className=""
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
               >
