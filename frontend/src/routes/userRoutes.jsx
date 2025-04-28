@@ -13,6 +13,8 @@ import CheckOut from "../pages/CheckOut";
 import Login from "../pages/Login";
 import Test from "../pages/test";
 import Register from "../pages/Register";
+import EditProfile from "../pages/user/EditProfile";
+import UserInfo from "../pages/user/UserInfo";
 // Layout
 import UserLayout from "../layouts/UserLayout";
 import Reservation from "../pages/Reservation";
@@ -135,6 +137,22 @@ const routes = [
     element: (
       <UserLayout>
         <Register />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/edit-profile",
+    element: (
+      <UserLayout>
+        <EditProfile />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/user-info",
+    element: (
+      <UserLayout>
+        <UserInfo />
       </UserLayout>
     ),
   },

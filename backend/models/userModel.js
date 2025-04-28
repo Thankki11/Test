@@ -15,6 +15,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String, // Add address field
+    default: "",
+  },
   password: {
     type: String,
     required: true,
@@ -23,6 +27,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["user", "admin"],
     default: "user",
+  },
+  avatar: {
+    type: String,
+    default: "https://localhost:3001/uploads/default-avatar.png.jpeg",
   },
   createdAt: {
     type: Date,
