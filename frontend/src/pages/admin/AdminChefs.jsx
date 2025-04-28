@@ -19,6 +19,8 @@ function AdminChefs() {
   });
   const [editChef, setEditChef] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const chefsPerPage = 5; // Số chef mỗi trang
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -40,6 +42,10 @@ function AdminChefs() {
       console.error("Error fetching chefs:", err);
     }
   };
+
+  useEffect(() => {
+    setCurrentPage(1); // Khi search, reset về trang 1
+  }, [searchKeyword]);
 
   const handleCreate = async () => {
     try {
@@ -75,10 +81,8 @@ function AdminChefs() {
         previewUrl: "",
       });
       fetchChefs();
-      bootstrap.Modal.getInstance(
-        document.getElementById("addChefModal")
-      ).hide();
-    } catch (err) {
+      bootstrap.Modal.getInstance(document.getElementById("addChefModal")).hide();
+     } catch (err) {
       console.error("Error creating chef:", err);
     }
   };
@@ -130,11 +134,18 @@ function AdminChefs() {
     }
   };
 
+  // Filter chefs theo keyword
   const filteredChefs = chefs.filter(
     (chef) =>
       chef.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
       chef.specialty.toLowerCase().includes(searchKeyword.toLowerCase())
   );
+
+  // Phân trang
+  const indexOfLastChef = currentPage * chefsPerPage;
+  const indexOfFirstChef = indexOfLastChef - chefsPerPage;
+  const currentChefs = filteredChefs.slice(indexOfFirstChef, indexOfLastChef);
+  const totalPages = Math.ceil(filteredChefs.length / chefsPerPage);
 
   return (
     <div className="container">
@@ -158,6 +169,7 @@ function AdminChefs() {
               awards: "",
               description: "",
               imageBuffer: null,
+              file: null,
               fileName: "",
               previewUrl: "",
             });
@@ -189,7 +201,7 @@ function AdminChefs() {
               </tr>
             </thead>
             <tbody>
-              {filteredChefs.map((chef) => (
+              {currentChefs.map((chef) => (
                 <tr key={chef._id}>
                   <td>{chef.name}</td>
                   <td>{chef.specialty}</td>
@@ -228,8 +240,62 @@ function AdminChefs() {
                   </td>
                 </tr>
               ))}
+              {currentChefs.length === 0 && (
+                <tr>
+                  <td colSpan="7" className="text-center">
+                    {searchKeyword ? "No matching chefs found." : "No chefs available."}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
+                    {/* Pagination */}
+
+                    {filteredChefs.length > 0 && (
+
+                <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+
+                  <button
+
+                    className=""
+
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+
+                    disabled={currentPage === 1}
+
+                  >
+
+                    Previous
+
+                  </button>
+
+
+
+                  <span>
+
+                    Page {currentPage} of {totalPages}
+
+                  </span>
+
+
+
+                  <button
+
+                    className=""
+
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+
+                    disabled={currentPage === totalPages}
+
+                  >
+
+                    Next
+
+                  </button>
+
+                </div>
+
+                )}
         </div>
       </div>
 

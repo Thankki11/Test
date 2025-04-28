@@ -3,6 +3,9 @@ import axios from "axios";
 
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ordersPerPage = 5; // Số đơn hàng mỗi trang
 
   useEffect(() => {
     fetchOrders();
@@ -10,18 +13,50 @@ function AdminOrders() {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3001/api/orders/getOrders"
-      );
+      const response = await axios.get("http://localhost:3001/api/orders/getOrders");
       setOrders(response.data);
     } catch (err) {
       console.error("Error fetching orders:", err);
     }
   };
 
+  // Khi search thì reset về trang 1
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchKeyword]);
+
+  // Filter orders theo search keyword
+  const filteredOrders = orders.filter((order) => {
+    const keyword = searchKeyword.toLowerCase();
+    return (
+      order.customerName.toLowerCase().includes(keyword) ||
+      order.phoneNumber.toLowerCase().includes(keyword) ||
+      order.emailAddress.toLowerCase().includes(keyword) ||
+      order.address.toLowerCase().includes(keyword)
+    );
+  });
+
+  // Xử lý phân trang
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
+  const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+
   return (
     <div className="container">
       <h2 className="text-center mb-3">Manage Orders</h2>
+
+      {/* Search */}
+      <div className="d-flex align-items-center justify-content-center gap-3 mb-2 text-center">
+        <span style={{ fontWeight: "bold", marginRight: "10px" }}>Search:</span>
+        <input
+          type="text"
+          className="form-control w-50"
+          placeholder="Search by customer, phone, email, address..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+        />
+      </div>
 
       <div className="card">
         <div className="card-body">
@@ -40,7 +75,7 @@ function AdminOrders() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => (
+              {currentOrders.map((order) => (
                 <tr key={order._id}>
                   <td>{order.customerName}</td>
                   <td>{order.phoneNumber}</td>
@@ -61,8 +96,40 @@ function AdminOrders() {
                   <td>{new Date(order.date).toLocaleString()}</td>
                 </tr>
               ))}
+              {currentOrders.length === 0 && (
+                <tr>
+                  <td colSpan="9" className="text-center">
+                    {searchKeyword ? "No matching orders found." : "No orders available."}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
+
+          {/* Pagination buttons */}
+          {filteredOrders.length > 0 && (
+            <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                className="btn btn-secondary"
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
