@@ -7,6 +7,7 @@ const categories = ["drink", "mainCourse", "dessert", "appetizer"];
 function AdminMenus() {
   const [menus, setMenus] = useState([]);
   const [editMenu, setEditMenu] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
   const [newMenu, setNewMenu] = useState({
     name: "",
     description: "",
@@ -30,6 +31,14 @@ function AdminMenus() {
       console.error("Error fetching menus:", err);
     }
   };
+
+  // Filter menus based on search keyword
+  const filteredMenus = menus.filter(
+    (menu) =>
+      menu.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      menu.category.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      menu.description.toLowerCase().includes(searchKeyword.toLowerCase())
+  );
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this menu?")) {
@@ -92,7 +101,7 @@ function AdminMenus() {
           fileName,
           category,
           imageBuffer,
-          previewUrl: URL.createObjectURL(file), // Hiển thị ảnh tạm thời
+          previewUrl: URL.createObjectURL(file),
         });
       })
       .catch((err) => {
@@ -245,15 +254,25 @@ function AdminMenus() {
 
       <h2 className="text-center mb-3">Manage Menus</h2>
 
-      <button
-        onClick={() => {
-          const modal = new Modal(document.getElementById("addNewMenu"));
-          modal.show();
-        }}
-        className="mb-2"
-      >
-        Add new menu
-      </button>
+      <div className="d-flex align-items-center justify-content-center gap-3 mb-2 text-center">
+        <span style={{ fontWeight: "bold", marginRight: "10px" }}>Search:</span>
+        <input
+          type="text"
+          className="form-control w-50"
+          placeholder="Search by name, category or description..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+        />
+
+        <button
+          onClick={() => {
+            const modal = new Modal(document.getElementById("addNewMenu"));
+            modal.show();
+          }}
+        >
+          Add menu
+        </button>
+      </div>
 
       <div>
         {/* Menu Table */}
@@ -264,7 +283,7 @@ function AdminMenus() {
                 Menus List
               </span>
             </div>
-            <table className="table table-striped ">
+            <table className="table table-striped">
               <thead>
                 <tr>
                   <th>Name</th>
@@ -275,7 +294,7 @@ function AdminMenus() {
                 </tr>
               </thead>
               <tbody>
-                {menus.map((menu) => (
+                {filteredMenus.map((menu) => (
                   <tr key={menu._id}>
                     <td>{menu.name}</td>
                     <td>{menu.description}</td>
@@ -293,7 +312,7 @@ function AdminMenus() {
                         Edit
                       </button>
                       <button
-                        className="btn-select "
+                        className="btn-select"
                         onClick={() => handleDelete(menu._id)}
                       >
                         Delete
@@ -307,6 +326,7 @@ function AdminMenus() {
         </div>
 
         {/* Edit Menu Modal */}
+
         <div
           className="modal fade"
           id="editMenuModal"
