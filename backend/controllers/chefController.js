@@ -12,10 +12,10 @@ exports.getChefs = async (req, res) => {
 
 // Thêm chef mới
 exports.createChef = async (req, res) => {
-  const { name, specialty, imageUrl, experience } = req.body;
+  const { name, specialty, imageUrl, experience, contact, awards, description } = req.body;
 
   try {
-    const newChef = new Chef({ name, specialty, imageUrl, experience });
+    const newChef = new Chef({ name, specialty, imageUrl, experience, contact, awards, description });
     const savedChef = await newChef.save();
     res
       .status(201)
@@ -28,12 +28,12 @@ exports.createChef = async (req, res) => {
 // Cập nhật thông tin chef
 exports.updateChef = async (req, res) => {
   const { id } = req.params;
-  const { name, specialty, imageUrl, experience } = req.body;
+  const { name, specialty, imageUrl, experience, contact, awards, description } = req.body;
 
   try {
     const updatedChef = await Chef.findByIdAndUpdate(
       id,
-      { name, specialty, imageUrl, experience },
+      { name, specialty, imageUrl, experience, contact, awards, description },
       { new: true }
     );
 

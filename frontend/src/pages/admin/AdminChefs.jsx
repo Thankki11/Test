@@ -1,15 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { Modal } from "bootstrap";
+import * as bootstrap from "bootstrap";
+import imageCompression from 'browser-image-compression';
 
 function AdminChefs() {
   const [chefs, setChefs] = useState([]);
-  const [newChef, setNewChef] = useState({
-    name: "",
+  const [newChef, setNewChef] = useState({ 
+    name: "", 
     specialty: "",
-    imageUrl: "",
-    experience: "",
+    experience: "", 
+    contact: "", 
+    awards: "", 
+    description: "",
+    imageBuffer: null,
+    fileName: "",
+    previewUrl: "", 
   });
   const [editChef, setEditChef] = useState(null);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const fileInputRef = useRef(null);
+
 
   useEffect(() => {
     fetchChefs();
@@ -26,21 +37,42 @@ function AdminChefs() {
 
   const handleCreate = async () => {
     try {
-      await axios.post("http://localhost:3001/api/chefs", newChef);
+      const chefData = {
+        ...newChef,
+        imageUrl: newChef.imageBuffer, // Dùng ảnh base64
+      };
+      await axios.post("http://localhost:3001/api/chefs", chefData);
       alert("Chef created successfully");
-      setNewChef({ name: "", specialty: "", imageUrl: "", experience: "" });
+      setNewChef({
+        name: "",
+        specialty: "",
+        experience: "",
+        contact: "",
+        awards: "",
+        description: "",
+        imageBuffer: null,
+        fileName: "",
+        previewUrl: "",
+      });
       fetchChefs();
+      bootstrap.Modal.getInstance(document.getElementById("addChefModal")).hide();
     } catch (err) {
       console.error("Error creating chef:", err);
     }
   };
 
+
   const handleSave = async () => {
     try {
-      await axios.put(`http://localhost:3001/api/chefs/${editChef._id}`, editChef);
+      const chefData = {
+        ...editChef,
+        imageUrl: editChef.imageBuffer ? editChef.imageBuffer : editChef.imageUrl,
+      };
+      await axios.put(`http://localhost:3001/api/chefs/${editChef._id}`, chefData);
       alert("Chef updated successfully");
       setEditChef(null);
       fetchChefs();
+      bootstrap.Modal.getInstance(document.getElementById("editChefModal")).hide();
     } catch (err) {
       console.error("Error updating chef:", err);
     }
@@ -58,167 +90,274 @@ function AdminChefs() {
     }
   };
 
+  const filteredChefs = chefs.filter((chef) =>
+    chef.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+    chef.specialty.toLowerCase().includes(searchKeyword.toLowerCase())
+  );
+  
+
   return (
     <div className="container mt-5">
       <h2>Admin: Manage Chefs</h2>
+      <div className="d-flex align-items-center">
+      <button
+        onClick={() => {
+          setNewChef({
+            name: "",
+            specialty: "",
+            experience: "",
+            contact: "",
+            awards: "",
+            description: "",
+            imageBuffer: null,
+            fileName: "",
+            previewUrl: "",
+          });
+          if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+          }
+          new Modal(document.getElementById("addChefModal")).show();
+        }}
+      >
+        Add Chef
+      </button>
+      <input
+        type="text"
+        className="form-control w-50"
+        placeholder="Search by name or specialty..."
+        value={searchKeyword}
+        onChange={(e) => setSearchKeyword(e.target.value)}
+      /> 
+      </div>                      
+      {/* Danh sách chef */}
+      <table className="table table-striped">
+        <thead>
+          <tr>
+            <th className="text-center">Name</th>
+            <th className="text-center">Specialty</th>
+            <th className="text-center">Experience</th>
+            <th className="text-center">Contact</th>
+            <th className="text-center">Awards</th>
+            <th className="text-center">Description</th>
+            <th className="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredChefs.map((chef) => (
+            <tr key={chef._id}>
+              <td className="text-center">{chef.name}</td>
+              <td className="text-center">{chef.specialty}</td>
+              <td className="text-center">{chef.experience} years</td>
+              <td>+{chef.contact}</td>
+              <td>
+                {chef.awards
+                  ?.split('\n') // Nếu bạn lưu bằng dấu xuống dòng, hoặc dùng .split(',') nếu phân cách bằng dấu phẩy
+                  .map((award, idx) => (
+                    <div key={idx}>{award}</div>
+                  ))}
+              </td>
+              <td>{chef.description}</td>
+              <td className="text-center">
+                <button
+                  
+                  onClick={() => {
+                    setEditChef(chef);
+                    new Modal(document.getElementById("editChefModal")).show();
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                 
+                  onClick={() => handleDelete(chef._id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
-      {/* Add New Chef */}
-      <div>
-        <h3>Add New Chef</h3>
-        <form>
-          <div className="mb-3">
-            <label>Name</label>
-            <input
-              type="text"
-              name="name"
-              value={newChef.name}
-              onChange={(e) => setNewChef({ ...newChef, name: e.target.value })}
-              className="form-control"
-            />
+      {/* Modal Thêm Chef */}
+      <div className="modal fade" id="addChefModal" tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Add New Chef</h5>
+              <button className="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div className="modal-body">
+            {["name", "specialty", "experience", "contact", "awards", "description"].map((field) => (
+              <div className="mb-3" key={field}>
+                <label className="form-label">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
+
+                {["description", "awards"].includes(field) ? (
+                  <textarea
+                    className="form-control"
+                    value={newChef[field]}
+                    onChange={(e) =>
+                      setNewChef({ ...newChef, [field]: e.target.value })
+                    }
+                  />
+                ) : field === "contact" ? (
+                  <div className="input-group">
+                    <span className="input-group-text">+</span>
+                    <input
+                      className="form-control"
+                      type="number"
+                      value={newChef[field]}
+                      onChange={(e) =>
+                        setNewChef({ ...newChef, [field]: e.target.value.replace(/^\+/, "") })
+                      }
+                    />
+                  </div>
+                ) : (
+                  <input
+                    className="form-control"
+                    type={field === "experience" ? "number" : "text"}
+                    value={newChef[field]}
+                    onChange={(e) =>
+                      setNewChef({ ...newChef, [field]: e.target.value })
+                    }
+                  />
+                )}
+              </div>
+            ))}
+              {/* Upload Image */}
+              <div className="mb-3">
+                <label className="form-label">Upload Image</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef} 
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setNewChef(prev => ({
+                          ...prev,
+                          imageBuffer: reader.result,
+                          fileName: file.name,
+                          previewUrl: URL.createObjectURL(file),
+                        }));
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                {newChef.previewUrl && (
+                  <img
+                    src={newChef.previewUrl}
+                    alt="Preview"
+                    className="img-thumbnail mt-2"
+                    style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                  />
+                )}
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button data-bs-dismiss="modal">Cancel</button>
+              <button onClick={handleCreate}>Add</button>
+            </div>
           </div>
-          <div className="mb-3">
-            <label>Specialty</label>
-            <input
-              type="text"
-              name="specialty"
-              value={newChef.specialty}
-              onChange={(e) =>
-                setNewChef({ ...newChef, specialty: e.target.value })
-              }
-              className="form-control"
-            />
-          </div>
-          <div className="mb-3">
-            <label>Image URL</label>
-            <input
-              type="text"
-              name="imageUrl"
-              value={newChef.imageUrl}
-              onChange={(e) =>
-                setNewChef({ ...newChef, imageUrl: e.target.value })
-              }
-              className="form-control"
-            />
-          </div>
-          <div className="mb-3">
-            <label>Experience</label>
-            <input
-              type="number"
-              name="experience"
-              value={newChef.experience}
-              onChange={(e) =>
-                setNewChef({ ...newChef, experience: e.target.value })
-              }
-              className="form-control"
-            />
-          </div>
-          <button type="button" onClick={handleCreate} className="btn btn-primary">
-            Add Chef
-          </button>
-        </form>
+        </div>
       </div>
 
-      {/* Edit Chef */}
-      {editChef && (
-        <div>
-          <h3>Edit Chef</h3>
-          <form>
-            <div className="mb-3">
-              <label>Name</label>
-              <input
-                type="text"
-                name="name"
-                value={editChef.name}
-                onChange={(e) => setEditChef({ ...editChef, name: e.target.value })}
-                className="form-control"
-              />
-            </div>
-            <div className="mb-3">
-              <label>Specialty</label>
-              <input
-                type="text"
-                name="specialty"
-                value={editChef.specialty}
-                onChange={(e) =>
-                  setEditChef({ ...editChef, specialty: e.target.value })
-                }
-                className="form-control"
-              />
-            </div>
-            <div className="mb-3">
-              <label>Image URL</label>
-              <input
-                type="text"
-                name="imageUrl"
-                value={editChef.imageUrl}
-                onChange={(e) =>
-                  setEditChef({ ...editChef, imageUrl: e.target.value })
-                }
-                className="form-control"
-              />
-            </div>
-            <div className="mb-3">
-              <label>Experience</label>
-              <input
-                type="number"
-                name="experience"
-                value={editChef.experience}
-                onChange={(e) =>
-                  setEditChef({ ...editChef, experience: e.target.value })
-                }
-                className="form-control"
-              />
-            </div>
-            <button type="button" onClick={handleSave} className="btn btn-success">
-              Save
-            </button>
-            <button
-              type="button"
-              onClick={() => setEditChef(null)}
-              className="btn btn-secondary ms-2"
-            >
-              Cancel
-            </button>
-          </form>
-        </div>
-      )}
+      {/* Modal Sửa Chef */}
+      <div className="modal fade" id="editChefModal" tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            {editChef && (
+              <>
+                <div className="modal-header">
+                  <h5 className="modal-title">Edit Chef</h5>
+                  <button className="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div className="modal-body">
+                {["name", "specialty", "experience", "contact", "awards", "description"].map((field) => (
+              <div className="mb-3" key={field}>
+                <label className="form-label">
+                  {field.charAt(0).toUpperCase() + field.slice(1)}
+                </label>
 
-      {/* Existing Chefs */}
-      <div>
-        <h3>Existing Chefs</h3>
-        <table className="table mt-4">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Specialty</th>
-              <th>Experience</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {chefs.map((chef) => (
-              <tr key={chef._id}>
-                <td>{chef.name}</td>
-                <td>{chef.specialty}</td>
-                <td>{chef.experience} years</td>
-                <td>
-                  <button
-                    className="btn btn-primary me-2"
-                    onClick={() => setEditChef(chef)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="btn btn-danger"
-                    onClick={() => handleDelete(chef._id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
+                {["description", "awards"].includes(field) ? (
+                  <textarea
+                    className="form-control"
+                    value={editChef[field]}
+                    onChange={(e) =>
+                      setEditChef({ ...editChef, [field]: e.target.value })
+                    }
+                  />
+                ) : field === "contact" ? (
+                  <div className="input-group">
+                    <span className="input-group-text">+</span>
+                    <input
+                      className="form-control"
+                      type="number"
+                      value={editChef[field]}
+                      onChange={(e) =>
+                        setEditChef({ ...editChef, [field]: e.target.value.replace(/^\+/, "") })
+                      }
+                    />
+                  </div>
+                ) : (
+                  <input
+                    className="form-control"
+                    type={field === "experience" ? "number" : "text"}
+                    value={editChef[field]}
+                    onChange={(e) =>
+                      setEditChef({ ...editChef, [field]: e.target.value })
+                    }
+                  />
+                )}
+              </div>
             ))}
-          </tbody>
-        </table>
+            {/* Upload New Image */}
+              <div className="mb-3">
+                <label className="form-label">Change Image (Optional)</label>
+                <input
+                  className="form-control"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        setEditChef(prev => ({
+                          ...prev,
+                          imageBuffer: reader.result,
+                          previewUrl: URL.createObjectURL(file),
+                        }));
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                {(editChef.previewUrl || editChef.imageUrl) && (
+                  <img
+                    src={editChef.previewUrl || editChef.imageUrl}
+                    alt="Preview"
+                    className="img-thumbnail mt-2"
+                    style={{ width: "100px", height: "100px", objectFit: "cover" }}
+                  />
+                )}
+              </div>
+
+                </div>
+                <div className="modal-footer">
+                  <button data-bs-dismiss="modal">Cancel</button>
+                  <button onClick={handleSave}>Save</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
