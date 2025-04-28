@@ -7,6 +7,7 @@ import ButtonWhite from "../components/Buttons/ButtonWhite";
 import BasicSlider from "../components/Slider/BasicSlider";
 import Reservation from "../components/Forms/Reservation";
 import ContactBox from "../components/Box/ContactBox";
+import ReservationForm from "../components/ReservationForm";
 
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
@@ -258,12 +259,10 @@ function Home() {
           </div>
           <div className="col-1"></div>
           <div className="col-5 p-2" style={{ backgroundColor: "white" }}>
-            <Reservation
-              title={"Table Reservation"}
-              description={
-                "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod, cumque."
-              }
-            />
+            <h5 className="text-center mt-3" style={{ fontSize: "30px" }}>
+              Book a table
+            </h5>
+            <ReservationForm />
           </div>
         </div>
       </div>

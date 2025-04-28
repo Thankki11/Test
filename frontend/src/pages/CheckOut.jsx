@@ -12,6 +12,14 @@ function CheckOut() {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [formData, setFormData] = useState({
+    customerName: "",
+    phoneNumber: "",
+    emailAddress: "",
+    address: "",
+  });
+  const [amount, setAmount] = useState(0);
 
   //các giá trị trong bảng, giá trị hàng hóa
   const selectedData = items
@@ -77,6 +85,7 @@ function CheckOut() {
         { label: "Cash on Delivery (COD)", value: "cod" },
         { label: "Bank Transfer", value: "bank" },
         { label: "E-Wallet (Momo, ZaloPay...)", value: "e-wallet" },
+        { label: "VNPay", value: "vnpay" },
       ],
       required: true,
     },
@@ -102,11 +111,10 @@ function CheckOut() {
     if (!confirm) return;
 
     try {
-      // Tạo đối tượng đặt hàng với cấu trúc phù hợp
       const order = {
         ...data,
         items: items
-          .filter((item) => selectedItems.includes(item._id)) // Chỉ lấy các món đã chọn
+          .filter((item) => selectedItems.includes(item._id))
           .map((item) => ({
             menuItemId: item._id,
             name: item.name,
@@ -117,30 +125,40 @@ function CheckOut() {
         createdAt: new Date().toISOString(),
       };
 
-      await axios.post("http://localhost:3001/api/orders/add", order);
-
-      // Cập nhật localStorage - chỉ xóa các món đã chọn
-      const cart = JSON.parse(localStorage.getItem("cart")) || {};
-      if (cart.items) {
-        cart.items = cart.items.filter(
-          (item) => !selectedItems.includes(item._id)
+      if (data.paymentMethod === "vnpay") {
+        const response = await axios.post(
+          "http://localhost:3001/api/payment/create_payment_url",
+          {
+            amount: totalAmount,
+            paymentMethod: "vnpay",
+          }
         );
-        localStorage.setItem("cart", JSON.stringify(cart));
+
+        if (response.data.paymentUrl) {
+          window.location.href = response.data.paymentUrl;
+        }
+      } else {
+        await axios.post("http://localhost:3001/api/orders/add", order);
+
+        const cart = JSON.parse(localStorage.getItem("cart")) || {};
+        if (cart.items) {
+          cart.items = cart.items.filter(
+            (item) => !selectedItems.includes(item._id)
+          );
+          localStorage.setItem("cart", JSON.stringify(cart));
+        }
+
+        window.dispatchEvent(new Event("cartUpdated"));
+
+        alert("Đặt hàng thành công!");
+        navigate("/");
       }
-
-      // Gửi sự kiện custom để các component khác biết
-      window.dispatchEvent(new Event("cartUpdated"));
-
-      // Thông báo và điều hướng về trang chủ
-      alert("Đặt hàng thành công!");
-      navigate("/"); // hoặc "/home"
     } catch (error) {
       console.error("Lỗi khi gửi đặt hàng:", error);
       alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
     }
   };
 
-  //Kiểm tra những món hàng nào đã được chọn
   const handleSelect = (itemId) => {
     setSelectedItems((prevSelected) => {
       const newSelected = prevSelected.includes(itemId)
@@ -152,9 +170,28 @@ function CheckOut() {
     });
   };
 
-  // Start load giỏ hàng từ localStorage
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await axios.get("http://localhost:3001/api/auth/user/info", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const user = response.data;
+        setFormData({
+          customerName: user.username || "",
+          phoneNumber: user.phone || "",
+          emailAddress: user.email || "",
+          address: user.address || "",
+        });
+      } catch (err) {
+        console.error("Failed to fetch user info:", err);
+      }
+    };
+
     const loadCart = () => {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || {
         items: [],
@@ -162,6 +199,7 @@ function CheckOut() {
       setItems(savedCart.items);
     };
 
+    fetchUserInfo();
     loadCart();
     window.addEventListener("cartUpdated", loadCart);
 
@@ -169,9 +207,7 @@ function CheckOut() {
       window.removeEventListener("cartUpdated", loadCart);
     };
   }, []);
-  // End load giỏ hàng từ localStorage
 
-  // Start phần xử lý giỏ hàng
   const updateCart = (updatedItems) => {
     setItems(updatedItems);
     const updatedCart = {
@@ -186,7 +222,6 @@ function CheckOut() {
       item._id === id ? { ...item, quantity: item.quantity + 1 } : item
     );
     updateCart(updatedItems);
-    // Gửi sự kiện custom để các component khác biết
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
@@ -197,7 +232,6 @@ function CheckOut() {
         : item
     );
     updateCart(updatedItems);
-    // Gửi sự kiện custom để các component khác biết
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
@@ -210,7 +244,6 @@ function CheckOut() {
       updateCart(updatedItems);
     }
   };
-  // End phần xử lý giỏ hàng
 
   return (
     <>
@@ -330,6 +363,12 @@ function CheckOut() {
                       </h2>
                       <CustomForm
                         fields={fields}
+                        initialValues={{
+                          customerName: formData.customerName,
+                          phoneNumber: formData.phoneNumber,
+                          emailAddress: formData.emailAddress,
+                          address: formData.address,
+                        }}
                         onSubmit={handleSubmit}
                         buttonText="Place Order"
                       />

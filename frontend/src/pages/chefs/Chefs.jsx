@@ -5,7 +5,7 @@ import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
 import styles from "./Chefs.module.css";
 
-const UPLOAD_BASE = "http://localhost:3001/uploads/";  // URL gốc để serve static
+const UPLOAD_BASE = "http://localhost:3001/uploads/"; // URL gốc để serve static
 
 function Chefs() {
   const [chefs, setChefs] = useState([]);
@@ -19,9 +19,7 @@ function Chefs() {
         const data = res.data.map((chef) => ({
           ...chef,
           // nếu backend lưu imageUrl = "chefs/xyz.png", thì prepend thư mục uploads
-          imageUrl: chef.imageUrl
-            ? `${UPLOAD_BASE}${chef.imageUrl}`
-            : null,
+          imageUrl: chef.imageUrl ? `${UPLOAD_BASE}${chef.imageUrl}` : null,
         }));
         setChefs(data);
       })

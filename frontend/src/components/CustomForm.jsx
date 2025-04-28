@@ -1,55 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-// // Mảng các trường của form
-// const formFields = [
-//   {
-//     name: "name",
-//     label: "Full Name",
-//     type: "text",
-//     placeholder: "Enter your full name",
-//     required: true,
-//   },
-//   {
-//     name: "email",
-//     label: "Email",
-//     type: "text",
-//     placeholder: "Enter your email",
-//     required: true,
-//   },
-//   {
-//     name: "subscribe",
-//     label: "Subscribe to newsletter",
-//     type: "checkbox",
-//     required: false,
-//   },
-//   {
-//     name: "country",
-//     label: "Country",
-//     type: "select",
-//     options: [
-//       { value: "us", label: "United States" },
-//       { value: "ca", label: "Canada" },
-//       { value: "uk", label: "United Kingdom" },
-//     ],
-//     required: true,
-//   },
-// ];
-
-// // Hàm xử lý khi submit form
-// const handleFormSubmit = (formData) => {
-//   console.log("Form submitted with data:", formData);
-// };
-
-// <CustomForm
-//   fields={formFields}
-//   onSubmit={handleFormSubmit}
-//   buttonText="Submit Form"
-// />;
-
-const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
+const CustomForm = ({ fields, onSubmit, buttonText = "Place order", initialValues = {} }) => {
+  // Initialize form data with initialValues or default values
   const initialState = fields.reduce((acc, field) => {
     acc[field.name] =
-      field.type === "checkbox"
+      initialValues[field.name] !== undefined
+        ? initialValues[field.name]
+        : field.type === "checkbox"
         ? false
         : field.type === "select"
         ? field.options[0].value
@@ -59,14 +16,22 @@ const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
   const [formData, setFormData] = useState(initialState);
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    // Update form data when initialValues change
+    setFormData((prev) => ({
+      ...prev,
+      ...initialValues,
+    }));
+  }, [initialValues]);
+
   const handleChange = (name, value) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setErrors((prev) => ({ ...prev, [name]: "" })); // Xóa lỗi khi người dùng thay đổi giá trị
+    setErrors((prev) => ({ ...prev, [name]: "" })); // Clear errors when user changes value
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Kiểm tra các trường bắt buộc
+    // Validate required fields
     const newErrors = {};
     fields.forEach((field) => {
       if (field.required && !formData[field.name]) {
@@ -76,7 +41,7 @@ const CustomForm = ({ fields, onSubmit, buttonText = "Place order" }) => {
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
-      return; // Không submit nếu có lỗi
+      return; // Do not submit if there are errors
     }
 
     onSubmit(formData);
