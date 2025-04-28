@@ -28,7 +28,14 @@ function AdminChefs() {
   const fetchChefs = async () => {
     try {
       const response = await axios.get("http://localhost:3001/api/chefs");
-      setChefs(response.data);
+      // Thêm server host nếu imageUrl thiếu
+      const chefsWithFullImage = response.data.map((chef) => ({
+        ...chef,
+        imageUrl: chef.imageUrl
+          ? `http://localhost:3001/uploads/${chef.imageUrl}`
+          : null,
+      }));
+      setChefs(chefsWithFullImage);
     } catch (err) {
       console.error("Error fetching chefs:", err);
     }
@@ -36,11 +43,24 @@ function AdminChefs() {
 
   const handleCreate = async () => {
     try {
-      const chefData = {
-        ...newChef,
-        imageUrl: newChef.imageBuffer, // Dùng ảnh base64
-      };
-      await axios.post("http://localhost:3001/api/chefs", chefData);
+      const formData = new FormData();
+      formData.append("name", newChef.name);
+      formData.append("specialty", newChef.specialty);
+      formData.append("experience", newChef.experience);
+      formData.append("contact", newChef.contact);
+      formData.append("awards", newChef.awards);
+      formData.append("description", newChef.description);
+
+      if (newChef.file) {
+        formData.append("image", newChef.file); // ảnh upload
+      }
+
+      await axios.post("http://localhost:3001/api/chefs", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
       alert("Chef created successfully");
       setNewChef({
         name: "",
@@ -50,6 +70,7 @@ function AdminChefs() {
         awards: "",
         description: "",
         imageBuffer: null,
+        file: null,
         fileName: "",
         previewUrl: "",
       });
@@ -64,16 +85,28 @@ function AdminChefs() {
 
   const handleSave = async () => {
     try {
-      const chefData = {
-        ...editChef,
-        imageUrl: editChef.imageBuffer
-          ? editChef.imageBuffer
-          : editChef.imageUrl,
-      };
+      const formData = new FormData();
+      formData.append("name", editChef.name);
+      formData.append("specialty", editChef.specialty);
+      formData.append("experience", editChef.experience);
+      formData.append("contact", editChef.contact);
+      formData.append("awards", editChef.awards);
+      formData.append("description", editChef.description);
+
+      if (editChef.file) {
+        formData.append("image", editChef.file); // nếu có chọn ảnh mới
+      }
+
       await axios.put(
         `http://localhost:3001/api/chefs/${editChef._id}`,
-        chefData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
+
       alert("Chef updated successfully");
       setEditChef(null);
       fetchChefs();
@@ -107,7 +140,7 @@ function AdminChefs() {
     <div className="container">
       <h2 className="text-center mb-3">Manage Chefs</h2>
       <div className="d-flex align-items-center justify-content-center gap-3 mb-2 text-center">
-        <span style={{ fontWeight: "bold" }}>Search:</span>
+        <span style={{ fontWeight: "bold", marginRight: "10px" }}>Search:</span>
         <input
           type="text"
           className="form-control w-50"
@@ -137,38 +170,30 @@ function AdminChefs() {
           Add Chef
         </button>
       </div>
-
+      {/* Danh sách chef */}
       <div className="card">
         <div className="card-body">
-          <div>
-            <span
-              style={{
-                fontSize: "20px",
-                fontWeight: "bold",
-              }}
-            >
-              Chefs list
-            </span>
-          </div>
-          {/* Danh sách chef */}
+          <span style={{ fontWeight: "bold", fontSize: "20px" }}>
+            Chefs List
+          </span>
           <table className="table table-striped">
             <thead>
               <tr>
-                <th className="text-center">Name</th>
-                <th className="text-center">Specialty</th>
-                <th className="text-center">Experience</th>
-                <th className="text-center">Contact</th>
-                <th className="text-center">Awards</th>
-                <th className="text-center">Description</th>
-                <th className="text-center">Actions</th>
+                <th>Name</th>
+                <th>Specialty</th>
+                <th>Experience</th>
+                <th>Contact</th>
+                <th>Awards</th>
+                <th>Description</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredChefs.map((chef) => (
                 <tr key={chef._id}>
-                  <td className="text-center">{chef.name}</td>
-                  <td className="text-center">{chef.specialty}</td>
-                  <td className="text-center">{chef.experience} years</td>
+                  <td>{chef.name}</td>
+                  <td>{chef.specialty}</td>
+                  <td>{chef.experience} years</td>
                   <td>+{chef.contact}</td>
                   <td>
                     {chef.awards
@@ -178,11 +203,15 @@ function AdminChefs() {
                       ))}
                   </td>
                   <td>{chef.description}</td>
-                  <td className="text-center">
+                  <td>
                     <button
                       className="btn-select selected"
                       onClick={() => {
-                        setEditChef(chef);
+                        setEditChef({
+                          ...chef,
+                          previewUrl: chef.imageUrl, // Lưu imageUrl vào previewUrl nếu chưa upload mới
+                          file: null, // reset file mới
+                        });
                         new Modal(
                           document.getElementById("editChefModal")
                         ).show();
@@ -206,7 +235,7 @@ function AdminChefs() {
 
       {/* Modal Thêm Chef */}
       <div className="modal fade" id="addChefModal" tabIndex="-1">
-        <div className="modal-dialog modal-lg">
+        <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Add New Chef</h5>
@@ -272,16 +301,11 @@ function AdminChefs() {
                   onChange={(e) => {
                     const file = e.target.files[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        setNewChef((prev) => ({
-                          ...prev,
-                          imageBuffer: reader.result,
-                          fileName: file.name,
-                          previewUrl: URL.createObjectURL(file),
-                        }));
-                      };
-                      reader.readAsDataURL(file);
+                      setNewChef((prev) => ({
+                        ...prev,
+                        file: file,
+                        previewUrl: URL.createObjectURL(file),
+                      }));
                     }
                   }}
                 />
@@ -387,21 +411,17 @@ function AdminChefs() {
                       onChange={(e) => {
                         const file = e.target.files[0];
                         if (file) {
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setEditChef((prev) => ({
-                              ...prev,
-                              imageBuffer: reader.result,
-                              previewUrl: URL.createObjectURL(file),
-                            }));
-                          };
-                          reader.readAsDataURL(file);
+                          setEditChef((prev) => ({
+                            ...prev,
+                            file: file,
+                            previewUrl: URL.createObjectURL(file),
+                          }));
                         }
                       }}
                     />
-                    {(editChef.previewUrl || editChef.imageUrl) && (
+                    {editChef.previewUrl && (
                       <img
-                        src={editChef.previewUrl || editChef.imageUrl}
+                        src={editChef.previewUrl}
                         alt="Preview"
                         className="img-thumbnail mt-2"
                         style={{

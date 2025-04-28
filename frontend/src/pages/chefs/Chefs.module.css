@@ -1,8 +1,8 @@
 /* Chefs.module.css */
 .chefImg {
-    height: 250px;
-    object-fit: cover;
-  }
+  height: 250px;
+  object-fit: cover;
+}
 
 .chefName {
   font-size: 2rem; /* hoặc 0.9rem, 14px... tuỳ bạn */
@@ -18,4 +18,3 @@
   transform: translateY(-5px); /* nổi lên một chút */
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15); /* đổ bóng nhẹ */
 }
-
