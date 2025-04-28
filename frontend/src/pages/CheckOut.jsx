@@ -13,6 +13,12 @@ function CheckOut() {
   const [items, setItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
   const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [formData, setFormData] = useState({
+    customerName: "",
+    phoneNumber: "",
+    emailAddress: "",
+    address: "",
+  });
   const [amount, setAmount] = useState(0);
 
   //các giá trị trong bảng, giá trị hàng hóa
@@ -165,7 +171,27 @@ function CheckOut() {
   };
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const response = await axios.get("http://localhost:3001/api/auth/user/info", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const user = response.data;
+        setFormData({
+          customerName: user.username || "",
+          phoneNumber: user.phone || "",
+          emailAddress: user.email || "",
+          address: user.address || "",
+        });
+      } catch (err) {
+        console.error("Failed to fetch user info:", err);
+      }
+    };
+
     const loadCart = () => {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || {
         items: [],
@@ -173,6 +199,7 @@ function CheckOut() {
       setItems(savedCart.items);
     };
 
+    fetchUserInfo();
     loadCart();
     window.addEventListener("cartUpdated", loadCart);
 
@@ -336,6 +363,12 @@ function CheckOut() {
                       </h2>
                       <CustomForm
                         fields={fields}
+                        initialValues={{
+                          customerName: formData.customerName,
+                          phoneNumber: formData.phoneNumber,
+                          emailAddress: formData.emailAddress,
+                          address: formData.address,
+                        }}
                         onSubmit={handleSubmit}
                         buttonText="Place Order"
                       />

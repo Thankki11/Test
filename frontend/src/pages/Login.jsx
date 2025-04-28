@@ -1,32 +1,37 @@
 import React, { useState } from "react";
 import axios from "axios";
-import logo from '../assets/images/logo-black.png';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import { useNavigate } from "react-router-dom";
+import logo from "../assets/images/logo-black.png";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 
 function Login() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/auth/user/login",
-        formData
-      );
-      localStorage.setItem("token", response.data.token);
-      alert("Login successful!");
+      const response = await axios.post("http://localhost:3001/api/auth/user/login", formData);
+      const { token } = response.data;
+
+      // Save token and user info to localStorage
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+
+      // Emit an event to notify other components
+      window.dispatchEvent(new Event("userLoggedIn"));
+
+      // Redirect to the home page
+      navigate("/");
     } catch (err) {
-      console.error(err);
-      alert("Login failed. Please try again.");
+      console.error("Login failed:", err);
+      alert("Invalid email or password");
     }
   };
 
@@ -35,11 +40,11 @@ function Login() {
       <div
         className="card shadow p-5"
         style={{
-          maxWidth: '800px',
-          width: '100%',
-          borderRadius: '1rem',
-          fontSize: '1.2rem',
-          backgroundColor: '#fff'
+          maxWidth: "800px",
+          width: "100%",
+          borderRadius: "1rem",
+          fontSize: "1.2rem",
+          backgroundColor: "#fff",
         }}
       >
         <div className="text-center mb-4">
@@ -47,15 +52,15 @@ function Login() {
             src={logo}
             alt="logo"
             className="rounded-circle"
-            style={{ width: '270px', height: '100px', objectFit: 'cover' }}
+            style={{ width: "270px", height: "100px", objectFit: "cover" }}
           />
         </div>
 
-        <h2 className="text-center mb-4 text-uppercase fw-semibold" style={{ letterSpacing: '2px' }}>
+        <h2 className="text-center mb-4 text-uppercase fw-semibold" style={{ letterSpacing: "2px" }}>
           Login
         </h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleLogin}>
           <div className="mb-4">
             <label htmlFor="email" className="form-label">Email</label>
             <input
@@ -73,7 +78,7 @@ function Login() {
           <div className="mb-4 position-relative">
             <label htmlFor="password" className="form-label">Password</label>
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleChange}
@@ -83,18 +88,10 @@ function Login() {
               required
             />
             <i
-              className={`fa ${showPassword ? 'fa-eye-slash' : 'fa-eye'} position-absolute`}
-              style={{ top: '50px', right: '15px', cursor: 'pointer', color: '#888' }}
+              className={`fa ${showPassword ? "fa-eye-slash" : "fa-eye"} position-absolute`}
+              style={{ top: "50px", right: "15px", cursor: "pointer", color: "#888" }}
               onClick={() => setShowPassword(!showPassword)}
             ></i>
-          </div>
-
-          <div className="d-flex justify-content-between align-items-center mb-4">
-            <div className="form-check">
-              <input className="form-check-input" type="checkbox" defaultChecked id="remember" />
-              <label className="form-check-label" htmlFor="remember">Remember me</label>
-            </div>
-            <a href="/" className="text-decoration-none text-danger">Forgot password?</a>
           </div>
 
           <button type="submit" className="btn btn-danger btn-lg w-100 fw-semibold">
