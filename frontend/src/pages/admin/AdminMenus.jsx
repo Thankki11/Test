@@ -101,7 +101,7 @@ function AdminMenus() {
           fileName,
           category,
           imageBuffer,
-          previewUrl: URL.createObjectURL(file),
+          previewUrl: URL.createObjectURL(file), // Hiển thị ảnh tạm thời
         });
       })
       .catch((err) => {
