@@ -3,8 +3,14 @@ import ReservationForm from "../components/ReservationForm";
 function Reservation() {
   return (
     <>
-      <h2>Chưa dùng được </h2>
-      <ReservationForm />
+      <div className="section">
+        <h2 className="text-center">Reservation Test </h2>
+        <div className="row">
+          <div className="col-8">
+            <ReservationForm />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
