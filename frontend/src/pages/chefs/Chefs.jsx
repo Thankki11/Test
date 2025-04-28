@@ -47,10 +47,11 @@ function Chefs() {
                 >
 
               <img
-                src={`http://localhost:3001${chef.imageUrl}`}
+                src={chef.imageUrl}
                 className={`card-img-top ${styles.chefImg}`}
                 alt={chef.name}
               />
+
               <div className="card-body">
               <h5 className={`card-title ${styles.chefName}`}>{chef.name}</h5>
 
@@ -63,19 +64,60 @@ function Chefs() {
       </div>
 
       {/* Bootstrap Modal */}
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>{selectedChef?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <img src={`http://localhost:3001${selectedChef?.imageUrl}`} alt={selectedChef?.name} className="img-fluid mb-3" />
-          <p><strong>Specialty:</strong> {selectedChef?.specialty}</p>
-          <p><strong>Experience:</strong> {selectedChef?.experience} years</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>Close</Button>
-        </Modal.Footer>
-      </Modal>
+      <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
+  <Modal.Header closeButton>
+    <Modal.Title>{selectedChef?.name}</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <div style={{ display: 'flex', height: '400px' }}>
+      {/* Bên trái: Ảnh */}
+      <div style={{ flex: 1, paddingRight: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img
+          src={selectedChef?.imageUrl}
+          alt={selectedChef?.name}
+          style={{
+            maxWidth: '100%',
+            maxHeight: '100%',
+            objectFit: 'contain',
+            borderRadius: '8px',
+          }}
+        />
+
+      </div>
+
+      {/* Bên phải: Thông tin (có scroll nếu vượt) */}
+      <div style={{
+        flex: 1,
+        overflowY: 'auto',
+        padding: '10px',
+        borderLeft: '1px solid #ccc'
+      }}>
+        <p><strong>Specialty:</strong> {selectedChef?.specialty}</p>
+        <p><strong>Experience:</strong> {selectedChef?.experience} years</p>
+        <p><strong>Contact:</strong> +{selectedChef?.contact}</p>
+        <p><strong>Awards:</strong></p>
+          <ul style={{ paddingLeft: '20px', fontSize: '1.25rem', marginBottom: '1rem' }}>
+            {selectedChef?.awards
+              ?.split('\n')
+              .filter((award) => award.trim() !== '') // bỏ dòng trống
+              .map((award, index) => (
+                <li key={index} style={{ marginBottom: '4px' }}>
+                  • {award}
+                </li>
+              ))}
+          </ul>
+
+        <p><strong>Description:</strong> {selectedChef?.description}</p>
+      </div>
+    </div>
+  </Modal.Body>
+  <Modal.Footer>
+    <Button variant="secondary" onClick={handleCloseModal}>
+      Close
+    </Button>
+  </Modal.Footer>
+</Modal>
+
     </div>
   );
 }

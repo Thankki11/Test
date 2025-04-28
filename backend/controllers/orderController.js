@@ -43,4 +43,14 @@ const addOrder = async (req, res) => {
   }
 };
 
-module.exports = { addOrder };
+const getOrders = async (req, res) => {
+  try {
+    const orders = await Order.find(); // Lấy tất cả đơn hàng từ database
+    res.json(orders);
+  } catch (err) {
+    console.error("Lỗi khi lấy danh sách đơn hàng:", err);
+    res.status(500).json({ message: "Lỗi server, không thể lấy danh sách đơn hàng." });
+  }
+};
+
+module.exports = { addOrder, getOrders };
