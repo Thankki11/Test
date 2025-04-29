@@ -8,6 +8,9 @@ function AdminMenus() {
   const [menus, setMenus] = useState([]);
   const [editMenu, setEditMenu] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1); // ✅ thêm current page
+  const menusPerPage = 5; // ✅ số lượng món ăn trên mỗi trang
+
   const [newMenu, setNewMenu] = useState({
     name: "",
     description: "",
@@ -39,6 +42,13 @@ function AdminMenus() {
       menu.category.toLowerCase().includes(searchKeyword.toLowerCase()) ||
       menu.description.toLowerCase().includes(searchKeyword.toLowerCase())
   );
+
+  // ✅ Phân trang: Tính toán danh sách menu cần hiển thị
+  const indexOfLastMenu = currentPage * menusPerPage;
+  const indexOfFirstMenu = indexOfLastMenu - menusPerPage;
+  const currentMenus = filteredMenus.slice(indexOfFirstMenu, indexOfLastMenu);
+
+  const totalPages = Math.ceil(filteredMenus.length / menusPerPage);
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this menu?")) {
@@ -139,6 +149,12 @@ function AdminMenus() {
       .catch((err) => {
         console.error("Error creating menu:", err);
       });
+  };
+
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
   };
 
   return (
@@ -261,7 +277,10 @@ function AdminMenus() {
           className="form-control w-50"
           placeholder="Search by name, category or description..."
           value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
+          onChange={(e) => {
+            setSearchKeyword(e.target.value);
+            setCurrentPage(1); // ✅ reset về page 1 khi tìm kiếm
+          }}
         />
 
         <button
@@ -294,7 +313,7 @@ function AdminMenus() {
                 </tr>
               </thead>
               <tbody>
-                {filteredMenus.map((menu) => (
+                 {currentMenus.map((menu) => (
                   <tr key={menu._id}>
                     <td>{menu.name}</td>
                     <td>{menu.description}</td>
@@ -322,6 +341,26 @@ function AdminMenus() {
                 ))}
               </tbody>
             </table>
+                        {/* ✅ Thêm phân trang */}
+
+                        <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+
+            <button
+              className=""
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button
+              className=""
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+            </div>
           </div>
         </div>
 
