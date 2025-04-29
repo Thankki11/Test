@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { 
-    getChefs,
-    createChef,
-    updateChef,
-    deleteChef,
-    uploadChefImage
+const {
+  getChefs,
+  createChef,
+  updateChef,
+  deleteChef,
+  uploadChefImage,
 } = require("../controllers/chefController");
 
 // Route lấy tất cả chefs
