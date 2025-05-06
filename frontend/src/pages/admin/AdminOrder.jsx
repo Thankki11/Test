@@ -99,6 +99,7 @@ function AdminOrders() {
                   </td>
                   <td>${order.totalPrice}</td>
                   <td>{new Date(order.date).toLocaleString()}</td>
+                  {console.log("Order object:", order)}
                 </tr>
               ))}
               {currentOrders.length === 0 && (

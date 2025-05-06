@@ -12,14 +12,12 @@ function CheckOut() {
   const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [paymentMethod, setPaymentMethod] = useState("cod");
   const [formData, setFormData] = useState({
     customerName: "",
     phoneNumber: "",
     emailAddress: "",
     address: "",
   });
-  const [amount, setAmount] = useState(0);
 
   //các giá trị trong bảng, giá trị hàng hóa
   const selectedData = items
@@ -83,8 +81,6 @@ function CheckOut() {
       type: "select",
       options: [
         { label: "Cash on Delivery (COD)", value: "cod" },
-        { label: "Bank Transfer", value: "bank" },
-        { label: "E-Wallet (Momo, ZaloPay...)", value: "e-wallet" },
         { label: "VNPay", value: "vnpay" },
       ],
       required: true,
@@ -124,34 +120,47 @@ function CheckOut() {
         totalPrice: totalAmount,
         createdAt: new Date().toISOString(),
       };
+      const token = localStorage.getItem("token");
 
       if (data.paymentMethod === "vnpay") {
+        // Gọi API create_payment_url để lấy URL thanh toán
         const response = await axios.post(
           "http://localhost:3001/api/payment/create_payment_url",
           {
             amount: totalAmount,
+            bankCode: "VNPAY",
             paymentMethod: "vnpay",
+            language: "vn",
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
           }
         );
 
         if (response.data.paymentUrl) {
+          // Xóa giỏ hàng khỏi localStorage trước khi chuyển hướng
+          localStorage.removeItem("cart");
+          window.dispatchEvent(new Event("cartUpdated")); // Cập nhật trạng thái giỏ hàng
+
+          // Chuyển hướng đến VNPay
           window.location.href = response.data.paymentUrl;
         }
       } else {
-        await axios.post("http://localhost:3001/api/orders/add", order);
+        // Gọi API vnpay_return để xử lý đơn hàng không qua VNPay
+        const returnResponse = await axios.post(
+          "http://localhost:3001/api/payment/vnpay_return",
+          order,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        const cart = JSON.parse(localStorage.getItem("cart")) || {};
-        if (cart.items) {
-          cart.items = cart.items.filter(
-            (item) => !selectedItems.includes(item._id)
-          );
-          localStorage.setItem("cart", JSON.stringify(cart));
+        if (returnResponse.data.success) {
+          alert("Thanh toán thành công!");
+          navigate("/"); // Điều hướng về trang chủ
+        } else {
+          alert("Thanh toán thất bại. Vui lòng thử lại.");
         }
-
-        window.dispatchEvent(new Event("cartUpdated"));
-
-        alert("Đặt hàng thành công!");
-        navigate("/");
       }
     } catch (error) {
       console.error("Lỗi khi gửi đặt hàng:", error);

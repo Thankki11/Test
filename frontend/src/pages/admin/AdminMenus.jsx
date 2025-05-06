@@ -38,9 +38,9 @@ function AdminMenus() {
   // Filter menus based on search keyword
   const filteredMenus = menus.filter(
     (menu) =>
-      menu.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      menu.category.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      menu.description.toLowerCase().includes(searchKeyword.toLowerCase())
+      menu.name?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      menu.category?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      menu.description?.toLowerCase().includes(searchKeyword.toLowerCase())
   );
 
   // ✅ Phân trang: Tính toán danh sách menu cần hiển thị
