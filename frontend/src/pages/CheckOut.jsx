@@ -146,21 +146,25 @@ function CheckOut() {
           window.location.href = response.data.paymentUrl;
         }
       } else {
-        // Gọi API vnpay_return để xử lý đơn hàng không qua VNPay
-        const returnResponse = await axios.post(
-          "http://localhost:3001/api/payment/vnpay_return",
-          order,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-
-        if (returnResponse.data.success) {
-          alert("Thanh toán thành công!");
-          navigate("/"); // Điều hướng về trang chủ
-        } else {
-          alert("Thanh toán thất bại. Vui lòng thử lại.");
+        await axios.post("http://localhost:3001/api/orders/add", 
+        order,
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
+      );
+
+        const cart = JSON.parse(localStorage.getItem("cart")) || {};
+        if (cart.items) {
+          cart.items = cart.items.filter(
+            (item) => !selectedItems.includes(item._id)
+          );
+          localStorage.setItem("cart", JSON.stringify(cart));
+        }
+
+        window.dispatchEvent(new Event("cartUpdated"));
+
+        alert("Đặt hàng thành công!");
+        navigate("/");
       }
     } catch (error) {
       console.error("Lỗi khi gửi đặt hàng:", error);
