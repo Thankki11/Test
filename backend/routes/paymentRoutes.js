@@ -4,7 +4,7 @@ const { createPayment, vnpayReturn, vnpayIpn } = require("../controllers/payment
 
 router.post("/create_payment_url", createPayment);
 router.get("/vnpay_return", vnpayReturn);
-router.get("/vnpay_ipn", vnpayIpn);
+// router.get("/vnpay_ipn", vnpayIpn);
 
 
 module.exports = router;

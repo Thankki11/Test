@@ -9,7 +9,7 @@ import Reservation from "../components/Forms/Reservation";
 import ContactBox from "../components/Box/ContactBox";
 import ReservationForm from "../components/ReservationForm";
 
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 // media
@@ -31,20 +31,24 @@ import imgAdvanceClass from "../assets/images/advance-class.jpg";
 
 function Home() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
+    const queryParams = new URLSearchParams(window.location.search);
     const paymentStatus = queryParams.get("paymentStatus");
-
+    
     if (paymentStatus === "success") {
       alert("Thanh toán thành công! Đơn hàng của bạn đã được cập nhật.");
+      localStorage.removeItem("cart"); // Xóa giỏ hàng trong localStorage
+      window.dispatchEvent(new Event("cartUpdated"));
+      navigate("/"); // Cập nhật trạng thái giỏ hàng
     } else if (paymentStatus === "failed") {
       alert("Thanh toán thất bại. Vui lòng thử lại.");
     } else if (paymentStatus === "checksum_failed") {
       alert("Lỗi xác thực chữ ký. Vui lòng liên hệ hỗ trợ.");
     }
     window.scrollTo(0, 0); // Cuộn lên đầu khi trang được mount
-  }, [location]);
+  }, [location, navigate]);
 
   return (
     <div>

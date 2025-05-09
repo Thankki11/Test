@@ -36,6 +36,7 @@ const addOrder = async (req, res) => {
     res.status(201).json({
       message: "Đặt hàng thành công!",
       order: newOrder,
+      _id: newOrder._id
     });
   } catch (error) {
     console.error("Lỗi khi thêm order:", error);

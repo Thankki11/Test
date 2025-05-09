@@ -123,6 +123,13 @@ function CheckOut() {
       const token = localStorage.getItem("token");
 
       if (data.paymentMethod === "vnpay") {
+        const orderRes = await axios.post(
+          "http://localhost:3001/api/orders/add",
+          order,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         // Gọi API create_payment_url để lấy URL thanh toán
         const response = await axios.post(
           "http://localhost:3001/api/payment/create_payment_url",
@@ -131,6 +138,7 @@ function CheckOut() {
             bankCode: "VNPAY",
             paymentMethod: "vnpay",
             language: "vn",
+            orderId: orderRes.data._id,
           },
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -138,21 +146,20 @@ function CheckOut() {
         );
 
         if (response.data.paymentUrl) {
-          // Xóa giỏ hàng khỏi localStorage trước khi chuyển hướng
+          // Xoá giỏ hàng
           localStorage.removeItem("cart");
-          window.dispatchEvent(new Event("cartUpdated")); // Cập nhật trạng thái giỏ hàng
+          window.dispatchEvent(new Event("cartUpdated"));
 
-          // Chuyển hướng đến VNPay
+          // Điều hướng đến VNPay
           window.location.href = response.data.paymentUrl;
         }
       } else {
-        await axios.post("http://localhost:3001/api/orders/add", 
-        order,
-        {
+        // Xử lý thanh toán COD
+        await axios.post("http://localhost:3001/api/orders/add", order, {
           headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        });
 
+        // Xóa các sản phẩm đã đặt khỏi giỏ hàng
         const cart = JSON.parse(localStorage.getItem("cart")) || {};
         if (cart.items) {
           cart.items = cart.items.filter(
