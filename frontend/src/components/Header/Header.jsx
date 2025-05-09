@@ -240,14 +240,11 @@ function Header() {
                 />
               </div>
               <ul className={styles.mainMenus}>
-                {/* <li>
-                  <Link to="/">Home</Link>
-                </li> */}
                 <li>
-                  <Link to="/chefs">Chefs</Link>
+                  <Link to="/">Home</Link>
                 </li>
                 <li>
-                  <Link to="/menus">Menus</Link>
+                  <Link to="/chefs">Chefs</Link>
                 </li>
               </ul>
             </div>
@@ -268,7 +265,7 @@ function Header() {
               <div>
                 <ul className={styles.mainMenus}>
                   <li>
-                    <Link to="/shop">Shop</Link>
+                    <Link to="/menus">Menus</Link>
                   </li>
                   {/* <li>
                     <div className="dropdown">

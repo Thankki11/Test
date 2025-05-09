@@ -36,7 +36,7 @@ function Home() {
   useEffect(() => {
     const queryParams = new URLSearchParams(window.location.search);
     const paymentStatus = queryParams.get("paymentStatus");
-    
+
     if (paymentStatus === "success") {
       alert("Thanh toán thành công! Đơn hàng của bạn đã được cập nhật.");
       localStorage.removeItem("cart"); // Xóa giỏ hàng trong localStorage
@@ -126,7 +126,7 @@ function Home() {
           <div className="col-sm-3">
             <OverlayCard
               title={"Peter Perkson"}
-              description={["Peter ancake Chef"]}
+              description={["Pancake Chef"]}
               imageSrc={chef4}
               height={"450px"}
             />
@@ -184,14 +184,26 @@ function Home() {
                 finds, our online store is designed to make your shopping
                 experience fast, easy, and enjoyable.
               </p>
-              <ButtonWhite buttontext={"Explore all category"} />
+              <Link to="/shop">
+                <ButtonWhite buttontext={"Explore all category"} />
+              </Link>
             </div>
           </div>
           <div className="col-sm-3">
-            <OverlayCard imageSrc={shopping1} height={"500px"} />
+            <OverlayCard
+              imageSrc={shopping1}
+              height={"500px"}
+              title="Wines"
+              description={["nice wines is here"]}
+            />
           </div>
           <div className="col-sm-3">
-            <OverlayCard imageSrc={shopping2} height={"500px"} />
+            <OverlayCard
+              imageSrc={shopping2}
+              height={"500px"}
+              title="Cakes"
+              description={["we have delicious cakes"]}
+            />
           </div>
         </div>
       </div>
