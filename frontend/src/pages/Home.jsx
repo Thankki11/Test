@@ -28,6 +28,7 @@ import shopping1 from "../assets/images/shopping/title-wines.jpg";
 import shopping2 from "../assets/images/shopping/title-cakes.jpg";
 import imgBeginnerClass from "../assets/images/beginner-class.jpg";
 import imgAdvanceClass from "../assets/images/advance-class.jpg";
+import ReservationBackground from "../assets/images/reservation-background.jpg";
 
 function Home() {
   const location = useLocation();
@@ -255,8 +256,30 @@ function Home() {
       {/* ***** Join us End ***** */}
 
       {/* ***** Reservation Start ***** */}
-      <div className="section" style={{ backgroundColor: "black" }}>
-        <div className="row">
+      <div
+        className="section"
+        style={{
+          backgroundImage: `url(${ReservationBackground})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          minHeight: "100vh",
+          position: "relative",
+        }}
+      >
+        {/* Lớp overlay đen mờ */}
+        <div
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1,
+          }}
+        />
+
+        <div className="row" style={{ position: "relative", zIndex: 2 }}>
           <div className="col-6">
             <h6 style={{ color: "white" }}>Your table, your way</h6>
             <h2 style={{ color: "white" }}>
@@ -286,7 +309,10 @@ function Home() {
             </div>
           </div>
           <div className="col-1"></div>
-          <div className="col-5 p-2" style={{ backgroundColor: "white" }}>
+          <div
+            className="col-5 p-2 rounded"
+            style={{ backgroundColor: "white" }}
+          >
             <h5 className="text-center mt-3" style={{ fontSize: "30px" }}>
               Book a table
             </h5>

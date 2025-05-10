@@ -86,10 +86,10 @@ const ReservationTable = ({ isInModal = false }) => {
   };
 
   return (
-    <div className="container">
+    <div className="container ">
       <form onSubmit={handleSubmit} className="bg-light p-4 rounded shadow-sm">
         <div className="mb-3">
-          <label className="form-label">Customer Name</label>
+          <label className="form-label">Full Name</label>
           <input
             type="text"
             className="form-control"
@@ -99,6 +99,7 @@ const ReservationTable = ({ isInModal = false }) => {
             required
           />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Email Address</label>
           <input
@@ -110,71 +111,80 @@ const ReservationTable = ({ isInModal = false }) => {
             required
           />
         </div>
-        <div className="mb-3">
-          <label className="form-label">Phone Number</label>
-          <input
-            type="text"
-            className="form-control"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            required
-          />
+
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Phone Number</label>
+            <input
+              type="text"
+              className="form-control"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Number of Guests</label>
+            <input
+              type="number"
+              className="form-control"
+              name="numberOfGuest"
+              value={formData.numberOfGuest}
+              onChange={handleChange}
+              required
+            />
+          </div>
         </div>
-        <div className="mb-3">
-          <label className="form-label">Number of Guests</label>
-          <input
-            type="number"
-            className="form-control"
-            name="numberOfGuest"
-            value={formData.numberOfGuest}
-            onChange={handleChange}
-            required
-          />
+
+        <div className="row">
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Seating Area</label>
+            <select
+              className="form-control"
+              name="seatingArea"
+              value={formData.seatingArea}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select Area</option>
+              {seatingAreas.map((area) => (
+                <option key={area} value={area}>
+                  {area}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label">Table Type</label>
+            <select
+              className="form-control"
+              name="tableType"
+              value={formData.tableType}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Select table Type</option>
+              <option value="Standard">Standard</option>
+              <option value="Vip">Vip</option>
+              <option value="Family">Family</option>
+              <option value="Bar">Bar</option>
+            </select>
+          </div>
         </div>
-        <div className="mb-3">
-          <label className="form-label">Seating Area</label>
-          <select
-            className="form-control"
-            name="seatingArea"
-            value={formData.seatingArea}
-            onChange={handleChange}
-            required
-          >
-            <option value="">----Select Area----</option>
-            {seatingAreas.map((area) => (
-              <option key={area} value={area}>
-                {area}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Table Type</label>
-          <select
-            className="form-control"
-            name="tableType"
-            value={formData.tableType}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select a table Type</option>
-            <option value="Standard">Standard</option>
-            <option value="Vip">Vip</option>
-            <option value="Family">Family</option>
-            <option value="Bar">Bar</option>
-          </select>
-        </div>
+
         <div className="mb-3">
           <label className="form-label">Note</label>
-          <input
-            type="text"
+          <textarea
             className="form-control"
             name="note"
             value={formData.note}
             onChange={handleChange}
+            rows="3"
+            placeholder="Additional requests or notes"
           />
         </div>
+
         <div className="mb-3">
           <label className="form-label">Reservation Date</label>
           <TextField
@@ -189,7 +199,10 @@ const ReservationTable = ({ isInModal = false }) => {
             required
           />
         </div>
-        <button type="submit">Submit</button>
+
+        <div className="d-flex justify-content-end mt-3">
+          <button type="submit">Submit</button>
+        </div>
       </form>
     </div>
   );
