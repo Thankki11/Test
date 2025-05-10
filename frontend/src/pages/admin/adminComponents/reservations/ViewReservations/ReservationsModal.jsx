@@ -19,6 +19,9 @@ function ReservationsModal({
   const [allReservations, setAllReservations] = useState([]);
   const [filteredReservations, setFilteredReservations] = useState([]);
 
+  //Biến tìm kiếm
+  const [searchKeyword, setSearchKeyword] = useState("");
+
   //Các nút filter
   const [showAll, setShowAll] = useState(false);
   const [showPending, setShowPending] = useState(false);
@@ -90,13 +93,22 @@ function ReservationsModal({
       );
     }
 
+    // Bước 3: Lọc theo từ khóa tìm kiếm
+    if (searchKeyword.trim() !== "") {
+      filtered = filtered.filter((reservation) =>
+        reservation.customerName
+          .toLowerCase()
+          .includes(searchKeyword.trim().toLowerCase())
+      );
+    }
+
     setFilteredReservations(filtered);
   };
 
   //Xử lý khi các filter thay đổi
   useEffect(() => {
     filterReservations(allReservations, showAll, showPending, fromDate, toDate);
-  }, [allReservations, showAll, showPending, fromDate, toDate]);
+  }, [allReservations, showAll, showPending, fromDate, toDate, searchKeyword]);
 
   // useEffect(() => {
   //   fetchReservations();
@@ -379,50 +391,65 @@ function ReservationsModal({
                     alignItems: "center",
                   }}
                 >
-                  <div className="d-flex gap-3 align-items-center">
-                    <TextField
-                      id="from-date"
-                      label="From date"
-                      type="date"
-                      size="small"
-                      InputLabelProps={{ shrink: true }}
-                      value={fromDate || today}
-                      onChange={(e) => setFromDate(e.target.value)}
-                      disabled={showAll}
-                    />
-                    <TextField
-                      id="to-date"
-                      label="To date"
-                      type="date"
-                      size="small"
-                      InputLabelProps={{ shrink: true }}
-                      value={toDate || today}
-                      onChange={(e) => setToDate(e.target.value)}
-                      disabled={showAll}
-                    />
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id="showAll"
-                        checked={showAll}
-                        onChange={toggleShowAll}
+                  <div>
+                    <div className="d-flex gap-3 align-items-center">
+                      <TextField
+                        id="from-date"
+                        label="From date"
+                        type="date"
+                        size="small"
+                        InputLabelProps={{ shrink: true }}
+                        value={fromDate || today}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        disabled={showAll}
                       />
-                      <label className="form-check-label" htmlFor="showAll">
-                        Show all
-                      </label>
+                      <TextField
+                        id="to-date"
+                        label="To date"
+                        type="date"
+                        size="small"
+                        InputLabelProps={{ shrink: true }}
+                        value={toDate || today}
+                        onChange={(e) => setToDate(e.target.value)}
+                        disabled={showAll}
+                      />
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="showAll"
+                          checked={showAll}
+                          onChange={toggleShowAll}
+                        />
+                        <label className="form-check-label" htmlFor="showAll">
+                          Show all
+                        </label>
+                      </div>
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id="showPending"
+                          checked={showPending}
+                          onChange={toggleShowPending}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="showPending"
+                        >
+                          Show pending only
+                        </label>
+                      </div>
                     </div>
-                    <div className="form-check">
+                    <div className="d-flex justify-content-center mt-3">
                       <input
-                        className="form-check-input"
-                        type="checkbox"
-                        id="showPending"
-                        checked={showPending}
-                        onChange={toggleShowPending}
+                        type="text"
+                        className="form-control"
+                        placeholder="Search by customer name..."
+                        value={searchKeyword}
+                        onChange={(e) => setSearchKeyword(e.target.value)}
+                        style={{ width: "100%" }}
                       />
-                      <label className="form-check-label" htmlFor="showPending">
-                        Show pending only
-                      </label>
                     </div>
                   </div>
                   <div className="d-flex gap-3 align-items-center">
