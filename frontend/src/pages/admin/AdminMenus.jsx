@@ -9,7 +9,7 @@ function AdminMenus() {
   const [editMenu, setEditMenu] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1); // ✅ thêm current page
-  const menusPerPage = 5; // ✅ số lượng món ăn trên mỗi trang
+  const menusPerPage = 10; // ✅ số lượng món ăn trên mỗi trang
 
   const [newMenu, setNewMenu] = useState({
     name: "",
@@ -63,26 +63,45 @@ function AdminMenus() {
   };
 
   const handleEdit = (menu) => {
-    setEditMenu(menu);
-    setNewMenu({
-      ...menu,
-      previewUrl: menu.imageUrl || "",
-    });
-  };
+  setEditMenu({
+    ...menu,
+    previewUrl: `http://localhost:3001${menu.imageUrl}`,
+  });
+};
+
 
   const handleSave = async () => {
-    try {
-      await axios.put(`http://localhost:3001/api/menus/${editMenu._id}`, {
-        ...editMenu,
-        price: parseFloat(editMenu.price),
-      });
-      alert("Menu updated successfully");
-      setEditMenu(null);
-      fetchMenus();
-    } catch (err) {
-      console.error("Error updating menu:", err);
-    }
-  };
+  try {
+    const {
+      name,
+      description,
+      category,
+      price,
+      fileName,
+      imageBuffer,
+      mimeType,
+    } = editMenu;
+
+    const payload = {
+      name,
+      description,
+      category,
+      price: parseFloat(price),
+      imageBuffer,
+      fileName,
+      mimeType,
+    };
+
+    await axios.put(`http://localhost:3001/api/menus/${editMenu._id}`, payload);
+
+    alert("Menu updated successfully");
+    setEditMenu(null);
+    fetchMenus();
+  } catch (err) {
+    console.error("Error updating menu:", err);
+  }
+};
+
 
   const handleChange = (e) => {
     setEditMenu({ ...editMenu, [e.target.name]: e.target.value });
@@ -118,6 +137,36 @@ function AdminMenus() {
         console.error("Error uploading image:", err);
       });
   };
+
+const handleEditImageUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("image", file);
+  formData.append("category", editMenu.category || "mainCourse"); // fallback
+
+  axios
+    .post("http://localhost:3001/api/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    .then((response) => {
+      const { fileName, imageBuffer, mimeType } = response.data;
+
+      const previewUrl = URL.createObjectURL(file);
+
+      setEditMenu((prev) => ({
+        ...prev,
+        fileName,
+        imageBuffer,
+        mimeType,
+        previewUrl,
+      }));
+    })
+    .catch((err) => {
+      console.error("Error uploading image:", err);
+    });
+};
 
   const handleCreateMenu = () => {
     const { name, description, price, category, fileName, imageBuffer } =
@@ -296,73 +345,75 @@ function AdminMenus() {
       <div>
         {/* Menu Table */}
         <div className="card">
-          <div className="card-body">
-            <div>
-              <span style={{ fontWeight: "bold", fontSize: "20px" }}>
-                Menus List
-              </span>
-            </div>
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                  <th>Category</th>
-                  <th>Price</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                 {currentMenus.map((menu) => (
-                  <tr key={menu._id}>
-                    <td>{menu.name}</td>
-                    <td>{menu.description}</td>
-                    <td>{menu.category}</td>
-                    <td>
-                      ${menu.price ? Number(menu.price).toFixed(2) : "0.00"}
-                    </td>
-                    <td>
-                      <button
-                        className="btn-select selected"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editMenuModal"
-                        onClick={() => setEditMenu(menu)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn-select"
-                        onClick={() => handleDelete(menu._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-                        {/* ✅ Thêm phân trang */}
+  <div className="card-body" style={{ minHeight: "500px" }}>
+    <div>
+      <span style={{ fontWeight: "bold", fontSize: "20px" }}>
+        Menus List
+      </span>
+    </div>
+    <div className="table-responsive">
+      <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
+        <thead>
+          <tr>
+            <th style={{ width: "8%" }}>Name</th>
+            <th style={{ width: "25%" }}>Description</th>
+            <th style={{ width: "4%" }}>Category</th>
+            <th style={{ width: "6%" }}>Price</th>
+            <th style={{ width: "11%", position: "sticky", right: 0, background: "#fff", zIndex: 1 }}>
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentMenus.map((menu) => (
+            <tr key={menu._id}>
+              <td>{menu.name}</td>
+              <td>{menu.description}</td>
+              <td>{menu.category}</td>
+              <td>${menu.price ? Number(menu.price).toFixed(2) : "0.00"}</td>
+              <td style={{ position: "sticky", right: 0, background: "#fff" }}>
+                <button
+                  className="btn-select selected me-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editMenuModal"
+                  onClick={() => handleEdit(menu)}
+                >
+                  Edit
+                </button>
+                <button
+                  className="btn-select"
+                  onClick={() => handleDelete(menu._id)}
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
 
-                        <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+    {/* ✅ Pagination cố định dưới bảng */}
+    <div className="d-flex justify-content-center align-items-center gap-3 mt-3" style={{ minHeight: "40px" }}>
+      <button
+        className=""
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        Previous
+      </button>
+      <span>Page {currentPage} of {totalPages}</span>
+      <button
+        className=""
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</div>
 
-            <button
-              className=""
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <span>Page {currentPage} of {totalPages}</span>
-            <button
-              className=""
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-            </div>
-          </div>
-        </div>
 
         {/* Edit Menu Modal */}
 
@@ -413,17 +464,20 @@ function AdminMenus() {
                       ></textarea>
                     </div>
                     <div className="mb-3">
-                      <label className="form-label">Image URL</label>
+                      <label className="form-label">Image</label>
                       <input
-                        type="text"
-                        name="imageUrl"
-                        value={editMenu.imageUrl}
-                        onChange={handleChange}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleEditImageUpload}
                         className="form-control"
                       />
-                      {editMenu.imageUrl && (
+                      {(editMenu.previewUrl || editMenu.imageUrl) && (
                         <img
-                          src={`http://localhost:3001${editMenu.imageUrl}`}
+                          src={
+                            editMenu.previewUrl
+                              ? editMenu.previewUrl
+                              : `http://localhost:3001${editMenu.imageUrl}`
+                          }
                           alt="Preview"
                           style={{
                             width: "100px",
@@ -432,6 +486,7 @@ function AdminMenus() {
                           }}
                         />
                       )}
+
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Category</label>
