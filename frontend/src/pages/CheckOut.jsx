@@ -19,6 +19,14 @@ function CheckOut() {
     address: "",
   });
 
+  useEffect(() => {
+    const isLoggedIn = !!localStorage.getItem("token"); // Kiểm tra token trong localStorage
+    if (!isLoggedIn) {
+      localStorage.setItem("redirectUrl", "/check-out"); // Lưu URL hiện tại
+      navigate("/login"); // Chuyển hướng đến trang login nếu chưa đăng nhập
+    }
+  }, [navigate]);
+
   //các giá trị trong bảng, giá trị hàng hóa
   const selectedData = items
     .filter((item) => selectedItems.includes(item._id))
@@ -265,6 +273,11 @@ function CheckOut() {
     }
   };
 
+  const handlePayment = () => {
+    // Logic thanh toán
+    console.log("Proceeding to payment...");
+  };
+
   return (
     <>
       <PageHeader
@@ -413,6 +426,9 @@ function CheckOut() {
           </div>
           <div className="col-4"></div>
         </div>
+      </div>
+      <div className="text-center mt-4">
+        <button onClick={handlePayment}>Proceed to Payment</button>
       </div>
     </>
   );

@@ -32,8 +32,10 @@ function Login() {
       // Emit an event to notify other components
       window.dispatchEvent(new Event("userLoggedIn"));
 
-      // Redirect to the home page
-      navigate("/");
+      // Redirect to the previous page or home page
+      const redirectUrl = localStorage.getItem("redirectUrl") || "/";
+      localStorage.removeItem("redirectUrl"); // Clear the stored URL after redirecting
+      navigate(redirectUrl);
     } catch (err) {
       console.error("Login failed:", err);
       alert("Invalid email or password");

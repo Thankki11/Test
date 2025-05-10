@@ -29,7 +29,7 @@ const addOrder = async (req, res) => {
       items,
       totalPrice,
       date: date || new Date(),
-      userId, 
+      userId,
     });
 
     // Lưu vào database
