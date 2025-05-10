@@ -1,4 +1,3 @@
-import React from "react";
 import styles from "./Footer.module.css"; // import CSS module
 
 const Footer = () => {
@@ -20,28 +19,23 @@ const Footer = () => {
             <h5 className="mb-4">Quick Links</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
+                <a href="/" className={styles.footerLink}>
                   Home
                 </a>
               </li>
               <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  About
+                <a href="/chefs" className={styles.footerLink}>
+                  Discover chefs
                 </a>
               </li>
               <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  Services
+                <a href="/menus" className={styles.footerLink}>
+                  Discover menus
                 </a>
               </li>
               <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  Portfolio
-                </a>
-              </li>
-              <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  Contact
+                <a href="/reservation" className={styles.footerLink}>
+                  Book table
                 </a>
               </li>
             </ul>
@@ -52,28 +46,18 @@ const Footer = () => {
             <h5 className="mb-4">Our services</h5>
             <ul className="list-unstyled">
               <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  Web Design
+                <a href="/login" className={styles.footerLink}>
+                  Login
                 </a>
               </li>
               <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  Development
+                <a href="/register" className={styles.footerLink}>
+                  Register
                 </a>
               </li>
               <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  Marketing
-                </a>
-              </li>
-              <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  Consulting
-                </a>
-              </li>
-              <li className="mb-2">
-                <a href="#" className={styles.footerLink}>
-                  Analytics
+                <a href="/check-out" className={styles.footerLink}>
+                  Check out
                 </a>
               </li>
             </ul>
@@ -99,7 +83,7 @@ const Footer = () => {
                   href="mailto:contact@example.com"
                   className={styles.footerLink}
                 >
-                  contact@example.com
+                  namv2704@gmail.com
                 </a>
               </li>
             </ul>
