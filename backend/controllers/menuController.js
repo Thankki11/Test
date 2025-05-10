@@ -49,24 +49,39 @@ exports.getMenuByCategory = async (req, res) => {
 // Cập nhật món ăn
 exports.updateMenu = async (req, res) => {
   const { id } = req.params;
-  const { name, description, imageUrl, category, price } = req.body;
+  const { name, description, price, category, imageBuffer, fileName, mimeType } = req.body;
 
   try {
-    const menu = await Menu.findByIdAndUpdate(
-      id,
-      { name, description, imageUrl, category, price },
-      { new: true } // Trả về bản ghi đã cập nhật
-    );
+    const menu = await Menu.findById(id);
+    if (!menu) return res.status(404).json({ message: "Menu not found" });
 
-    if (!menu) {
-      return res.status(404).json({ message: "Menu not found" });
+    // Cập nhật thông tin cơ bản
+    menu.name = name || menu.name;
+    menu.description = description || menu.description;
+    menu.price = price || menu.price;
+    menu.category = category || menu.category;
+
+    // Nếu có ảnh mới thì lưu lại
+    if (imageBuffer && fileName && mimeType) {
+      // Xóa ảnh cũ nếu có
+      if (menu.imageUrl) {
+        const oldPath = path.join(__dirname, `../${menu.imageUrl}`);
+        if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+      }
+
+      const newImageUrl = saveImageToUploads(imageBuffer, fileName, mimeType, category);
+      if (!newImageUrl) return res.status(500).json({ message: "Error saving image" });
+      menu.imageUrl = newImageUrl;
     }
 
+    await menu.save();
     res.json({ message: "Menu updated successfully", menu });
   } catch (err) {
-    res.status(500).json({ message: "Server Error" });
+    console.error("Update menu error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 // Xóa món ăn
 exports.deleteMenu = async (req, res) => {
