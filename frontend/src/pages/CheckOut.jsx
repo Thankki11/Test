@@ -132,7 +132,7 @@ function CheckOut() {
 
       if (data.paymentMethod === "vnpay") {
         const orderRes = await axios.post(
-          "http://localhost:3001/api/orders/add",
+          "http://localhost:3001/api/orders/add-order",
           order,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -163,7 +163,7 @@ function CheckOut() {
         }
       } else {
         // Xử lý thanh toán COD
-        await axios.post("http://localhost:3001/api/orders/add", order, {
+        await axios.post("http://localhost:3001/api/orders/add-order", order, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
