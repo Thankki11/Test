@@ -31,7 +31,7 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Set a default avatar URL
-    const defaultAvatar = "https://localhost:3001/uploads/default-avatar.png.jpeg"; // Replace with your default avatar URL
+    const defaultAvatar = "https://localhost:3001/uploads/default-avatar.png"; // Replace with your default avatar URL
 
     // Create a new user
     const newUser = new User({

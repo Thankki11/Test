@@ -4,8 +4,11 @@ import logo from "../assets/images/logo-black.png";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import registerBackground from "../assets/images/login-bg.jpg";
 import registerPhoto from "../assets/images/register-photo.jpg";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -26,6 +29,7 @@ function Register() {
         formData
       );
       alert(response.data.message);
+      navigate("/login");
     } catch (err) {
       console.error(err);
       alert("Registration failed. Please try again.");
