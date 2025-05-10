@@ -60,6 +60,7 @@ function Home() {
         h2Title={"restaurant"}
         subTitle={"Welcome to our delicious corner"}
         title={"A3Building"}
+        buttonLink={"/reservation"}
       />
       {/* ***** About Us Start ***** */}
       <div className="section">

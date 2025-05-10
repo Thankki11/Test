@@ -11,6 +11,7 @@ function PageHeader({
   h2Title,
   buttonText,
   height = "85vh",
+  buttonLink,
 }) {
   return (
     <section className={styles.section} style={{ height: height }}>
@@ -47,7 +48,11 @@ function PageHeader({
           )}
           {h2Title && <h2 className={styles.h2Title}>{h2Title}</h2>}
           {buttonText && (
-            <ButtonWhite2 buttontext={buttonText} className={styles.btn} />
+            <ButtonWhite2
+              buttontext={buttonText}
+              className={styles.btn}
+              link={buttonLink}
+            />
           )}
         </div>
       </div>
