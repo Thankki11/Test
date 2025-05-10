@@ -8,9 +8,12 @@ const Footer = () => {
           {/* Company Info */}
           <div className="col-6 col-md-6">
             <h5 className="mb-4">About Us</h5>
-            <p className="mb-4" style={{ paddingRight: "250px" }}>
-              We are dedicated to providing innovative solutions that help
-              businesses grow and succeed in the digital age.
+            <p className="mb-4" style={{ paddingRight: "150px" }}>
+              We are dedicated to delivering innovative, reliable, and scalable
+              digital solutions that empower businesses to grow, adapt, and
+              thrive in an ever-evolving digital landscape. Our mission is to
+              support your success by combining cutting-edge technology with
+              deep industry insight and a commitment to excellence.
             </p>
           </div>
 
