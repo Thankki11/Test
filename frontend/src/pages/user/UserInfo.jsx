@@ -31,7 +31,7 @@ function UserInfo() {
       <div className="card p-4">
         <div className="text-center mb-4">
           <img
-            src={user.avatar || "http://localhost:3001/uploads/default-avatar.png.jpeg"}
+            src={user.avatar || "http://localhost:3001/uploads/users/default-avatar.png"}
             alt="User Avatar"
             className="rounded-circle"
             style={{ width: "150px", height: "150px", objectFit: "cover" }}

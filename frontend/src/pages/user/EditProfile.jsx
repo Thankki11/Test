@@ -25,7 +25,7 @@ function EditProfile() {
           phone: user.phone || "",
           address: user.address || "",
         });
-        setPreviewAvatar(user.avatar || "http://localhost:3001/uploads/default-avatar.png.jpeg");
+        setPreviewAvatar(user.avatar || "http://localhost:3001/uploads/users/default-avatar.png");
       } catch (err) {
         console.error("Failed to fetch user info:", err);
         alert("Failed to load user information. Please try again.");

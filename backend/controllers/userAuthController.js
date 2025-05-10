@@ -18,29 +18,34 @@ const upload = multer({ storage });
 
 // User Registration
 exports.register = async (req, res) => {
-  const { username, email, phone, password } = req.body;
+  const { username, email, phone, password, confirmPassword } = req.body;
 
   try {
-    // Check if the user already exists
+    // Kiểm tra email đã tồn tại
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    // Hash the password
+    // Kiểm tra xác nhận mật khẩu
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: "Passwords do not match" });
+    }
+
+    // Hash mật khẩu
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Set a default avatar URL
-    const defaultAvatar = "https://localhost:3001/uploads/default-avatar.png"; // Replace with your default avatar URL
+    // Đặt avatar mặc định
+    const defaultAvatar = "http://localhost:3001/uploads/users/default-avatar.png";
 
-    // Create a new user
+    // Tạo người dùng mới
     const newUser = new User({
       username,
       email,
       phone,
       password: hashedPassword,
-      avatar: defaultAvatar, // Assign the default avatar
-      role: "user", // Default role
+      avatar: defaultAvatar,
+      role: "user",
     });
 
     await newUser.save();

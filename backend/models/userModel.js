@@ -4,7 +4,6 @@ const userSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
   },
   email: {
     type: String,
@@ -30,7 +29,7 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    default: "https://localhost:3001/uploads/default-avatar.png.jpeg",
+    default: "http://localhost:3001/uploads/users/default-avatar.png",
   },
   createdAt: {
     type: Date,

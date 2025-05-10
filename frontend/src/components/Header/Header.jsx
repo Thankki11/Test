@@ -328,7 +328,7 @@ function Header() {
                       <img
                         src={
                           user?.avatar ||
-                          "http://localhost:3001/uploads/default-avatar.png.jpeg"
+                          "http://localhost:3001/uploads/users/default-avatar.png"
                         }
                         alt="User Avatar"
                         className="rounded-circle"
