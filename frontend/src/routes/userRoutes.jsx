@@ -15,6 +15,8 @@ import Test from "../pages/test";
 import Register from "../pages/Register";
 import EditProfile from "../pages/user/EditProfile";
 import UserInfo from "../pages/user/UserInfo";
+import OrderDetail from "../pages/user/OrderDetail";
+import MyOrders from "../pages/user/MyOrders";
 // Layout
 import UserLayout from "../layouts/UserLayout";
 import Reservation from "../pages/Reservation";
@@ -156,6 +158,22 @@ const routes = [
       </UserLayout>
     ),
   },
+  {
+    path: "/order-detail/:id",
+    element: (
+      <UserLayout>
+        <OrderDetail />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/my-orders",
+    element: (
+      <UserLayout>
+        <MyOrders />
+      </UserLayout>
+    ),
+  }
 ];
 
 function UserRoutes() {
