@@ -78,10 +78,10 @@ const ReservationTable = ({ isInModal = false }) => {
       });
 
       //Hiện lên màn hình thông báo đã tạo thành công
-      alert(`Đã tạo mới thành công`);
+      alert(`Reservation created successfully!`);
     } catch (error) {
       console.error("Error:", error);
-      alert(`Đã tạo mới thất bại`);
+      alert(`Reservation creation failed!`);
     }
   };
 
