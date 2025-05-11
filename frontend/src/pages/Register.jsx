@@ -5,9 +5,11 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import registerBackground from "../assets/images/login-bg.jpg";
 import registerPhoto from "../assets/images/register-photo.jpg";
 import { useNavigate } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function Register() {
   const navigate = useNavigate();
+  const [captchaToken, setCaptchaToken] = useState(null);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -22,8 +24,17 @@ function Register() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleCaptchaChange = (token) => {
+    setCaptchaToken(token);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!captchaToken) {
+      alert("Please verify that you are not a robot.");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match");
@@ -33,7 +44,7 @@ function Register() {
     try {
       const response = await axios.post(
         "http://localhost:3001/api/auth/user/register",
-        formData
+        { ...formData, captchaToken }
       );
       alert(response.data.message);
       navigate("/login");
@@ -201,6 +212,13 @@ function Register() {
                   id="confirmPassword"
                   placeholder="Confirm your password"
                   required
+                />
+              </div>
+
+              <div className="mb-4">
+                <ReCAPTCHA
+                  sitekey="6Ldv5TUrAAAAALi0n0nZ37XS5w8Jtwj1DhpbE6Az"
+                  onChange={handleCaptchaChange}
                 />
               </div>
 

@@ -5,10 +5,12 @@ import logo from "../assets/images/logo-black.png";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import loginPhoto from "../assets/images/login-photo.jpg";
 import loginBackground from "../assets/images/login-bg.jpg";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -16,12 +18,21 @@ function Login() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleCaptchaChange = (token) => {
+    setCaptchaToken(token);
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!captchaToken) {
+      alert("Please verify that you are not a robot.");
+      return;
+    }
+
     try {
       const response = await axios.post(
         "http://localhost:3001/api/auth/user/login",
-        formData
+        { ...formData, captchaToken }
       );
       const { token } = response.data;
 
@@ -38,7 +49,7 @@ function Login() {
       navigate(redirectUrl);
     } catch (err) {
       console.error("Login failed:", err);
-      alert("Invalid email or password");
+      alert("Invalid email, password, or captcha.");
     }
   };
 
@@ -151,6 +162,13 @@ function Login() {
                     onClick={() => setShowPassword(!showPassword)}
                   ></i>
                 </div>
+              </div>
+
+              <div className="mb-4">
+                <ReCAPTCHA
+                  sitekey="6Ldv5TUrAAAAALi0n0nZ37XS5w8Jtwj1DhpbE6Az"
+                  onChange={handleCaptchaChange}
+                />
               </div>
 
               <button type="submit" className=" btn-lg w-100 fw-semibold">
