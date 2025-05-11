@@ -15,9 +15,29 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
   const [areas, setAreas] = useState([]);
   const [selectedTable, setSelectedTable] = useState(null);
   const [editedTable, setEditedTable] = useState(null); // 👈 State để lưu thông tin chỉnh sửa
+  const [reservationDetails, setReservationDetails] = useState({});
 
   //Chọn tùy chọn sắp xếp thứ tự hiển thị cho các bàn
   const [sortOption, setSortOption] = useState("tableNumber");
+
+  const fetchReservationDetails = async (reservationId) => {
+    if (reservationDetails[reservationId]) return; // Đã có thì bỏ qua
+
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/reservations/get/${reservationId}`
+      );
+      const data = response.data;
+      console.log("Fetched reservation data:", data);
+
+      setReservationDetails((prev) => ({
+        ...prev,
+        [reservationId]: data.data,
+      }));
+    } catch (error) {
+      console.error("❌ Failed to fetch reservation details:", error);
+    }
+  };
 
   useEffect(() => {
     const uniqueAreas = [
@@ -32,11 +52,13 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
     const modal = new Modal(document.getElementById("tableDetailModal"));
     modal.show();
 
-    const bookingHistoryArray = table.bookingHistory;
-    // console.log(bookingHistoryArray);
+    const bookingHistoryArray = table.bookingHistory || [];
+    bookingHistoryArray.forEach((booking) => {
+      fetchReservationDetails(booking.reservationId);
+    });
 
     setSelectedTable(table);
-    setEditedTable({ ...table }); // Tạo bản sao để chỉnh sửa
+    setEditedTable({ ...table });
   };
 
   const handleChange = (event, newValue) => {
@@ -160,9 +182,14 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                               <tr>
                                 <th>Date</th>
                                 <th>Time</th>
-                                <th>Reservation ID</th>
+
+                                <th>Customer Name</th>
+                                <th>Phone</th>
+                                <th>Guests</th>
+                                <th>Note</th>
                               </tr>
                             </thead>
+
                             <tbody>
                               {selectedTable.bookingHistory
                                 .sort(
@@ -171,6 +198,9 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                                     new Date(a.startTime)
                                 )
                                 .map((booking) => {
+                                  const details =
+                                    reservationDetails[booking.reservationId] ||
+                                    {};
                                   const bookingDate = new Date(
                                     booking.startTime
                                   ).toLocaleDateString();
@@ -211,6 +241,7 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                                           minute: "2-digit",
                                         })}
                                       </td>
+
                                       <td
                                         style={
                                           isToday
@@ -218,7 +249,34 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
                                             : {}
                                         }
                                       >
-                                        {booking.reservationId.toString()}...
+                                        {details.customerName || "-"}
+                                      </td>
+                                      <td
+                                        style={
+                                          isToday
+                                            ? { backgroundColor: "#ffdddd" }
+                                            : {}
+                                        }
+                                      >
+                                        {details.phoneNumber || "-"}
+                                      </td>
+                                      <td
+                                        style={
+                                          isToday
+                                            ? { backgroundColor: "#ffdddd" }
+                                            : {}
+                                        }
+                                      >
+                                        {details.numberOfGuest || "-"}
+                                      </td>
+                                      <td
+                                        style={
+                                          isToday
+                                            ? { backgroundColor: "#ffdddd" }
+                                            : {}
+                                        }
+                                      >
+                                        {details.note || "-"}
                                       </td>
                                     </tr>
                                   );

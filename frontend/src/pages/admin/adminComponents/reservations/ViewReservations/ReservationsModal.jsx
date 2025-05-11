@@ -520,7 +520,7 @@ function ReservationsModal({
                                   fontSize: "0.8rem",
                                 }}
                               >
-                                <i className="fa-solid fa-info"></i>
+                                <i className="fa-solid fa-pen"></i>
                               </button>
                             </td>
                             <td>{reservationTime}</td>

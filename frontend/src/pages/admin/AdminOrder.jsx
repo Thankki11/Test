@@ -418,7 +418,7 @@ function AdminOrders() {
                               fontSize: "0.8rem",
                             }}
                           >
-                            <i className="fa-solid fa-info"></i>
+                            <i className="fa-solid fa-pen"></i>
                           </button>
                         </div>
                       </td>
@@ -492,6 +492,9 @@ function AdminOrders() {
 
         <div className="card">
           <div className="card-body">
+            <div className="text-center mt-2 mb-2">
+              <h2 style={{ fontSize: "30px" }}>Confirmed orders</h2>
+            </div>
             <table
               className="table table-striped table-bordered"
               style={{ tableLayout: "fixed", width: "100%" }}
