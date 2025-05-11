@@ -31,6 +31,8 @@ function AdminOrders() {
     }
   };
 
+  
+
   //Thứ tự hiển thị modal
   useEffect(() => {
     // Lấy cả modal con
@@ -96,32 +98,44 @@ function AdminOrders() {
   };
 
   //Xóa đơn (chỉ xóa đơn chưa xác nhận)
-  const handleDelete = (id) => {
-    window.confirm("Do you want to DELETE this order");
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this order?")) {
+      try {
+        const token = localStorage.getItem("adminToken");
+        await axios.delete(`http://localhost:3001/api/admin/orders/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("Order deleted successfully");
+        fetchOrders(); // Refresh danh sách đơn hàng
+      } catch (err) {
+        console.error("Error deleting order:", err);
+        alert("Failed to delete order.");
+      }
+    }
   };
 
   //Sửa đơn (chỉ sửa đơn chưa xác nhận)
-  const handleEdit = (id) => {
-    // Tìm order từ danh sách có sẵn
-    const order = orders.find((item) => item._id === id);
-
-    if (!order) {
-      alert("Không tìm thấy đơn đặt bàn!");
-      return;
+  const handleEdit = async (id) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      if (!orderDetail.items || orderDetail.items.some((item) => !item.name)) {
+        alert("Each item must have a name.");
+        return;
+      }
+      await axios.put(
+        `http://localhost:3001/api/admin/orders/${id}`,
+        orderDetail,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      alert("Order updated successfully");
+      setOrderDetail(null); // Đóng modal sau khi lưu
+      fetchOrders(); // Refresh danh sách đơn hàng
+    } catch (err) {
+      console.error("Error updating order:", err);
+      alert("Failed to update order.");
     }
-
-    // Lưu lại thông tin đơn đặt bàn chi tiết và id được chọn
-    setOrderDetail(order);
-
-    // Đóng modal danh sách order trước
-    const viewModal = Modal.getInstance(
-      document.getElementById("confirmOrdersModal")
-    );
-    if (viewModal) viewModal.hide();
-
-    // Sau đó mở modal detail
-    const detailModal = new Modal(document.getElementById("detailOrderModal"));
-    detailModal.show();
   };
 
   return (
@@ -356,6 +370,7 @@ function AdminOrders() {
                   <th>Items</th>
                   <th>Total Price</th>
                   <th>Date</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -378,12 +393,25 @@ function AdminOrders() {
                     </td>
                     <td>${order.totalPrice}</td>
                     <td>{new Date(order.date).toLocaleString()}</td>
-                    {console.log("Order object:", order)}
+                    <td>
+                      <button
+                        className="btn btn-primary me-2"
+                        onClick={() => setOrderDetail(order)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="btn btn-danger"
+                        onClick={() => handleDelete(order._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
                 {currentOrders.length === 0 && (
                   <tr>
-                    <td colSpan="9" className="text-center">
+                    <td colSpan="10" className="text-center">
                       {searchKeyword
                         ? "No matching orders found."
                         : "No orders available."}
@@ -424,6 +452,187 @@ function AdminOrders() {
           </div>
         </div>
       </div>
+
+      {orderDetail && (
+        <div className="modal fade show" style={{ display: "block" }}>
+          <div className="modal-dialog modal-lg">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Edit Order</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setOrderDetail(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <form>
+                  <div className="mb-3">
+                    <label className="form-label">Customer Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={orderDetail.customerName}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          customerName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Phone Number</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={orderDetail.phoneNumber}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          phoneNumber: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Email Address</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      value={orderDetail.emailAddress}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          emailAddress: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Address</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={orderDetail.address}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          address: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Payment Method</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={orderDetail.paymentMethod}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          paymentMethod: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Note</label>
+                    <textarea
+                      className="form-control"
+                      rows="3"
+                      value={orderDetail.note}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          note: e.target.value,
+                        })
+                      }
+                    ></textarea>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Items</label>
+                    <ul>
+                      {orderDetail.items.map((item, index) => (
+                        <li key={index}>
+                          <input
+                            type="text"
+                            className="form-control mb-2"
+                            value={item.name}
+                            onChange={(e) => {
+                              const updatedItems = [...orderDetail.items];
+                              updatedItems[index].name = e.target.value;
+                              setOrderDetail({
+                                ...orderDetail,
+                                items: updatedItems,
+                              });
+                            }}
+                          />
+                          <input
+                            type="number"
+                            className="form-control mb-2"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const updatedItems = [...orderDetail.items];
+                              updatedItems[index].quantity = e.target.value;
+                              setOrderDetail({
+                                ...orderDetail,
+                                items: updatedItems,
+                              });
+                            }}
+                          />
+                          <input
+                            type="number"
+                            className="form-control mb-2"
+                            value={item.price}
+                            onChange={(e) => {
+                              const updatedItems = [...orderDetail.items];
+                              updatedItems[index].price = e.target.value;
+                              setOrderDetail({
+                                ...orderDetail,
+                                items: updatedItems,
+                              });
+                            }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Total Price</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={orderDetail.totalPrice}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          totalPrice: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </form>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-primary"
+                  onClick={() => handleEdit(orderDetail._id)}
+                >
+                  Save
+                </button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setOrderDetail(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

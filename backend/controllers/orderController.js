@@ -108,4 +108,45 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-module.exports = { addOrder, getOrders, getUserOrders, getOrderById, updateOrderStatus };
+// Sửa thông tin order
+const updateOrder = async (req, res) => {
+  try {
+    const { id } = req.params; // Lấy ID order từ URL
+    const { customerName, phoneNumber, emailAddress, address, paymentMethod, note, items, totalPrice } = req.body;
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { customerName, phoneNumber, emailAddress, address, paymentMethod, note, items, totalPrice },
+      { new: true, runValidators: true } // Trả về order đã cập nhật
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({ message: "Order updated successfully", order: updatedOrder });
+  } catch (err) {
+    console.error("Error updating order:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Xóa order
+const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params; // Lấy ID order từ URL
+
+    const deletedOrder = await Order.findByIdAndDelete(id);
+
+    if (!deletedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({ message: "Order deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting order:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { addOrder, getOrders, getUserOrders, getOrderById, updateOrderStatus, updateOrder, deleteOrder };
