@@ -344,18 +344,31 @@ function AdminOrders() {
 
         <div className="card">
           <div className="card-body">
-            <table className="table table-striped mt-4">
+            <table
+              className="table table-striped table-bordered"
+              style={{ tableLayout: "fixed", width: "100%" }}
+            >
               <thead>
                 <tr>
-                  <th>Customer Name</th>
-                  <th>Phone Number</th>
-                  <th>Email Address</th>
-                  <th>Address</th>
-                  <th>Payment Method</th>
-                  <th>Note</th>
-                  <th>Items</th>
-                  <th>Total Price</th>
-                  <th>Date</th>
+                  <th style={{ width: "10%" }}>Customer Name</th>
+                  <th style={{ width: "8%" }}>Phone Number</th>
+                  <th style={{ width: "12%" }}>Email Address</th>
+                  <th style={{ width: "17%" }}>Address</th>
+                  <th style={{ width: "5.75%" }}>Payment Method</th>
+                  <th style={{ width: "8%" }}>Note</th>
+                  <th style={{ width: "19.25%" }}>Items</th>
+                  <th style={{ width: "6.5%" }}>Total Price</th>
+                  <th
+                    style={{
+                      width: "13.5%",
+                      position: "sticky",
+                      right: 0,
+                      background: "#fff",
+                      zIndex: 1,
+                    }}
+                  >
+                    Date
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -368,7 +381,7 @@ function AdminOrders() {
                     <td>{order.paymentMethod}</td>
                     <td>{order.note || "N/A"}</td>
                     <td>
-                      <ul>
+                      <ul className="mb-0 ps-3">
                         {order.items.map((item, index) => (
                           <li key={index}>
                             {item.name} - {item.quantity} x ${item.price}
@@ -376,9 +389,17 @@ function AdminOrders() {
                         ))}
                       </ul>
                     </td>
-                    <td>${order.totalPrice}</td>
-                    <td>{new Date(order.date).toLocaleString()}</td>
-                    {console.log("Order object:", order)}
+                    <td>${Number(order.totalPrice).toFixed(2)}</td>
+                    <td
+                      style={{
+                        position: "sticky",
+                        right: 0,
+                        background: "#fff",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {new Date(order.date).toLocaleString()}
+                    </td>
                   </tr>
                 ))}
                 {currentOrders.length === 0 && (
