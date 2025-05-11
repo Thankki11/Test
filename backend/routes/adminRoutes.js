@@ -1,11 +1,22 @@
 const express = require("express");
-const adminOnly = require("../middleware/adminMiddleware");
-
 const router = express.Router();
 
-// Example admin-only route
-router.get("/dashboard", adminOnly, (req, res) => {
-  res.json({ message: "Welcome to the admin dashboard" });
-});
+// const { authenticateToken } = require("../middleware/authMiddleware");
+const adminMiddleware = require("../middleware/adminMiddleware");
+
+const {
+  login,
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+} = require("../controllers/authController");
+
+// Route cho admin, bảo vệ bằng middleware
+router.post("/login", login);
+router.get("/users", adminMiddleware, getAllUsers);
+router.post("/users", adminMiddleware, createUser);
+router.put("/users/:id", adminMiddleware, updateUser);
+router.delete("/users/:id", adminMiddleware, deleteUser);
 
 module.exports = router;

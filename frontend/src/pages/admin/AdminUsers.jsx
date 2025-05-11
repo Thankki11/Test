@@ -4,6 +4,13 @@ import axios from "axios";
 function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [editUser, setEditUser] = useState(null);
+  const [newUser, setNewUser] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    password: "",
+    role: "user",
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -21,23 +28,22 @@ function AdminUsers() {
     }
   };
 
-  const handleEdit = (user) => {
-    setEditUser(user);
+  const handleAddUser = async () => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.post("http://localhost:3001/api/admin/users", newUser, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("User added successfully");
+      setNewUser({ username: "", email: "", phone: "", password: "", role: "user" });
+      fetchUsers();
+    } catch (err) {
+      console.error("Error adding user:", err);
+    }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      try {
-        const token = localStorage.getItem("adminToken");
-        await axios.delete(`http://localhost:3001/api/admin/users/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        alert("User deleted successfully");
-        fetchUsers();
-      } catch (err) {
-        console.error("Error deleting user:", err);
-      }
-    }
+  const handleEdit = (user) => {
+    setEditUser(user);
   };
 
   const handleSave = async () => {
@@ -58,95 +64,119 @@ function AdminUsers() {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      try {
+        const token = localStorage.getItem("adminToken");
+        await axios.delete(`http://localhost:3001/api/admin/users/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        alert("User deleted successfully");
+        fetchUsers();
+      } catch (err) {
+        console.error("Error deleting user:", err);
+      }
+    }
+  };
+
   return (
     <div className="container mt-5">
       <h2>User Management</h2>
-      <table className="table">
+      <div>
+        <h4>Add New User</h4>
+        <input
+          type="text"
+          placeholder="Username"
+          value={newUser.username}
+          onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={newUser.email}
+          onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+        />
+        <input
+          type="text"
+          placeholder="Phone"
+          value={newUser.phone}
+          onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={newUser.password}
+          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+        />
+        <select
+          value={newUser.role}
+          onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+        >
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
+        <button onClick={handleAddUser}>Add User</button>
+      </div>
+
+      <table className="table mt-4">
         <thead>
           <tr>
             <th>Username</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Address</th>
             <th>Role</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
-            <tr key={user._id}>
-              <td>{user.username}</td>
-              <td>{user.email}</td>
-              <td>{user.phone}</td>
-              <td>{user.address}</td>
-              <td>{user.role}</td>
-              <td>
-                <button
-                  className="btn btn-primary me-2"
-                  onClick={() => handleEdit(user)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => handleDelete(user._id)}
-                >
-                  Delete
-                </button>
-              </td>
+          {users.length > 0 ? (
+            users.map((user) => (
+              <tr key={user._id}>
+                <td>{user.username}</td>
+                <td>{user.email}</td>
+                <td>{user.phone}</td>
+                <td>{user.role}</td>
+                <td>
+                  <button onClick={() => handleEdit(user)}>Edit</button>
+                  <button onClick={() => handleDelete(user._id)}>Delete</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5">No users found</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
       {editUser && (
-        <div className="modal">
-          <div className="modal-content">
-            <h3>Edit User</h3>
-            <input
-              type="text"
-              value={editUser.username}
-              onChange={(e) =>
-                setEditUser({ ...editUser, username: e.target.value })
-              }
-              placeholder="Username"
-            />
-            <input
-              type="email"
-              value={editUser.email}
-              onChange={(e) =>
-                setEditUser({ ...editUser, email: e.target.value })
-              }
-              placeholder="Email"
-            />
-            <input
-              type="text"
-              value={editUser.phone}
-              onChange={(e) =>
-                setEditUser({ ...editUser, phone: e.target.value })
-              }
-              placeholder="Phone"
-            />
-            <input
-              type="text"
-              value={editUser.address}
-              onChange={(e) =>
-                setEditUser({ ...editUser, address: e.target.value })
-              }
-              placeholder="Address"
-            />
-            <select
-              value={editUser.role}
-              onChange={(e) =>
-                setEditUser({ ...editUser, role: e.target.value })
-              }
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button onClick={handleSave}>Save</button>
-            <button onClick={() => setEditUser(null)}>Cancel</button>
-          </div>
+        <div>
+          <h4>Edit User</h4>
+          <input
+            type="text"
+            value={editUser.username}
+            onChange={(e) => setEditUser({ ...editUser, username: e.target.value })}
+          />
+          <input
+            type="email"
+            value={editUser.email}
+            onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+          />
+          <input
+            type="text"
+            value={editUser.phone}
+            onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
+          />
+          <select
+            value={editUser.role}
+            onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button onClick={handleSave}>Save</button>
+          <button onClick={() => setEditUser(null)}>Cancel</button>
         </div>
       )}
     </div>
