@@ -1,28 +1,50 @@
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const axios = require("axios");
 
 exports.login = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password, captchaToken } = req.body;
 
+  // Xác minh reCAPTCHA
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY; // Secret Key từ Google reCAPTCHA
   try {
-    // Validate user credentials
-    const user = await User.findOne({ username });
-    if (!user || user.password !== password) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Generate a JWT
-    const token = jwt.sign(
-      { id: user._id, username: user.username, role: user.role }, // Include role in payload
-      process.env.JWT_SECRET, // Secret key
-      { expiresIn: "1h" } // Token expiration
+    const captchaResponse = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      null,
+      {
+        params: {
+          secret: secretKey,
+          response: captchaToken,
+        },
+      }
     );
 
-    res.json({ message: "Login successful", token, role: user.role });
+    if (!captchaResponse.data.success) {
+      return res.status(400).json({ message: "Captcha verification failed" });
+    }
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
+    console.error("Captcha verification error:", err);
+    return res.status(500).json({ message: "Captcha verification error" });
+  }
+
+  // Xử lý đăng nhập
+  try {
+    const user = await User.findOne({ email });
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ message: "Login successful", token, user });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
