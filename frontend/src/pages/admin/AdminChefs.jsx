@@ -194,11 +194,11 @@ function AdminChefs() {
             <thead>
               <tr>
                 <th style={{ width: "12%" }}>Name</th>
-                <th style={{ width: "6%" }}>Specialty</th>
+                <th style={{ width: "7%" }}>Specialty</th>
                 <th style={{ width: "8%" }}>Experience</th>
                 <th style={{ width: "10%" }}>Contact</th>
                 <th style={{ width: "15%" }}>Awards</th>
-                <th style={{ width: "28%" }}>Description</th>
+                <th style={{ width: "27%" }}>Description</th>
                 <th
                   style={{
                     width: "20%",
