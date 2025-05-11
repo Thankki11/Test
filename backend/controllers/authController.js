@@ -48,6 +48,45 @@ exports.login = async (req, res) => {
   }
 };
 
+// Đăng ký người dùng
+exports.register = async (req, res) => {
+  const { email, password, captchaToken } = req.body;
+
+  // Xác minh reCAPTCHA
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY; // Secret Key từ Google reCAPTCHA
+  try {
+    const captchaResponse = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      null,
+      {
+        params: {
+          secret: secretKey,
+          response: captchaToken,
+        },
+      }
+    );
+
+    if (!captchaResponse.data.success) {
+      return res.status(400).json({ message: "Captcha verification failed" });
+    }
+  } catch (err) {
+    console.error("Captcha verification error:", err);
+    return res.status(500).json({ message: "Captcha verification error" });
+  }
+
+  // Xử lý đăng ký
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({ email, password: hashedPassword });
+    await newUser.save();
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (err) {
+    console.error("Registration error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Lấy tất cả người dùng (cho admin)
 exports.getAllUsers = async (req, res) => {
   try {
