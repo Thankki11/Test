@@ -114,24 +114,6 @@ function Detail() {
                         fontWeight: "bold",
                       }}
                     />
-                    <Tab
-                      label="Information"
-                      value="2"
-                      style={{
-                        fontSize: "15px",
-                        fontFamily: "JosefinSans",
-                        fontWeight: "bold",
-                      }}
-                    />
-                    <Tab
-                      label="Rates"
-                      value="3"
-                      style={{
-                        fontSize: "15px",
-                        fontFamily: "JosefinSans",
-                        fontWeight: "bold",
-                      }}
-                    />
                   </TabList>
                 </Box>
                 <TabPanel
