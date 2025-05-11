@@ -19,9 +19,7 @@ const chefSchema = new mongoose.Schema({
     min: 0
   },
   contact: {
-    type: Number,
-    required: true,
-    min: 0
+    type: String
   },
   awards: {
     type: String
