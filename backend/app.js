@@ -37,7 +37,7 @@ app.use("/api/tables", tableRoutes);
 app.use("api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/payment", paymentRouter);
-app.use("/api/auth/user", userAuthRoutes); 
+app.use("/api/auth/user", userAuthRoutes);
 
 // Thêm route upload ảnh
 app.use("/api", uploadRoutes);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
+import { NavLink } from "react-router-dom";
 
 function OrderDetail() {
   const { id } = useParams();
@@ -46,90 +47,152 @@ function OrderDetail() {
 
   if (!order) return <p>Loading...</p>;
 
+  // Style dùng inline
+  const linkStyle = {
+    padding: "8px 12px",
+    borderRadius: "4px",
+    display: "block",
+    textDecoration: "none",
+    color: "#333",
+  };
+
+  const activeLinkStyle = {
+    ...linkStyle,
+    backgroundColor: "#ede7d8",
+    color: "#b8860b",
+    fontWeight: "bold",
+  };
+
   return (
-    <div className="container mt-5 ">
-      <div className="container mt-5">
-        <div className="d-flex mb-4 align-items-center justify-content-between">
-          <Link to="/my-orders">
-            <button>Go back</button>
-          </Link>
-          <h1 className="mb-0" style={{ fontSize: "28px" }}>
-            Order #{order._id}
-          </h1>
-        </div>
-
-        <div className="row">
-          <div className="col-md-6 mb-3">
-            <p>
-              <strong>Total Price:</strong> {order.totalPrice}$
-            </p>
-            <p>
-              <strong>Status:</strong> {order.status}
-            </p>
-            <p>
-              <strong>Payment method:</strong> {order.paymentMethod}
-            </p>
-            <p>
-              <strong>Note:</strong> {order.note || "No note"}
-            </p>
-          </div>
-
-          <div className="col-md-6 mb-3">
-            <p>
-              <strong>Full Name:</strong> {order.customerName}
-            </p>
-            <p>
-              <strong>Address:</strong> {order.address}
-            </p>
-            <p>
-              <strong>Phone number:</strong> {order.phoneNumber}
-            </p>
-          </div>
-        </div>
-
-        <hr className="my-4" />
-        <h4 className="mb-3">Ordered Items:</h4>
-        {/* phần hiển thị item nằm sau đây */}
-      </div>
-
-      <h2 className="mt-5 mb-3" style={{ fontSize: "30px" }}>
-        Items:
-      </h2>
+    <div className="container mt-5 mb-5">
       <div className="row">
-        {itemsWithDetails.map((item) => (
-          <div className="col-md-3 mb-4" key={item.menuItemId}>
-            <div className="card h-100">
-              <img
-                src={
-                  item.menuItem.imageUrl
-                    ? `http://localhost:3001${
-                        item.menuItem.imageUrl.startsWith("/uploads")
-                          ? item.menuItem.imageUrl
-                          : "/uploads/" + item.menuItem.imageUrl
-                      }`
-                    : "https://via.placeholder.com/300x300?text=No+Image"
-                }
-                className="card-img-top"
-                alt={item.menuItem.name}
-                style={{ height: "200px", objectFit: "cover" }}
-              />
-
-              <div className="card-body">
-                <h5 className="card-title" style={{ fontSize: "30px" }}>
-                  {item.menuItem.name}
-                </h5>
-                <p className="card-text">{item.menuItem.description}</p>
-                <p className="card-text">
-                  <strong>Quantity:</strong> {item.quantity}
-                </p>
-                <p className="card-text fw-bold" style={{ color: "#b8860b" }}>
-                  Total price: ${item.price} x {item.quantity} = $
-                  {(item.price * item.quantity).toLocaleString()}
-                </p>
+        <div className="col-3">
+          {" "}
+          <div className="card p-3 shadow-sm">
+            <ul className="nav flex-column">
+              <li className="nav-item mb-2" style={{ fontSize: "16px" }}>
+                <NavLink
+                  to="/user-info"
+                  style={({ isActive }) =>
+                    isActive ? activeLinkStyle : linkStyle
+                  }
+                >
+                  Account Information
+                </NavLink>
+              </li>
+              <li className="nav-item mb-2" style={{ fontSize: "16px" }}>
+                <NavLink
+                  to="/edit-profile"
+                  style={({ isActive }) =>
+                    isActive ? activeLinkStyle : linkStyle
+                  }
+                >
+                  Edit Profile
+                </NavLink>
+              </li>
+              <li className="nav-item" style={{ fontSize: "16px" }}>
+                <NavLink
+                  to="/my-orders"
+                  style={({ isActive }) =>
+                    isActive ? activeLinkStyle : linkStyle
+                  }
+                >
+                  My Orders
+                </NavLink>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div className="col-9">
+          <div className="card p-4 shadow-sm mb-5">
+            <div className="container mt-5">
+              <div className="d-flex mb-4 align-items-center justify-content-between">
+                <Link to="/my-orders">
+                  <button>Go back</button>
+                </Link>
+                <h1 className="mb-0" style={{ fontSize: "28px" }}>
+                  Order #{order._id}
+                </h1>
               </div>
+
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <p>
+                    <strong>Total Price:</strong> {order.totalPrice}$
+                  </p>
+                  <p>
+                    <strong>Status:</strong> {order.status}
+                  </p>
+                  <p>
+                    <strong>Payment method:</strong> {order.paymentMethod}
+                  </p>
+                  <p>
+                    <strong>Note:</strong> {order.note || "No note"}
+                  </p>
+                </div>
+
+                <div className="col-md-6 mb-3">
+                  <p>
+                    <strong>Full Name:</strong> {order.customerName}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {order.address}
+                  </p>
+                  <p>
+                    <strong>Phone number:</strong> {order.phoneNumber}
+                  </p>
+                </div>
+              </div>
+
+              <hr className="my-4" />
+              <h4 className="mb-3">Ordered Items:</h4>
+              {/* phần hiển thị item nằm sau đây */}
+            </div>
+
+            <h2 className="mt-5 mb-3" style={{ fontSize: "30px" }}>
+              Items:
+            </h2>
+            <div className="row">
+              {itemsWithDetails.map((item) => (
+                <div className="col-md-3 mb-4" key={item.menuItemId}>
+                  <div className="card h-100">
+                    <img
+                      src={
+                        item.menuItem.imageUrl
+                          ? `http://localhost:3001${
+                              item.menuItem.imageUrl.startsWith("/uploads")
+                                ? item.menuItem.imageUrl
+                                : "/uploads/" + item.menuItem.imageUrl
+                            }`
+                          : "https://via.placeholder.com/300x300?text=No+Image"
+                      }
+                      className="card-img-top"
+                      alt={item.menuItem.name}
+                      style={{ height: "200px", objectFit: "cover" }}
+                    />
+
+                    <div className="card-body">
+                      <h5 className="card-title" style={{ fontSize: "30px" }}>
+                        {item.menuItem.name}
+                      </h5>
+                      <p className="card-text">{item.menuItem.description}</p>
+                      <p className="card-text">
+                        <strong>Quantity:</strong> {item.quantity}
+                      </p>
+                      <p
+                        className="card-text fw-bold"
+                        style={{ color: "#b8860b" }}
+                      >
+                        Total price: ${item.price} x {item.quantity} = $
+                        {(item.price * item.quantity).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

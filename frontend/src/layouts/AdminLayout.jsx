@@ -111,6 +111,19 @@ function AdminLayout({ children }) {
                 Manage Reservations
               </Link>
             </li>
+            {/* Thêm User Management */}
+            <li style={{ marginBottom: "10px" }}>
+              <Link
+                to="/admin/users"
+                style={{ color: "#fff", textDecoration: "none" }}
+              >
+                <i
+                  className="fas fa-users"
+                  style={{ marginRight: "10px" }}
+                ></i>
+                User Management
+              </Link>
+            </li>
           </ul>
 
           <div style={{ fontSize: "15px", marginBottom: "10px", opacity: 0.7 }}>
