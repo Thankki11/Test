@@ -159,6 +159,19 @@ function AdminOrders() {
       console.error("Error updating order:", err);
       alert("Failed to update order.");
     }
+
+    // Lưu lại thông tin đơn đặt bàn chi tiết và id được chọn
+    setOrderDetail(order);
+
+    // Đóng modal danh sách order trước
+    const viewModal = Modal.getInstance(
+      document.getElementById("confirmOrdersModal")
+    );
+    if (viewModal) viewModal.hide();
+
+    // Sau đó mở modal detail
+    const detailModal = new Modal(document.getElementById("detailOrderModal"));
+    detailModal.show();
   };
 
   return (
