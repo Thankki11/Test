@@ -20,7 +20,7 @@ function AdminChefs() {
   const [editChef, setEditChef] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const chefsPerPage = 5; // Số chef mỗi trang
+  const chefsPerPage = 10; // Số chef mỗi trang
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -190,16 +190,26 @@ function AdminChefs() {
           <span style={{ fontWeight: "bold", fontSize: "20px" }}>
             Chefs List
           </span>
-          <table className="table table-striped">
+          <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
             <thead>
               <tr>
-                <th>Name</th>
-                <th>Specialty</th>
-                <th>Experience</th>
-                <th>Contact</th>
-                <th>Awards</th>
-                <th>Description</th>
-                <th>Actions</th>
+                <th style={{ width: "12%" }}>Name</th>
+                <th style={{ width: "6%" }}>Specialty</th>
+                <th style={{ width: "8%" }}>Experience</th>
+                <th style={{ width: "10%" }}>Contact</th>
+                <th style={{ width: "15%" }}>Awards</th>
+                <th style={{ width: "28%" }}>Description</th>
+                <th
+                  style={{
+                    width: "20%",
+                    position: "sticky",
+                    right: 0,
+                    background: "#fff",
+                    zIndex: 1,
+                  }}
+                >
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -211,24 +221,28 @@ function AdminChefs() {
                   <td>+{chef.contact}</td>
                   <td>
                     {chef.awards
-                      ?.split("\n") // Nếu bạn lưu bằng dấu xuống dòng, hoặc dùng .split(',') nếu phân cách bằng dấu phẩy
+                      ?.split("\n")
                       .map((award, idx) => (
                         <div key={idx}>{award}</div>
                       ))}
                   </td>
                   <td>{chef.description}</td>
-                  <td>
+                  <td
+                    style={{
+                      position: "sticky",
+                      right: 0,
+                      background: "#fff",
+                    }}
+                  >
                     <button
-                      className="btn-select selected"
+                      className="btn-select selected me-2"
                       onClick={() => {
                         setEditChef({
                           ...chef,
-                          previewUrl: chef.imageUrl, // Lưu imageUrl vào previewUrl nếu chưa upload mới
-                          file: null, // reset file mới
+                          previewUrl: chef.imageUrl,
+                          file: null,
                         });
-                        new Modal(
-                          document.getElementById("editChefModal")
-                        ).show();
+                        new Modal(document.getElementById("editChefModal")).show();
                       }}
                     >
                       Edit
@@ -253,6 +267,7 @@ function AdminChefs() {
               )}
             </tbody>
           </table>
+
           {/* Pagination */}
 
           {filteredChefs.length > 0 && (
