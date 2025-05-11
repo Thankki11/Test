@@ -16,6 +16,9 @@ function AdminOrders() {
   //thông tin order cần chỉnh sửa
   const [orderDetail, setOrderDetail] = useState();
 
+  // Lọc danh sách đơn hàng có trạng thái "pending"
+  const pendingOrders = orders.filter((order) => order.status === "pending");
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -95,33 +98,67 @@ function AdminOrders() {
     window.confirm("Do you want to CONFIRM this order");
   };
 
-  //Xóa đơn (chỉ xóa đơn chưa xác nhận)
-  const handleDelete = (id) => {
-    window.confirm("Do you want to DELETE this order");
+  // Xóa đơn hàng
+  const handleDelete = async (id) => {
+    if (window.confirm("Do you want to DELETE this order?")) {
+      try {
+        const token = localStorage.getItem("adminToken");
+        await axios.delete(`http://localhost:3001/api/admin/orders/${id}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        alert("Order deleted successfully");
+        fetchOrders(); // Refresh danh sách đơn hàng
+      } catch (err) {
+        console.error("Error deleting order:", err);
+        alert("Failed to delete order.");
+      }
+    }
   };
 
-  //Sửa đơn (chỉ sửa đơn chưa xác nhận)
+  // Sửa đơn hàng
   const handleEdit = (id) => {
-    // Tìm order từ danh sách có sẵn
     const order = orders.find((item) => item._id === id);
 
     if (!order) {
-      alert("Không tìm thấy đơn đặt bàn!");
+      alert("Order not found!");
       return;
     }
 
-    // Lưu lại thông tin đơn đặt bàn chi tiết và id được chọn
-    setOrderDetail(order);
+    setOrderDetail(order); // Lưu thông tin order vào state
 
-    // Đóng modal danh sách order trước
-    const viewModal = Modal.getInstance(
-      document.getElementById("confirmOrdersModal")
-    );
-    if (viewModal) viewModal.hide();
+    // Đóng modal Confirm Orders nếu đang mở
+    const confirmModal = Modal.getInstance(document.getElementById("confirmOrdersModal"));
+    if (confirmModal) {
+      confirmModal.hide();
+    }
 
-    // Sau đó mở modal detail
+    // Hiển thị modal chỉnh sửa
     const detailModal = new Modal(document.getElementById("detailOrderModal"));
     detailModal.show();
+  };
+
+  const handleSave = async () => {
+    try {
+      const token = localStorage.getItem("adminToken"); // Lấy token từ localStorage
+      await axios.put(
+        `http://localhost:3001/api/admin/orders/${orderDetail._id}`,
+        orderDetail, // Gửi thông tin đơn hàng đã chỉnh sửa
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Gửi token trong header
+        }
+      );
+      alert("Order updated successfully");
+      fetchOrders(); // Refresh danh sách đơn hàng
+      const detailModal = Modal.getInstance(
+        document.getElementById("detailOrderModal")
+      );
+      detailModal.hide(); // Đóng modal sau khi lưu
+    } catch (err) {
+      console.error("Error updating order:", err);
+      alert("Failed to update order.");
+    }
   };
 
   return (
@@ -130,13 +167,11 @@ function AdminOrders() {
       <div className="modal fade" id="detailOrderModal">
         <div className="modal-dialog modal-xl">
           <div className="modal-content">
-            {/* <!-- Modal Header --> */}
+            {/* Modal Header */}
             <div className="modal-header">
-              <div className="d-flex gap-3 align-items-center">
-                <h4 className="modal-title" style={{ fontSize: "30px" }}>
-                  Order Detail
-                </h4>
-              </div>
+              <h4 className="modal-title" style={{ fontSize: "30px" }}>
+                Edit Order
+              </h4>
               <button
                 type="button"
                 className="btn-close"
@@ -144,13 +179,164 @@ function AdminOrders() {
               ></button>
             </div>
 
-            {/* <!-- Modal body --> */}
-            <div className="modal-body">Hello</div>
+            {/* Modal Body */}
+            <div className="modal-body">
+              {orderDetail && (
+                <form>
+                  <div className="mb-3">
+                    <label className="form-label">Customer Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={orderDetail.customerName}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          customerName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Phone Number</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={orderDetail.phoneNumber}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          phoneNumber: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Email Address</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      value={orderDetail.emailAddress}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          emailAddress: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Address</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={orderDetail.address}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          address: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Payment Method</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={orderDetail.paymentMethod}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          paymentMethod: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Note</label>
+                    <textarea
+                      className="form-control"
+                      rows="3"
+                      value={orderDetail.note}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          note: e.target.value,
+                        })
+                      }
+                    ></textarea>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Items</label>
+                    <ul>
+                      {orderDetail.items.map((item, index) => (
+                        <li key={index}>
+                          <input
+                            type="text"
+                            className="form-control mb-2"
+                            value={item.name}
+                            onChange={(e) => {
+                              const updatedItems = [...orderDetail.items];
+                              updatedItems[index].name = e.target.value;
+                              setOrderDetail({ ...orderDetail, items: updatedItems });
+                            }}
+                          />
+                          <input
+                            type="number"
+                            className="form-control mb-2"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const updatedItems = [...orderDetail.items];
+                              updatedItems[index].quantity = e.target.value;
+                              setOrderDetail({ ...orderDetail, items: updatedItems });
+                            }}
+                          />
+                          <input
+                            type="number"
+                            className="form-control mb-2"
+                            value={item.price}
+                            onChange={(e) => {
+                              const updatedItems = [...orderDetail.items];
+                              updatedItems[index].price = e.target.value;
+                              setOrderDetail({ ...orderDetail, items: updatedItems });
+                            }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="mb-3">
+                    <label className="form-label">Total Price</label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      value={orderDetail.totalPrice}
+                      onChange={(e) =>
+                        setOrderDetail({
+                          ...orderDetail,
+                          totalPrice: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </form>
+              )}
+            </div>
 
-            {/* <!-- Modal footer --> */}
-            <div className="modal-footer d-flex justify-content-between">
-              <button data-bs-dismiss="modal" className="btn-select">
-                Close
+            {/* Modal Footer */}
+            <div className="modal-footer">
+              <button
+                className="btn btn-primary"
+                onClick={handleSave}
+              >
+                Save
+              </button>
+              <button
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Cancel
               </button>
             </div>
           </div>
@@ -161,11 +347,11 @@ function AdminOrders() {
       <div className="modal fade" id="confirmOrdersModal">
         <div className="modal-dialog modal-xl">
           <div className="modal-content">
-            {/* <!-- Modal Header --> */}
+            {/* Modal Header */}
             <div className="modal-header">
               <div className="d-flex gap-3 align-items-center">
                 <h4 className="modal-title" style={{ fontSize: "30px" }}>
-                  Confirm orders
+                  Confirm Orders
                 </h4>
               </div>
               <button
@@ -175,7 +361,7 @@ function AdminOrders() {
               ></button>
             </div>
 
-            {/* <!-- Modal body --> */}
+            {/* Modal Body */}
             <div className="modal-body">
               <table className="table table-striped mt-4">
                 <thead>
@@ -190,19 +376,19 @@ function AdminOrders() {
                     <th>Items</th>
                     <th>Total Price</th>
                     <th>Date</th>
-                    <th>Confirm</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {currentModalOrders.map((order) => (
+                  {pendingOrders.map((order) => (
                     <tr key={order._id}>
                       <td
                         style={{ textAlign: "center", verticalAlign: "middle" }}
                       >
                         <div className="d-flex">
+                          {/* Nút Xóa */}
                           <button
                             className="btn btn-sm btn-outline-danger me-2"
-                            title="Cancel"
+                            title="Delete"
                             onClick={() => handleDelete(order._id)}
                             style={{
                               padding: "0.25rem 0.5rem",
@@ -218,8 +404,11 @@ function AdminOrders() {
                               }}
                             ></i>
                           </button>
+
+                          {/* Nút Sửa */}
                           <button
-                            className="btn btn-sm btn-outline-danger me-2 text-center"
+                            className="btn btn-sm btn-outline-primary me-2 text-center"
+                            title="Edit"
                             onClick={() => handleEdit(order._id)}
                             style={{
                               padding: "0.25rem 0.5rem",
@@ -247,64 +436,20 @@ function AdminOrders() {
                       </td>
                       <td>${order.totalPrice}</td>
                       <td>{new Date(order.date).toLocaleString()}</td>
-
-                      <td>
-                        <button
-                          style={{
-                            backgroundColor: "orange",
-                            color: "white",
-                            border: "transparent",
-                          }}
-                          onClick={() => handleConfirm(order._id)}
-                        >
-                          Confirm
-                        </button>
-                      </td>
-
-                      {console.log("Order object:", order)}
                     </tr>
                   ))}
-                  {currentOrders.length === 0 && (
+                  {pendingOrders.length === 0 && (
                     <tr>
-                      <td colSpan="9" className="text-center">
-                        {searchKeyword
-                          ? "No matching orders found."
-                          : "No orders available."}
+                      <td colSpan="10" className="text-center">
+                        No pending orders found.
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
-
-              {/* Pagination buttons */}
-              {ordersWithPrice48.length > 0 && (
-                <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
-                  <button
-                    onClick={() =>
-                      setModalPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={modalPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span>
-                    Page {modalPage} of {modalTotalPages}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setModalPage((prev) =>
-                        Math.min(prev + 1, modalTotalPages)
-                      )
-                    }
-                    disabled={modalPage === modalTotalPages}
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
             </div>
 
-            {/* <!-- Modal footer --> */}
+            {/* Modal Footer */}
             <div className="modal-footer d-flex justify-content-between">
               <button data-bs-dismiss="modal" className="btn-select">
                 Close
