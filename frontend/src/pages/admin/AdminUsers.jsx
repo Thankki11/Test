@@ -38,7 +38,12 @@ function AdminUsers() {
       setNewUser({ username: "", email: "", phone: "", password: "", role: "user" });
       fetchUsers();
     } catch (err) {
-      console.error("Error adding user:", err);
+      if (err.response && err.response.data && err.response.data.message) {
+        alert(err.response.data.message); // Hiển thị thông báo lỗi từ backend
+      } else {
+        console.error("Error adding user:", err);
+        alert("Failed to add user. Please try again.");
+      }
     }
   };
 

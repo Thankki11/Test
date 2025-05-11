@@ -42,7 +42,9 @@ exports.createUser = async (req, res) => {
     const { username, email, phone, password, role } = req.body;
 
     const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email đã tồn tại" });
+    if (existingUser){
+      return res.status(400).json({ message: "Email đã tồn tại" });
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
