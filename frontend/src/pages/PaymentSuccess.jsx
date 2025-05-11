@@ -1,53 +1,36 @@
 import React from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function PaymentSuccess() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const paymentStatus = queryParams.get("paymentStatus");
+
+  const handleGoHome = () => {
+    navigate("/"); // Điều hướng về trang chủ
+  };
+
+  const handleViewOrders = () => {
+    navigate("/my-orders"); // Điều hướng đến trang danh sách đơn hàng
+  };
 
   return (
     <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        textAlign: "center",
-        backgroundColor: "#f5f5f5",
-      }}
+      className="container d-flex flex-column align-items-center justify-content-center"
+      style={{ minHeight: "100vh", textAlign: "center" }}
     >
-      {paymentStatus === "success" ? (
-        <>
-          <h1 style={{ color: "green", marginBottom: "20px" }}>Payment Successful!</h1>
-          <p style={{ fontSize: "18px", marginBottom: "30px" }}>
-            Thank you for your purchase. Your order has been successfully processed.
-          </p>
-        </>
-      ) : (
-        <>
-          <h1 style={{ color: "red", marginBottom: "20px" }}>Payment Failed!</h1>
-          <p style={{ fontSize: "18px", marginBottom: "30px" }}>
-            Unfortunately, your payment could not be processed. Please try again.
-          </p>
-        </>
-      )}
-      <button
-        onClick={() => navigate("/")}
-        style={{
-          padding: "10px 20px",
-          fontSize: "16px",
-          backgroundColor: "#007bff",
-          color: "#fff",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        Back to Home
-      </button>
+      <div className="card shadow p-5" style={{ maxWidth: "600px", width: "100%" }}>
+        <h1 className="text-success mb-4">Payment Successful!</h1>
+        <p className="mb-4">
+          Thank you for your purchase. Your payment has been successfully processed.
+        </p>
+        <div className="d-flex justify-content-center gap-3">
+          <button className="btn btn-primary" onClick={handleGoHome}>
+            Go to Home
+          </button>
+          <button className="btn btn-secondary" onClick={handleViewOrders}>
+            View My Orders
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
