@@ -16,6 +16,9 @@ function AdminOrders() {
   //thông tin order cần chỉnh sửa
   const [orderDetail, setOrderDetail] = useState();
 
+  // Lọc danh sách đơn hàng có trạng thái "pending"
+  const pendingOrders = orders.filter((order) => order.status === "pending");
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -30,8 +33,6 @@ function AdminOrders() {
       console.error("Error fetching orders:", err);
     }
   };
-
-  
 
   //Thứ tự hiển thị modal
   useEffect(() => {
@@ -97,9 +98,9 @@ function AdminOrders() {
     window.confirm("Do you want to CONFIRM this order");
   };
 
-  //Xóa đơn (chỉ xóa đơn chưa xác nhận)
+  // Xóa đơn hàng
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this order?")) {
+    if (window.confirm("Do you want to DELETE this order?")) {
       try {
         const token = localStorage.getItem("adminToken");
         await axios.delete(`http://localhost:3001/api/admin/orders/${id}`, {
@@ -114,24 +115,46 @@ function AdminOrders() {
     }
   };
 
-  //Sửa đơn (chỉ sửa đơn chưa xác nhận)
-  const handleEdit = async (id) => {
+  // Sửa đơn hàng
+  const handleEdit = (id) => {
+    const order = orders.find((item) => item._id === id);
+
+    if (!order) {
+      alert("Order not found!");
+      return;
+    }
+
+    setOrderDetail(order); // Lưu thông tin order vào state
+
+    // Đóng modal Confirm Orders nếu đang mở
+    const confirmModal = Modal.getInstance(
+      document.getElementById("confirmOrdersModal")
+    );
+    if (confirmModal) {
+      confirmModal.hide();
+    }
+
+    // Hiển thị modal chỉnh sửa
+    const detailModal = new Modal(document.getElementById("detailOrderModal"));
+    detailModal.show();
+  };
+
+  const handleSave = async () => {
     try {
-      const token = localStorage.getItem("adminToken");
-      if (!orderDetail.items || orderDetail.items.some((item) => !item.name)) {
-        alert("Each item must have a name.");
-        return;
-      }
+      const token = localStorage.getItem("adminToken"); // Lấy token từ localStorage
       await axios.put(
-        `http://localhost:3001/api/admin/orders/${id}`,
-        orderDetail,
+        `http://localhost:3001/api/admin/orders/${orderDetail._id}`,
+        orderDetail, // Gửi thông tin đơn hàng đã chỉnh sửa
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${token}` }, // Gửi token trong header
         }
       );
       alert("Order updated successfully");
-      setOrderDetail(null); // Đóng modal sau khi lưu
       fetchOrders(); // Refresh danh sách đơn hàng
+      const detailModal = Modal.getInstance(
+        document.getElementById("detailOrderModal")
+      );
+      detailModal.hide(); // Đóng modal sau khi lưu
     } catch (err) {
       console.error("Error updating order:", err);
       alert("Failed to update order.");
@@ -144,13 +167,11 @@ function AdminOrders() {
       <div className="modal fade" id="detailOrderModal">
         <div className="modal-dialog modal-xl">
           <div className="modal-content">
-            {/* <!-- Modal Header --> */}
+            {/* Modal Header */}
             <div className="modal-header">
-              <div className="d-flex gap-3 align-items-center">
-                <h4 className="modal-title" style={{ fontSize: "30px" }}>
-                  Order Detail
-                </h4>
-              </div>
+              <h4 className="modal-title" style={{ fontSize: "30px" }}>
+                Edit Order
+              </h4>
               <button
                 type="button"
                 className="btn-close"
@@ -158,314 +179,9 @@ function AdminOrders() {
               ></button>
             </div>
 
-            {/* <!-- Modal body --> */}
-            <div className="modal-body">Hello</div>
-
-            {/* <!-- Modal footer --> */}
-            <div className="modal-footer d-flex justify-content-between">
-              <button data-bs-dismiss="modal" className="btn-select">
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* modal confirm order */}
-      <div className="modal fade" id="confirmOrdersModal">
-        <div className="modal-dialog modal-xl">
-          <div className="modal-content">
-            {/* <!-- Modal Header --> */}
-            <div className="modal-header">
-              <div className="d-flex gap-3 align-items-center">
-                <h4 className="modal-title" style={{ fontSize: "30px" }}>
-                  Confirm orders
-                </h4>
-              </div>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
-            </div>
-
-            {/* <!-- Modal body --> */}
+            {/* Modal Body */}
             <div className="modal-body">
-              <table className="table table-striped mt-4">
-                <thead>
-                  <tr>
-                    <th>Action</th>
-                    <th>Customer Name</th>
-                    <th>Phone Number</th>
-                    <th>Email Address</th>
-                    <th>Address</th>
-                    <th>Payment Method</th>
-                    <th>Note</th>
-                    <th>Items</th>
-                    <th>Total Price</th>
-                    <th>Date</th>
-                    <th>Confirm</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentModalOrders.map((order) => (
-                    <tr key={order._id}>
-                      <td
-                        style={{ textAlign: "center", verticalAlign: "middle" }}
-                      >
-                        <div className="d-flex">
-                          <button
-                            className="btn btn-sm btn-outline-danger me-2"
-                            title="Cancel"
-                            onClick={() => handleDelete(order._id)}
-                            style={{
-                              padding: "0.25rem 0.5rem",
-                              fontSize: "0.8rem",
-                            }}
-                          >
-                            <i
-                              className="fa fa-times"
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            ></i>
-                          </button>
-                          <button
-                            className="btn btn-sm btn-outline-danger me-2 text-center"
-                            onClick={() => handleEdit(order._id)}
-                            style={{
-                              padding: "0.25rem 0.5rem",
-                              fontSize: "0.8rem",
-                            }}
-                          >
-                            <i className="fa-solid fa-info"></i>
-                          </button>
-                        </div>
-                      </td>
-                      <td>{order.customerName}</td>
-                      <td>{order.phoneNumber}</td>
-                      <td>{order.emailAddress}</td>
-                      <td>{order.address}</td>
-                      <td>{order.paymentMethod}</td>
-                      <td>{order.note || "N/A"}</td>
-                      <td>
-                        <ul>
-                          {order.items.map((item, index) => (
-                            <li key={index}>
-                              {item.name} - {item.quantity} x ${item.price}
-                            </li>
-                          ))}
-                        </ul>
-                      </td>
-                      <td>${order.totalPrice}</td>
-                      <td>{new Date(order.date).toLocaleString()}</td>
-
-                      <td>
-                        <button
-                          style={{
-                            backgroundColor: "orange",
-                            color: "white",
-                            border: "transparent",
-                          }}
-                          onClick={() => handleConfirm(order._id)}
-                        >
-                          Confirm
-                        </button>
-                      </td>
-
-                      {console.log("Order object:", order)}
-                    </tr>
-                  ))}
-                  {currentOrders.length === 0 && (
-                    <tr>
-                      <td colSpan="9" className="text-center">
-                        {searchKeyword
-                          ? "No matching orders found."
-                          : "No orders available."}
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-
-              {/* Pagination buttons */}
-              {ordersWithPrice48.length > 0 && (
-                <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
-                  <button
-                    onClick={() =>
-                      setModalPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={modalPage === 1}
-                  >
-                    Previous
-                  </button>
-                  <span>
-                    Page {modalPage} of {modalTotalPages}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setModalPage((prev) =>
-                        Math.min(prev + 1, modalTotalPages)
-                      )
-                    }
-                    disabled={modalPage === modalTotalPages}
-                  >
-                    Next
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* <!-- Modal footer --> */}
-            <div className="modal-footer d-flex justify-content-between">
-              <button data-bs-dismiss="modal" className="btn-select">
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* content chính */}
-      <div className="container">
-        <h2 className="text-center mb-3">Manage Orders</h2>
-
-        {/* Search và nút confirm orders*/}
-        <div className="d-flex align-items-center justify-content-center gap-3 mb-2 text-center">
-          <span style={{ fontWeight: "bold", marginRight: "10px" }}>
-            Search:
-          </span>
-          <input
-            type="text"
-            className="form-control w-50"
-            placeholder="Search by customer, phone, email, address..."
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-          />
-          <button
-            onClick={() => {
-              const modal = new Modal(
-                document.getElementById("confirmOrdersModal")
-              );
-              modal.show();
-            }}
-          >
-            Confirm Orders
-          </button>
-        </div>
-
-        <div className="card">
-          <div className="card-body">
-            <table className="table table-striped mt-4">
-              <thead>
-                <tr>
-                  <th>Customer Name</th>
-                  <th>Phone Number</th>
-                  <th>Email Address</th>
-                  <th>Address</th>
-                  <th>Payment Method</th>
-                  <th>Note</th>
-                  <th>Items</th>
-                  <th>Total Price</th>
-                  <th>Date</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentOrders.map((order) => (
-                  <tr key={order._id}>
-                    <td>{order.customerName}</td>
-                    <td>{order.phoneNumber}</td>
-                    <td>{order.emailAddress}</td>
-                    <td>{order.address}</td>
-                    <td>{order.paymentMethod}</td>
-                    <td>{order.note || "N/A"}</td>
-                    <td>
-                      <ul>
-                        {order.items.map((item, index) => (
-                          <li key={index}>
-                            {item.name} - {item.quantity} x ${item.price}
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td>${order.totalPrice}</td>
-                    <td>{new Date(order.date).toLocaleString()}</td>
-                    <td>
-                      <button
-                        className="btn btn-primary me-2"
-                        onClick={() => setOrderDetail(order)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn btn-danger"
-                        onClick={() => handleDelete(order._id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {currentOrders.length === 0 && (
-                  <tr>
-                    <td colSpan="10" className="text-center">
-                      {searchKeyword
-                        ? "No matching orders found."
-                        : "No orders available."}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-
-            {/* Pagination buttons */}
-            {filteredOrders.length > 0 && (
-              <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
-                <button
-                  className=""
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                >
-                  Previous
-                </button>
-
-                <span>
-                  Page {currentPage} of {totalPages}
-                </span>
-
-                <button
-                  className=""
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {orderDetail && (
-        <div className="modal fade show" style={{ display: "block" }}>
-          <div className="modal-dialog modal-lg">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Edit Order</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={() => setOrderDetail(null)}
-                ></button>
-              </div>
-              <div className="modal-body">
+              {orderDetail && (
                 <form>
                   <div className="mb-3">
                     <label className="form-label">Customer Name</label>
@@ -614,25 +330,248 @@ function AdminOrders() {
                     />
                   </div>
                 </form>
-              </div>
-              <div className="modal-footer">
-                <button
-                  className="btn btn-primary"
-                  onClick={() => handleEdit(orderDetail._id)}
-                >
-                  Save
-                </button>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setOrderDetail(null)}
-                >
-                  Cancel
-                </button>
-              </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="modal-footer">
+              <button className="btn btn-primary" onClick={handleSave}>
+                Save
+              </button>
+              <button className="btn btn-secondary" data-bs-dismiss="modal">
+                Cancel
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </div>
+
+      {/* modal confirm order */}
+      <div className="modal fade" id="confirmOrdersModal">
+        <div className="modal-dialog modal-xl">
+          <div className="modal-content">
+            {/* Modal Header */}
+            <div className="modal-header">
+              <div className="d-flex gap-3 align-items-center">
+                <h4 className="modal-title" style={{ fontSize: "30px" }}>
+                  Confirm Orders
+                </h4>
+              </div>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="modal-body">
+              <table className="table table-striped mt-4">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Customer Name</th>
+                    <th>Phone Number</th>
+                    <th>Email Address</th>
+                    <th>Address</th>
+                    <th>Payment Method</th>
+                    <th>Note</th>
+                    <th>Items</th>
+                    <th>Total Price</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingOrders.map((order) => (
+                    <tr key={order._id}>
+                      <td
+                        style={{ textAlign: "center", verticalAlign: "middle" }}
+                      >
+                        <div className="d-flex">
+                          {/* Nút Xóa */}
+                          <button
+                            className="btn btn-sm btn-outline-danger me-2"
+                            title="Delete"
+                            onClick={() => handleDelete(order._id)}
+                            style={{
+                              padding: "0.25rem 0.5rem",
+                              fontSize: "0.8rem",
+                            }}
+                          >
+                            <i
+                              className="fa fa-times"
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            ></i>
+                          </button>
+
+                          {/* Nút Sửa */}
+                          <button
+                            className="btn btn-sm btn-outline-primary me-2 text-center"
+                            title="Edit"
+                            onClick={() => handleEdit(order._id)}
+                            style={{
+                              padding: "0.25rem 0.5rem",
+                              fontSize: "0.8rem",
+                            }}
+                          >
+                            <i className="fa-solid fa-info"></i>
+                          </button>
+                        </div>
+                      </td>
+                      <td>{order.customerName}</td>
+                      <td>{order.phoneNumber}</td>
+                      <td>{order.emailAddress}</td>
+                      <td>{order.address}</td>
+                      <td>{order.paymentMethod}</td>
+                      <td>{order.note || "N/A"}</td>
+                      <td>
+                        <ul>
+                          {order.items.map((item, index) => (
+                            <li key={index}>
+                              {item.name} - {item.quantity} x ${item.price}
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td>${order.totalPrice}</td>
+                      <td>{new Date(order.date).toLocaleString()}</td>
+                    </tr>
+                  ))}
+                  {pendingOrders.length === 0 && (
+                    <tr>
+                      <td colSpan="10" className="text-center">
+                        No pending orders found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="modal-footer d-flex justify-content-between">
+              <button data-bs-dismiss="modal" className="btn-select">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* content chính */}
+      <div className="container">
+        <h2 className="text-center mb-3">Manage Orders</h2>
+
+        {/* Search và nút confirm orders*/}
+        <div className="d-flex align-items-center justify-content-center gap-3 mb-2 text-center">
+          <span style={{ fontWeight: "bold", marginRight: "10px" }}>
+            Search:
+          </span>
+          <input
+            type="text"
+            className="form-control w-50"
+            placeholder="Search by customer, phone, email, address..."
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+          <button
+            onClick={() => {
+              const modal = new Modal(
+                document.getElementById("confirmOrdersModal")
+              );
+              modal.show();
+            }}
+          >
+            Confirm Orders
+          </button>
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <table className="table table-striped mt-4">
+              <thead>
+                <tr>
+                  <th>Customer Name</th>
+                  <th>Phone Number</th>
+                  <th>Email Address</th>
+                  <th>Address</th>
+                  <th>Payment Method</th>
+                  <th>Note</th>
+                  <th>Items</th>
+                  <th>Total Price</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentOrders.map((order) => (
+                  <tr key={order._id}>
+                    <td>{order.customerName}</td>
+                    <td>{order.phoneNumber}</td>
+                    <td>{order.emailAddress}</td>
+                    <td>{order.address}</td>
+                    <td>{order.paymentMethod}</td>
+                    <td>{order.note || "N/A"}</td>
+                    <td>
+                      <ul>
+                        {order.items.map((item, index) => (
+                          <li key={index}>
+                            {item.name} - {item.quantity} x ${item.price}
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                    <td>${order.totalPrice}</td>
+                    <td>{new Date(order.date).toLocaleString()}</td>
+                    {console.log("Order object:", order)}
+                  </tr>
+                ))}
+                {currentOrders.length === 0 && (
+                  <tr>
+                    <td colSpan="9" className="text-center">
+                      {searchKeyword
+                        ? "No matching orders found."
+                        : "No orders available."}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {/* Pagination buttons */}
+            {filteredOrders.length > 0 && (
+              <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+                <button
+                  className=""
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  className=""
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </>
   );
 }
