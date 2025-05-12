@@ -6,6 +6,9 @@ import { Modal } from "bootstrap";
 function AdminOrders() {
   const [orders, setOrders] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const ordersPerPage = 10; // Số đơn hàng mỗi trang
   //Trang hiển thị các orders cần confirm
@@ -67,15 +70,37 @@ function AdminOrders() {
   }, [searchKeyword]);
 
   // Filter orders theo search keyword
-  const filteredOrders = orders.filter((order) => {
+  const filteredOrders = orders
+  .filter((order) => {
     const keyword = searchKeyword.toLowerCase();
-    return (
+    const matchesSearch =
       order.customerName.toLowerCase().includes(keyword) ||
       order.phoneNumber.toLowerCase().includes(keyword) ||
       order.emailAddress.toLowerCase().includes(keyword) ||
-      order.address.toLowerCase().includes(keyword)
-    );
+      order.address.toLowerCase().includes(keyword);
+
+    const matchesPayment =
+      selectedPaymentMethod === "" || order.paymentMethod === selectedPaymentMethod;
+
+    return matchesSearch && matchesPayment;
+  })
+  .sort((a, b) => {
+    if (!sortField) return 0;
+
+    const valA = a[sortField];
+    const valB = b[sortField];
+
+    if (sortField === "date") {
+      return sortOrder === "asc"
+        ? new Date(valA) - new Date(valB)
+        : new Date(valB) - new Date(valA);
+    }
+
+    return sortOrder === "asc"
+      ? valA.localeCompare(valB)
+      : valB.localeCompare(valA);
   });
+
 
   // Xử lý phân trang
   const indexOfLastOrder = currentPage * ordersPerPage;
@@ -206,6 +231,15 @@ function AdminOrders() {
       alert("Failed to update order.");
     }
   };
+
+  const handleSort = (field) => {
+  if (sortField === field) {
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  } else {
+    setSortField(field);
+    setSortOrder("asc");
+  }
+};
 
   return (
     <>
@@ -400,7 +434,7 @@ function AdminOrders() {
             <div className="modal-header">
               <div className="d-flex gap-3 align-items-center">
                 <h4 className="modal-title" style={{ fontSize: "30px" }}>
-                  Confirm Orders
+                  Pending Orders
                 </h4>
               </div>
               <button
@@ -535,6 +569,20 @@ function AdminOrders() {
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           />
+          <select
+            className="form-select"
+            value={selectedPaymentMethod}
+            onChange={(e) => {
+              setSelectedPaymentMethod(e.target.value);
+              setCurrentPage(1);
+            }}
+            style={{ width: "160px" }}
+          >
+            <option value="">All methods</option>
+            <option value="cod">cod</option>
+            <option value="vnpay">vnpay</option>
+          </select>
+
           <button
             onClick={() => {
               const modal = new Modal(
@@ -543,7 +591,7 @@ function AdminOrders() {
               modal.show();
             }}
           >
-            Confirm Orders
+            Pending Orders
           </button>
         </div>
 
@@ -558,7 +606,12 @@ function AdminOrders() {
             >
               <thead>
                 <tr>
-                  <th style={{ width: "8%" }}>Customer Name</th>
+                  <th
+                    style={{ width: "9%", cursor: "pointer" }}
+                    onClick={() => handleSort("customerName")}
+                  >
+                    Customer Name {sortField === "customerName" && (sortOrder === "asc" ? "▲" : "▼")}
+                  </th>
                   <th style={{ width: "7%" }}>Phone Number</th>
                   <th style={{ width: "10%" }}>Email Address</th>
                   <th style={{ width: "12%" }}>Address</th>
@@ -567,7 +620,7 @@ function AdminOrders() {
                   <th style={{ width: "14%" }}>Items</th>
                   <th style={{ width: "6%" }}>Total Price</th>
                   <th style={{ width: "7%" }}>Status</th>
-                  <th style={{ width: "10%" }}>Action</th>
+                  <th style={{ width: "8%" }}>Action</th>
                   <th
                     style={{
                       width: "14%",
@@ -575,9 +628,11 @@ function AdminOrders() {
                       right: 0,
                       background: "#fff",
                       zIndex: 1,
+                      cursor: "pointer",
                     }}
+                    onClick={() => handleSort("date")}
                   >
-                    Date
+                    Date {sortField === "date" && (sortOrder === "asc" ? "▲" : "▼")}
                   </th>
                 </tr>
               </thead>
