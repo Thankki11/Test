@@ -204,9 +204,12 @@ function CheckOut() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const response = await axios.get("http://localhost:3001/api/auth/user/info", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          "http://localhost:3001/api/auth/user/info",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         const user = response.data;
         setFormData({
@@ -426,9 +429,6 @@ function CheckOut() {
           </div>
           <div className="col-4"></div>
         </div>
-      </div>
-      <div className="text-center mt-4">
-        <button onClick={handlePayment}>Proceed to Payment</button>
       </div>
     </>
   );

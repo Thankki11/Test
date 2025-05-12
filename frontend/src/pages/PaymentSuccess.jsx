@@ -1,5 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import backgroundImage from "../assets/images/login-bg.jpg";
+
+import logo from "../assets/images/logo-black.png";
 
 function PaymentSuccess() {
   const navigate = useNavigate();
@@ -14,21 +17,43 @@ function PaymentSuccess() {
 
   return (
     <div
-      className="container d-flex flex-column align-items-center justify-content-center"
-      style={{ minHeight: "100vh", textAlign: "center" }}
+      className="container-fluid d-flex flex-column align-items-center"
+      style={{
+        minHeight: "100vh",
+        textAlign: "center",
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
     >
-      <div className="card shadow p-5" style={{ maxWidth: "600px", width: "100%" }}>
+      <img
+        src={logo}
+        alt="logo"
+        className="rounded-circle"
+        style={{
+          width: "auto",
+          height: "100px",
+          objectFit: "cover",
+          marginTop: "10vh",
+        }}
+      />
+      <div
+        className="card shadow p-5"
+        style={{
+          maxWidth: "600px",
+          width: "100%",
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
+        }}
+      >
         <h1 className="text-success mb-4">Payment Successful!</h1>
         <p className="mb-4">
-          Thank you for your purchase. Your payment has been successfully processed.
+          Thank you for your purchase. Your payment has been successfully
+          processed.
         </p>
         <div className="d-flex justify-content-center gap-3">
-          <button className="btn btn-primary" onClick={handleGoHome}>
-            Go to Home
-          </button>
-          <button className="btn btn-secondary" onClick={handleViewOrders}>
-            View My Orders
-          </button>
+          <button onClick={handleGoHome}>Go to Home</button>
+          <button onClick={handleViewOrders}>View My Orders</button>
         </div>
       </div>
     </div>
