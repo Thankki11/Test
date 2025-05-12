@@ -179,7 +179,7 @@ const AddTableModal = ({ onTableCreated, tables }) => {
                     type="text"
                     className="form-control mt-2"
                     name="newSeatingArea"
-                    placeholder="Nhập tên khu vực mới"
+                    placeholder="Type new Area name"
                     value={formData.newSeatingArea}
                     onChange={handleChange}
                     required
