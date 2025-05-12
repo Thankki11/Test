@@ -335,10 +335,10 @@ function AdminOrders() {
 
             {/* Modal Footer */}
             <div className="modal-footer">
-              <button className="btn btn-primary" onClick={handleSave}>
+              <button className="" onClick={handleSave}>
                 Save
               </button>
-              <button className="btn btn-secondary" data-bs-dismiss="modal">
+              <button className="" data-bs-dismiss="modal">
                 Cancel
               </button>
             </div>
