@@ -95,9 +95,30 @@ function AdminOrders() {
   );
 
   //Xác nhận đơn
-  const handleConfirm = (id) => {
-    window.confirm("Do you want to CONFIRM this order");
-  };
+  const handleConfirm = async (id) => {
+  if (window.confirm("Do you want to CONFIRM this order?")) {
+    try {
+      const token = localStorage.getItem("adminToken");
+
+      await axios.put(
+        `http://localhost:3001/api/orders/${id}/status`,
+        { status: "delivering" },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      alert("Order confirmed successfully");
+
+      fetchOrders(); // ✅ Reload lại danh sách => đơn đã confirm sẽ không còn trong pendingOrders
+
+    } catch (err) {
+      console.error("Error confirming order:", err);
+      alert("Failed to confirm order.");
+    }
+  }
+};
+
 
   // Xóa đơn hàng
   const handleDelete = async (id) => {
@@ -421,6 +442,18 @@ function AdminOrders() {
                           >
                             <i className="fa-solid fa-pen"></i>
                           </button>
+                          <button
+  className="btn btn-sm btn-outline-success"
+  title="Confirm"
+  onClick={() => handleConfirm(order._id)}
+  style={{
+    padding: "0.25rem 0.5rem",
+    fontSize: "0.8rem",
+  }}
+>
+  <i className="fa fa-check"></i>
+</button>
+
                         </div>
                       </td>
                       <td>{order.customerName}</td>
