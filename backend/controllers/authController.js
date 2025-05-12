@@ -4,14 +4,15 @@ const bcrypt = require("bcrypt");
 const axios = require("axios");
 const Admin = require("../models/userModel"); // Đảm bảo bạn có model admin
 
-
 // Lấy tất cả người dùng (cho admin)
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select("-password");
     res.json(users);
   } catch (err) {
-    res.status(500).json({ message: "Lỗi server khi lấy danh sách người dùng" });
+    res
+      .status(500)
+      .json({ message: "Lỗi server khi lấy danh sách người dùng" });
   }
 };
 
@@ -21,7 +22,7 @@ exports.createUser = async (req, res) => {
     const { username, email, phone, password, role } = req.body;
 
     const existingUser = await User.findOne({ email });
-    if (existingUser){
+    if (existingUser) {
       return res.status(400).json({ message: "Email đã tồn tại" });
     }
 
@@ -77,7 +78,8 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const deleted = await User.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    if (!deleted)
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
 
     res.json({ message: "Xoá người dùng thành công" });
   } catch (err) {
@@ -87,10 +89,11 @@ exports.deleteUser = async (req, res) => {
 
 // Đăng nhập admin
 exports.adminLogin = async (req, res) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body; // Chỉnh từ email sang username
 
   try {
-    const admin = await Admin.findOne({ email });
+    // Tìm admin theo username thay vì email
+    const admin = await Admin.findOne({ username }); // Sử dụng username thay vì email
     if (!admin) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
@@ -101,12 +104,14 @@ exports.adminLogin = async (req, res) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
+    // Tạo token
     const token = jwt.sign(
       { id: admin._id, role: "admin" },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
 
+    // Trả về token và role
     res.json({ token, role: "admin" });
   } catch (err) {
     console.error("Error during admin login:", err);

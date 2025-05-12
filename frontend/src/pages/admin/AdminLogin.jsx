@@ -6,7 +6,7 @@ import loginBackground from "../../assets/images/login-bg.jpg";
 import logo from "../../assets/images/logo-black.png";
 
 function AdminLogin() {
-  const [email, setEmail] = useState(""); // Thay đổi từ username sang email
+  const [username, setUsername] = useState(""); // Dùng username thay vì email
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -17,15 +17,14 @@ function AdminLogin() {
       const response = await axios.post(
         "http://localhost:3001/api/admin/login",
         {
-          email, // Gửi email thay vì username
+          username, // Gửi username thay vì email
           password,
         }
       );
 
       if (response.data.role === "admin") {
-        // Lưu token vào localStorage
         localStorage.setItem("adminToken", response.data.token);
-        navigate("/admin"); // Điều hướng đến trang admin dashboard
+        navigate("/admin");
       } else {
         setError("Access denied. Admins only.");
       }
@@ -38,7 +37,7 @@ function AdminLogin() {
     <div
       className="container-fluid d-flex justify-content-center align-items-center py-5"
       style={{
-        backgroundImage: `url(${loginBackground})`, // dùng ảnh nền admin
+        backgroundImage: `url(${loginBackground})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         minHeight: "100vh",
@@ -46,7 +45,6 @@ function AdminLogin() {
         margin: 0,
       }}
     >
-      {/* Overlay mờ */}
       <div
         style={{
           backgroundColor: "rgba(0, 0, 0, 0.6)",
@@ -59,7 +57,6 @@ function AdminLogin() {
         }}
       />
 
-      {/* Card chứa nội dung */}
       <div
         className="card shadow p-5"
         style={{
@@ -72,7 +69,6 @@ function AdminLogin() {
         }}
       >
         <div className="row d-flex align-items-center">
-          {/* Bên trái: form đăng nhập */}
           <div className="col-md-6">
             <div className="text-center mb-4">
               <img
@@ -89,12 +85,13 @@ function AdminLogin() {
 
             <form onSubmit={handleLogin}>
               <div className="mb-3">
-                <label className="form-label">Email</label> {/* Thay đổi nhãn thành Email */}
+                <label className="form-label">Username</label>{" "}
+                {/* Thay label */}
                 <input
-                  type="email"
+                  type="text" // Đổi type từ email sang text
                   className="form-control form-control-lg"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
@@ -118,10 +115,9 @@ function AdminLogin() {
             </form>
           </div>
 
-          {/* Bên phải: hình ảnh minh họa hoặc trang trí */}
           <div className="col-md-6 d-none d-md-block">
             <img
-              src={adminPhoto} // ảnh minh họa trang admin
+              src={adminPhoto}
               alt="admin-illustration"
               className="img-fluid w-100"
               style={{
