@@ -130,5 +130,34 @@ const deleteOrder = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+// Cập nhật trạng thái đơn hàng (ví dụ: confirmed, delivering, etc.)
+const updateOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
 
-module.exports = { addOrder, getOrders, getUserOrders, getOrderById, updateOrder, deleteOrder };
+    if (!status) {
+      return res.status(400).json({ message: "Status is required" });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.status(200).json({
+      message: "Order status updated successfully",
+      order: updatedOrder,
+    });
+  } catch (err) {
+    console.error("Error updating order status:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+module.exports = { addOrder, getOrders, getUserOrders, getOrderById, updateOrder, deleteOrder, updateOrderStatus, };
