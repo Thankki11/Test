@@ -26,9 +26,12 @@ function AdminOrders() {
   const fetchOrders = async () => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get("http://localhost:3001/api/orders/getOrders", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "http://localhost:3001/api/orders/getOrders",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setOrders(response.data);
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -96,29 +99,50 @@ function AdminOrders() {
 
   //Xác nhận đơn
   const handleConfirm = async (id) => {
-  if (window.confirm("Do you want to CONFIRM this order?")) {
-    try {
-      const token = localStorage.getItem("adminToken");
+    if (window.confirm("Do you want to CHECK this order?")) {
+      try {
+        const token = localStorage.getItem("adminToken");
 
-      await axios.put(
-        `http://localhost:3001/api/orders/${id}/status`,
-        { status: "delivering" },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        await axios.put(
+          `http://localhost:3001/api/orders/${id}/status`,
+          { status: "delivering" },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-      alert("Order confirmed successfully");
+        alert("Order confirmed successfully");
 
-      fetchOrders(); // ✅ Reload lại danh sách => đơn đã confirm sẽ không còn trong pendingOrders
-
-    } catch (err) {
-      console.error("Error confirming order:", err);
-      alert("Failed to confirm order.");
+        fetchOrders(); // ✅ Reload lại danh sách => đơn đã confirm sẽ không còn trong pendingOrders
+      } catch (err) {
+        console.error("Error confirming order:", err);
+        alert("Failed to confirm order.");
+      }
     }
-  }
-};
+  };
 
+  const handleStatusUpdate = async (orderId, newStatus) => {
+    if (window.confirm("Do you want to CONFIRM this order?")) {
+      try {
+        const token = localStorage.getItem("adminToken");
+
+        await axios.put(
+          `http://localhost:3001/api/orders/${orderId}/status`,
+          { status: "completed" },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        alert("Order confirmed successfully");
+
+        fetchOrders(); // ✅ Reload lại danh sách => đơn đã confirm sẽ không còn trong pendingOrders
+      } catch (err) {
+        console.error("Error confirming order:", err);
+        alert("Failed to confirm order.");
+      }
+    }
+  };
 
   // Xóa đơn hàng
   const handleDelete = async (id) => {
@@ -443,17 +467,16 @@ function AdminOrders() {
                             <i className="fa-solid fa-pen"></i>
                           </button>
                           <button
-  className="btn btn-sm btn-outline-success"
-  title="Confirm"
-  onClick={() => handleConfirm(order._id)}
-  style={{
-    padding: "0.25rem 0.5rem",
-    fontSize: "0.8rem",
-  }}
->
-  <i className="fa fa-check"></i>
-</button>
-
+                            className="btn btn-sm btn-outline-success"
+                            title="Confirm"
+                            onClick={() => handleConfirm(order._id)}
+                            style={{
+                              padding: "0.25rem 0.5rem",
+                              fontSize: "0.8rem",
+                            }}
+                          >
+                            <i className="fa fa-check"></i>
+                          </button>
                         </div>
                       </td>
                       <td>{order.customerName}</td>
@@ -535,17 +558,19 @@ function AdminOrders() {
             >
               <thead>
                 <tr>
-                  <th style={{ width: "10%" }}>Customer Name</th>
-                  <th style={{ width: "8%" }}>Phone Number</th>
-                  <th style={{ width: "12%" }}>Email Address</th>
-                  <th style={{ width: "17%" }}>Address</th>
-                  <th style={{ width: "5.75%" }}>Payment Method</th>
-                  <th style={{ width: "8%" }}>Note</th>
-                  <th style={{ width: "19.25%" }}>Items</th>
-                  <th style={{ width: "6.5%" }}>Total Price</th>
+                  <th style={{ width: "8%" }}>Customer Name</th>
+                  <th style={{ width: "7%" }}>Phone Number</th>
+                  <th style={{ width: "10%" }}>Email Address</th>
+                  <th style={{ width: "12%" }}>Address</th>
+                  <th style={{ width: "6%" }}>Payment Method</th>
+                  <th style={{ width: "7%" }}>Note</th>
+                  <th style={{ width: "14%" }}>Items</th>
+                  <th style={{ width: "6%" }}>Total Price</th>
+                  <th style={{ width: "7%" }}>Status</th>
+                  <th style={{ width: "10%" }}>Action</th>
                   <th
                     style={{
-                      width: "13.5%",
+                      width: "14%",
                       position: "sticky",
                       right: 0,
                       background: "#fff",
@@ -557,39 +582,75 @@ function AdminOrders() {
                 </tr>
               </thead>
               <tbody>
-                {currentOrders.map((order) => (
-                  <tr key={order._id}>
-                    <td>{order.customerName}</td>
-                    <td>{order.phoneNumber}</td>
-                    <td>{order.emailAddress}</td>
-                    <td>{order.address}</td>
-                    <td>{order.paymentMethod}</td>
-                    <td>{order.note || "N/A"}</td>
-                    <td>
-                      <ul className="mb-0 ps-3">
-                        {order.items.map((item, index) => (
-                          <li key={index}>
-                            {item.name} - {item.quantity} x ${item.price}
-                          </li>
-                        ))}
-                      </ul>
-                    </td>
-                    <td>${Number(order.totalPrice).toFixed(2)}</td>
-                    <td
-                      style={{
-                        position: "sticky",
-                        right: 0,
-                        background: "#fff",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {new Date(order.date).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-                {currentOrders.length === 0 && (
+                {currentOrders
+                  .filter(
+                    (order) =>
+                      order.status === "completed" ||
+                      order.status === "delivering"
+                  )
+                  .map((order) => (
+                    <tr key={order._id}>
+                      <td>{order.customerName}</td>
+                      <td>{order.phoneNumber}</td>
+                      <td>{order.emailAddress}</td>
+                      <td>{order.address}</td>
+                      <td>{order.paymentMethod}</td>
+                      <td>{order.note || "N/A"}</td>
+                      <td>
+                        <ul className="mb-0 ps-3">
+                          {order.items.map((item, index) => (
+                            <li key={index}>
+                              {item.name} - {item.quantity} x ${item.price}
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td>${Number(order.totalPrice).toFixed(2)}</td>
+                      <td>
+                        <span
+                          style={{
+                            color:
+                              order.status === "delivering"
+                                ? "#ffc107"
+                                : "#43a137",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {order.status.charAt(0).toUpperCase() +
+                            order.status.slice(1)}
+                        </span>
+                      </td>
+                      <td>
+                        {/* Chỉ hiển thị nút khi trạng thái là delivering */}
+                        {order.status === "delivering" && (
+                          <button
+                            onClick={() =>
+                              handleStatusUpdate(order._id, "completed")
+                            }
+                          >
+                            <i className="fa fa-check"></i>
+                          </button>
+                        )}
+                      </td>
+                      <td
+                        style={{
+                          position: "sticky",
+                          right: 0,
+                          background: "#fff",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {new Date(order.date).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))}
+                {currentOrders.filter(
+                  (order) =>
+                    order.status === "confirmed" ||
+                    order.status === "delivering"
+                ).length === 0 && (
                   <tr>
-                    <td colSpan="9" className="text-center">
+                    <td colSpan="11" className="text-center">
                       {searchKeyword
                         ? "No matching orders found."
                         : "No orders available."}
@@ -603,7 +664,6 @@ function AdminOrders() {
             {filteredOrders.length > 0 && (
               <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
                 <button
-                  className=""
                   onClick={() =>
                     setCurrentPage((prev) => Math.max(prev - 1, 1))
                   }
@@ -617,7 +677,6 @@ function AdminOrders() {
                 </span>
 
                 <button
-                  className=""
                   onClick={() =>
                     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                   }
