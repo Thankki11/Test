@@ -28,7 +28,22 @@ function AdminUsers() {
     }
   };
 
+  const isValidPhoneNumber = (phone) => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
+
   const handleAddUser = async () => {
+    if (!isValidPhoneNumber(newUser.phone)) {
+      alert("Invalid phone number. Please enter a 10-digit number.");
+      return;
+    }
+
+    if (!newUser.email || !newUser.password) {
+      alert("Email and password are required.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("adminToken");
       await axios.post("http://localhost:3001/api/admin/users", newUser, {
@@ -48,15 +63,27 @@ function AdminUsers() {
   };
 
   const handleEdit = (user) => {
-    setEditUser(user);
+    setEditUser({ ...user, password: "" }); // Thêm trường mật khẩu trống
   };
 
   const handleSave = async () => {
+    if (!isValidPhoneNumber(editUser.phone)) {
+      alert("Invalid phone number. Please enter a 10-digit number.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("adminToken");
+
+      // Chỉ gửi trường `password` nếu admin nhập mật khẩu mới
+      const updatedUser = { ...editUser };
+      if (!updatedUser.password) {
+        delete updatedUser.password;
+      }
+
       await axios.put(
         `http://localhost:3001/api/admin/users/${editUser._id}`,
-        editUser,
+        updatedUser,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -66,6 +93,7 @@ function AdminUsers() {
       fetchUsers();
     } catch (err) {
       console.error("Error updating user:", err);
+      alert("Failed to update user. Please try again.");
     }
   };
 
@@ -89,38 +117,45 @@ function AdminUsers() {
       <h2>User Management</h2>
       <div>
         <h4>Add New User</h4>
-        <input
-          type="text"
-          placeholder="Username"
-          value={newUser.username}
-          onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={newUser.email}
-          onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Phone"
-          value={newUser.phone}
-          onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={newUser.password}
-          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-        />
-        <select
-          value={newUser.role}
-          onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleAddUser();
+          }}
         >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
-        <button onClick={handleAddUser}>Add User</button>
+          <input
+            type="text"
+            placeholder="Username"
+            value={newUser.username}
+            onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={newUser.email}
+            onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+          />
+          <input
+            type="text"
+            placeholder="Phone"
+            value={newUser.phone}
+            onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={newUser.password}
+            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+          />
+          <select
+            value={newUser.role}
+            onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button type="submit">Add User</button>
+        </form>
       </div>
 
       <table className="table mt-4">
@@ -158,30 +193,45 @@ function AdminUsers() {
       {editUser && (
         <div>
           <h4>Edit User</h4>
-          <input
-            type="text"
-            value={editUser.username}
-            onChange={(e) => setEditUser({ ...editUser, username: e.target.value })}
-          />
-          <input
-            type="email"
-            value={editUser.email}
-            onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
-          />
-          <input
-            type="text"
-            value={editUser.phone}
-            onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
-          />
-          <select
-            value={editUser.role}
-            onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSave();
+            }}
           >
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-          <button onClick={handleSave}>Save</button>
-          <button onClick={() => setEditUser(null)}>Cancel</button>
+            <input
+              type="text"
+              value={editUser.username}
+              onChange={(e) => setEditUser({ ...editUser, username: e.target.value })}
+            />
+            <input
+              type="email"
+              value={editUser.email}
+              onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+            />
+            <input
+              type="text"
+              value={editUser.phone}
+              onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
+            />
+            <input
+              type="password"
+              placeholder="New Password (Optional)"
+              value={editUser.password}
+              onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
+            />
+            <select
+              value={editUser.role}
+              onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button type="submit">Save</button>
+            <button type="button" onClick={() => setEditUser(null)}>
+              Cancel
+            </button>
+          </form>
         </div>
       )}
     </div>

@@ -13,6 +13,12 @@ const reservationSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     required: true,
+    validate: {
+      validator: function (v) {
+        return /^[0-9]{10}$/.test(v); // Biểu thức chính quy kiểm tra 10 chữ số
+      },
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
   },
   numberOfGuest: {
     type: Number,

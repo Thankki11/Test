@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const path = require("path");
+const axios = require("axios");
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -59,10 +60,33 @@ exports.register = async (req, res) => {
 
 // User Login
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, captchaToken } = req.body;
 
+  // Xác minh reCAPTCHA
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
   try {
-    const user = await User.findOne({ email, role: "user" }); // Ensure role is 'user'
+    const captchaResponse = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      null,
+      {
+        params: {
+          secret: secretKey,
+          response: captchaToken,
+        },
+      }
+    );
+
+    if (!captchaResponse.data.success) {
+      return res.status(400).json({ message: "Captcha verification failed" });
+    }
+  } catch (err) {
+    console.error("Captcha verification error:", err);
+    return res.status(500).json({ message: "Captcha verification error" });
+  }
+
+  // Xử lý đăng nhập
+  try {
+    const user = await User.findOne({ email, role: "user" }); // Đảm bảo chỉ tìm người dùng có role là "user"
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }

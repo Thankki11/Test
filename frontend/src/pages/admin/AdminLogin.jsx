@@ -6,7 +6,7 @@ import loginBackground from "../../assets/images/login-bg.jpg";
 import logo from "../../assets/images/logo-black.png";
 
 function AdminLogin() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState(""); // Thay đổi từ username sang email
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -15,9 +15,9 @@ function AdminLogin() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/auth/login",
+        "http://localhost:3001/api/admin/login",
         {
-          username,
+          email, // Gửi email thay vì username
           password,
         }
       );
@@ -89,12 +89,12 @@ function AdminLogin() {
 
             <form onSubmit={handleLogin}>
               <div className="mb-3">
-                <label className="form-label">Username</label>
+                <label className="form-label">Email</label> {/* Thay đổi nhãn thành Email */}
                 <input
-                  type="text"
+                  type="email"
                   className="form-control form-control-lg"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>

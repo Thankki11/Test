@@ -31,6 +31,12 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
+      if (!phoneRegex.test(formData.phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+      }
+
     if (!captchaToken) {
       alert("Please verify that you are not a robot.");
       return;

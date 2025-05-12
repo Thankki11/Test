@@ -38,6 +38,29 @@ const ReservationTable = ({ isInModal = false }) => {
     fetchSeatingAreas();
   }, []);
 
+  useEffect(() => {
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem("token"); // Lấy token từ localStorage
+      const response = await axios.get("http://localhost:3001/api/auth/user/info", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const user = response.data;
+
+      setFormData((prevData) => ({
+        ...prevData,
+        customerName: user.username || "",
+        emailAddress: user.email || "",
+        phoneNumber: user.phone || "",
+      }));
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  fetchUserData();
+}, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -48,6 +71,12 @@ const ReservationTable = ({ isInModal = false }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
+      if (!phoneRegex.test(formData.phoneNumber)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+    }
 
     try {
       console.log("Form Data Preview:", JSON.stringify(formData, null, 2));

@@ -2,90 +2,8 @@ const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const axios = require("axios");
+const Admin = require("../models/userModel"); // Đảm bảo bạn có model admin
 
-exports.login = async (req, res) => {
-  const { email, password, captchaToken } = req.body;
-
-  // Xác minh reCAPTCHA
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY; // Secret Key từ Google reCAPTCHA
-  try {
-    const captchaResponse = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify`,
-      null,
-      {
-        params: {
-          secret: secretKey,
-          response: captchaToken,
-        },
-      }
-    );
-
-    if (!captchaResponse.data.success) {
-      return res.status(400).json({ message: "Captcha verification failed" });
-    }
-  } catch (err) {
-    console.error("Captcha verification error:", err);
-    return res.status(500).json({ message: "Captcha verification error" });
-  }
-
-  // Xử lý đăng nhập
-  try {
-    const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-
-    const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res.json({ message: "Login successful", token, user });
-  } catch (err) {
-    console.error("Login error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-// Đăng ký người dùng
-exports.register = async (req, res) => {
-  const { email, password, captchaToken } = req.body;
-
-  // Xác minh reCAPTCHA
-  const secretKey = process.env.RECAPTCHA_SECRET_KEY; // Secret Key từ Google reCAPTCHA
-  try {
-    const captchaResponse = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify`,
-      null,
-      {
-        params: {
-          secret: secretKey,
-          response: captchaToken,
-        },
-      }
-    );
-
-    if (!captchaResponse.data.success) {
-      return res.status(400).json({ message: "Captcha verification failed" });
-    }
-  } catch (err) {
-    console.error("Captcha verification error:", err);
-    return res.status(500).json({ message: "Captcha verification error" });
-  }
-
-  // Xử lý đăng ký
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ email, password: hashedPassword });
-    await newUser.save();
-
-    res.status(201).json({ message: "User registered successfully" });
-  } catch (err) {
-    console.error("Registration error:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
 
 // Lấy tất cả người dùng (cho admin)
 exports.getAllUsers = async (req, res) => {
@@ -128,19 +46,30 @@ exports.createUser = async (req, res) => {
 // Cập nhật người dùng
 exports.updateUser = async (req, res) => {
   try {
-    const { username, email, phone, role } = req.body;
+    const { username, email, phone, role, password } = req.body;
 
-    const updated = await User.findByIdAndUpdate(
+    const updateData = { username, email, phone, role };
+
+    // Nếu có mật khẩu mới, mã hóa mật khẩu trước khi lưu
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateData.password = hashedPassword;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
-      { username, email, phone, role, isAdmin: role === "admin" },
-      { new: true }
+      updateData,
+      { new: true, runValidators: true }
     );
 
-    if (!updated) return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-    res.json({ message: "Cập nhật thành công", user: updated });
+    res.json({ message: "User updated successfully", user: updatedUser });
   } catch (err) {
-    res.status(500).json({ message: "Lỗi khi cập nhật người dùng" });
+    console.error("Error updating user:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -153,5 +82,34 @@ exports.deleteUser = async (req, res) => {
     res.json({ message: "Xoá người dùng thành công" });
   } catch (err) {
     res.status(500).json({ message: "Lỗi khi xoá người dùng" });
+  }
+};
+
+// Đăng nhập admin
+exports.adminLogin = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const admin = await Admin.findOne({ email });
+    if (!admin) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
+    // So sánh mật khẩu đã mã hóa
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
+    const token = jwt.sign(
+      { id: admin._id, role: "admin" },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    res.json({ token, role: "admin" });
+  } catch (err) {
+    console.error("Error during admin login:", err);
+    res.status(500).json({ message: "Server error" });
   }
 };

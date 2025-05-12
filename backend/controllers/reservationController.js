@@ -59,6 +59,11 @@ exports.addReservations = async (req, res) => {
     // Lấy giá trị ngày từ người dùng
   } = req.body;
 
+  const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
+  if (!phoneRegex.test(phoneNumber)) {
+    return res.status(400).json({ message: "Phone number must be exactly 10 digits." });
+  }
+
   try {
     // Chuyển đổi dateTime từ chuỗi sang đối tượng Date
     const date = new Date(dateTime); // Đây sẽ là một đối tượng Date hợp lệ trong MongoDB

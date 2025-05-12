@@ -5,7 +5,7 @@ const router = express.Router();
 const adminMiddleware = require("../middleware/adminMiddleware");
 
 const {
-  login,
+  adminLogin,
   getAllUsers,
   createUser,
   updateUser,
@@ -15,7 +15,7 @@ const {
 const { updateOrder, deleteOrder } = require("../controllers/orderController");
 
 // Route cho admin, bảo vệ bằng middleware
-router.post("/login", login);
+router.post("/login", adminLogin);
 router.get("/users", adminMiddleware, getAllUsers);
 router.post("/users", adminMiddleware, createUser);
 router.put("/users/:id", adminMiddleware, updateUser);
