@@ -13,7 +13,7 @@ function AdminOrders() {
   const modalOrdersPerPage = 5;
   const ordersWithPrice48 = orders.filter((order) => order.totalPrice === 48);
 
-  //thông tin order cần chỉnh sửa
+  // Thông tin order cần chỉnh sửa
   const [orderDetail, setOrderDetail] = useState();
 
   // Lọc danh sách đơn hàng có trạng thái "pending"
@@ -25,9 +25,10 @@ function AdminOrders() {
 
   const fetchOrders = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:3001/api/orders/getOrders"
-      );
+      const token = localStorage.getItem("adminToken");
+      const response = await axios.get("http://localhost:3001/api/orders/getOrders", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setOrders(response.data);
     } catch (err) {
       console.error("Error fetching orders:", err);
@@ -103,7 +104,7 @@ function AdminOrders() {
     if (window.confirm("Do you want to DELETE this order?")) {
       try {
         const token = localStorage.getItem("adminToken");
-        await axios.delete(`http://localhost:3001/api/admin/orders/${id}`, {
+        await axios.delete(`http://localhost:3001/api/orders/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         alert("Order deleted successfully");
@@ -141,12 +142,12 @@ function AdminOrders() {
 
   const handleSave = async () => {
     try {
-      const token = localStorage.getItem("adminToken"); // Lấy token từ localStorage
+      const token = localStorage.getItem("adminToken");
       await axios.put(
-        `http://localhost:3001/api/admin/orders/${orderDetail._id}`,
-        orderDetail, // Gửi thông tin đơn hàng đã chỉnh sửa
+        `http://localhost:3001/api/orders/${orderDetail._id}`,
+        orderDetail,
         {
-          headers: { Authorization: `Bearer ${token}` }, // Gửi token trong header
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
       alert("Order updated successfully");
@@ -163,7 +164,7 @@ function AdminOrders() {
 
   return (
     <>
-      {/* modal xem chi tiết order */}
+      {/* Modal xem chi tiết order */}
       <div className="modal fade" id="detailOrderModal">
         <div className="modal-dialog modal-xl">
           <div className="modal-content">

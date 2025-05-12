@@ -85,46 +85,28 @@ const getOrderById = async (req, res) => {
   }
 };
 
-const updateOrderStatus = async (req, res) => {
-  try {
-    const { id } = req.params; // Lấy order ID từ URL
-    const { status } = req.body; // Lấy trạng thái mới từ body
-
-    // Cập nhật trạng thái đơn hàng
-    const updatedOrder = await Order.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true } // Trả về đơn hàng đã cập nhật
-    );
-
-    if (!updatedOrder) {
-      return res.status(404).json({ message: "Order not found" });
-    }
-
-    res.json({ message: "Order status updated successfully", order: updatedOrder });
-  } catch (err) {
-    console.error("Error updating order status:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
 // Sửa thông tin order
 const updateOrder = async (req, res) => {
   try {
-    const { id } = req.params; // Lấy ID order từ URL
-    const { customerName, phoneNumber, emailAddress, address, paymentMethod, note, items, totalPrice } = req.body;
+    const { id } = req.params;
+    const updatedData = req.body;
 
-    const updatedOrder = await Order.findByIdAndUpdate(
-      id,
-      { customerName, phoneNumber, emailAddress, address, paymentMethod, note, items, totalPrice },
-      { new: true, runValidators: true } // Trả về order đã cập nhật
-    );
-
-    if (!updatedOrder) {
+    // Kiểm tra nếu đơn hàng tồn tại
+    const order = await Order.findById(id);
+    if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    res.status(200).json({ message: "Order updated successfully", order: updatedOrder });
+    // Cập nhật đơn hàng
+    const updatedOrder = await Order.findByIdAndUpdate(id, updatedData, {
+      new: true, // Trả về đơn hàng đã cập nhật
+      runValidators: true, // Kiểm tra dữ liệu đầu vào
+    });
+
+    res.status(200).json({
+      message: "Order updated successfully",
+      order: updatedOrder,
+    });
   } catch (err) {
     console.error("Error updating order:", err);
     res.status(500).json({ message: "Server error" });
@@ -149,4 +131,4 @@ const deleteOrder = async (req, res) => {
   }
 };
 
-module.exports = { addOrder, getOrders, getUserOrders, getOrderById, updateOrderStatus, updateOrder, deleteOrder };
+module.exports = { addOrder, getOrders, getUserOrders, getOrderById, updateOrder, deleteOrder };
