@@ -20,8 +20,12 @@ function AdminChefs() {
   const [editChef, setEditChef] = useState(null);
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState(null); // "name" hoặc "experience"
+  const [sortOrder, setSortOrder] = useState("asc"); // "asc" hoặc "desc"
   const chefsPerPage = 10; // Số chef mỗi trang
   const fileInputRef = useRef(null);
+
+
 
   useEffect(() => {
     fetchChefs();
@@ -137,11 +141,36 @@ function AdminChefs() {
   };
 
   // Filter chefs theo keyword
-  const filteredChefs = chefs.filter(
+  const filteredChefs = chefs
+  .filter(
     (chef) =>
       chef.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
       chef.specialty.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
+  )
+  .sort((a, b) => {
+    if (!sortField) return 0;
+
+    const valA = a[sortField];
+    const valB = b[sortField];
+
+    if (sortField === "experience") {
+      return sortOrder === "asc" ? valA - valB : valB - valA;
+    }
+
+    return sortOrder === "asc"
+      ? valA.localeCompare(valB)
+      : valB.localeCompare(valA);
+  });
+
+
+  const handleSort = (field) => {
+  if (sortField === field) {
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  } else {
+    setSortField(field);
+    setSortOrder("asc");
+  }
+};
 
   // Phân trang
   const indexOfLastChef = currentPage * chefsPerPage;
@@ -193,9 +222,13 @@ function AdminChefs() {
           <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
             <thead>
               <tr>
-                <th style={{ width: "12%" }}>Name</th>
+                <th style={{ width: "12%", cursor: "pointer" }} onClick={() => handleSort("name")}>
+                  Name {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+                </th>
                 <th style={{ width: "7%" }}>Specialty</th>
-                <th style={{ width: "8%" }}>Experience</th>
+                <th style={{ width: "8%", cursor: "pointer" }} onClick={() => handleSort("experience")}>
+                  Experience {sortField === "experience" && (sortOrder === "asc" ? "▲" : "▼")}
+                </th>
                 <th style={{ width: "10%" }}>Contact</th>
                 <th style={{ width: "15%" }}>Awards</th>
                 <th style={{ width: "27%" }}>Description</th>
@@ -300,7 +333,7 @@ function AdminChefs() {
 
       {/* Modal Thêm Chef */}
       <div className="modal fade" id="addChefModal" tabIndex="-1">
-        <div className="modal-dialog">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Add New Chef</h5>
@@ -398,7 +431,7 @@ function AdminChefs() {
 
       {/* Modal Sửa Chef */}
       <div className="modal fade" id="editChefModal" tabIndex="-1">
-        <div className="modal-dialog">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             {editChef && (
               <>

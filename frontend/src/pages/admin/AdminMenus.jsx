@@ -35,13 +35,40 @@ function AdminMenus() {
     }
   };
 
+  const [sortField, setSortField] = useState(null); // "name", "price"
+  const [sortOrder, setSortOrder] = useState("asc"); // "asc" hoặc "desc"
+  const [selectedCategory, setSelectedCategory] = useState(""); // cho bộ lọc theo category
+
   // Filter menus based on search keyword
-  const filteredMenus = menus.filter(
-    (menu) =>
-      menu.name?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      menu.category?.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      menu.description?.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
+  const filteredMenus = menus
+    .filter((menu) => {
+      const keyword = searchKeyword.toLowerCase();
+      const matchesKeyword =
+        menu.name?.toLowerCase().includes(keyword) ||
+        menu.category?.toLowerCase().includes(keyword) ||
+        menu.description?.toLowerCase().includes(keyword);
+
+      const matchesCategory = selectedCategory
+        ? menu.category === selectedCategory
+        : true;
+
+      return matchesKeyword && matchesCategory;
+    })
+    .sort((a, b) => {
+      if (!sortField) return 0;
+
+      const valA = a[sortField];
+      const valB = b[sortField];
+
+      if (typeof valA === "string") {
+        return sortOrder === "asc"
+          ? valA.localeCompare(valB)
+          : valB.localeCompare(valA);
+      } else {
+        return sortOrder === "asc" ? valA - valB : valB - valA;
+      }
+    });
+
 
   // ✅ Phân trang: Tính toán danh sách menu cần hiển thị
   const indexOfLastMenu = currentPage * menusPerPage;
@@ -49,6 +76,8 @@ function AdminMenus() {
   const currentMenus = filteredMenus.slice(indexOfFirstMenu, indexOfLastMenu);
 
   const totalPages = Math.ceil(filteredMenus.length / menusPerPage);
+
+
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this menu?")) {
@@ -206,6 +235,15 @@ const handleEditImageUpload = (e) => {
     }
   };
 
+  const handleSort = (field) => {
+  if (sortField === field) {
+    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+  } else {
+    setSortField(field);
+    setSortOrder("asc");
+  }
+};
+
   return (
     <div className="container">
       {/* //Modal add new */}
@@ -331,6 +369,22 @@ const handleEditImageUpload = (e) => {
             setCurrentPage(1); // ✅ reset về page 1 khi tìm kiếm
           }}
         />
+      <select
+        className="form-select"
+        value={selectedCategory}
+        onChange={(e) => {
+          setSelectedCategory(e.target.value);
+          setCurrentPage(1); // reset trang
+        }}
+        style={{ width: "200px" }}
+      >
+        <option value="">All categories</option>
+        {categories.map((cat) => (
+          <option key={cat} value={cat}>
+            {cat}
+          </option>
+        ))}
+      </select>
 
         <button
           onClick={() => {
@@ -355,10 +409,16 @@ const handleEditImageUpload = (e) => {
       <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
         <thead>
           <tr>
-            <th style={{ width: "8%" }}>Name</th>
+            <th style={{ width: "8%", cursor: "pointer" }} onClick={() => handleSort("name")}>
+              Name {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+            </th>
             <th style={{ width: "25%" }}>Description</th>
-            <th style={{ width: "4%" }}>Category</th>
-            <th style={{ width: "6%" }}>Price</th>
+            <th style={{ width: "4%", cursor: "pointer" }} onClick={() => handleSort("category")}>
+              Category
+            </th>
+            <th style={{ width: "6%", cursor: "pointer" }} onClick={() => handleSort("price")}>
+              Price {sortField === "price" && (sortOrder === "asc" ? "▲" : "▼")}
+            </th>
             <th style={{ width: "11%", position: "sticky", right: 0, background: "#fff", zIndex: 1 }}>
               Actions
             </th>
