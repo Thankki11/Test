@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { Modal } from "bootstrap";
+import * as bootstrap from "bootstrap";
 
 function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -11,6 +13,12 @@ function AdminUsers() {
     password: "",
     role: "user",
   });
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const usersPerPage = 10;
+useEffect(() => {
+  setCurrentPage(1);
+}, [searchKeyword]);
 
   useEffect(() => {
     fetchUsers();
@@ -112,128 +120,298 @@ function AdminUsers() {
     }
   };
 
+  const filteredUsers = users.filter((user) =>
+  user.username.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+  user.email.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+  user.phone.includes(searchKeyword)||
+  user.role.toLowerCase().includes(searchKeyword.toLowerCase())
+  );
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+
   return (
-    <div className="container mt-5">
-      <h2>User Management</h2>
-      <div>
-        <h4>Add New User</h4>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleAddUser();
-          }}
+    <div className="container">
+      <h2 className="text-center mb-3">User Management</h2>
+      
+
+      <div className="d-flex align-items-center justify-content-center gap-3 mb-2 text-center">
+        <span style={{ fontWeight: "bold", marginRight: "10px" }}>Search:</span>
+          <input
+            type="text"
+            className="form-control w-50"
+            placeholder="Search by username, email, phone, role..."
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+          />
+        <button
+          className=""
+          onClick={() => new bootstrap.Modal(document.getElementById("addUserModal")).show()}
         >
-          <input
-            type="text"
-            placeholder="Username"
-            value={newUser.username}
-            onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={newUser.email}
-            onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
-          />
-          <input
-            type="text"
-            placeholder="Phone"
-            value={newUser.phone}
-            onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={newUser.password}
-            onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-          />
-          <select
-            value={newUser.role}
-            onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-          >
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-          <button type="submit">Add User</button>
-        </form>
+          Add User
+        </button>
       </div>
 
-      <table className="table mt-4">
+      <div className="card">
+        <div className="card-body">
+          <span style={{ fontWeight: "bold", fontSize: "20px" }}>
+            Users List
+          </span>
+        <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Role</th>
-            <th>Actions</th>
+            <th style={{ width: "24%" }}>Username</th>
+            <th style={{ width: "41.5%" }}>Email</th>
+            <th style={{ width: "10%" }}>Phone</th>
+            <th style={{ width: "4.5%" }}>Role</th>
+            <th
+              style={{
+                width: "20%",
+                position: "sticky",
+                right: 0,
+                background: "#fff",
+                zIndex: 1,
+              }}
+            >
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
-          {users.length > 0 ? (
-            users.map((user) => (
+          {currentUsers.length > 0 ? (
+            currentUsers.map((user) => (
               <tr key={user._id}>
                 <td>{user.username}</td>
                 <td>{user.email}</td>
                 <td>{user.phone}</td>
                 <td>{user.role}</td>
-                <td>
-                  <button onClick={() => handleEdit(user)}>Edit</button>
-                  <button onClick={() => handleDelete(user._id)}>Delete</button>
+                <td
+                  style={{
+                    position: "sticky",
+                    right: 0,
+                    background: "#fff",
+                  }}
+                >
+                  <button
+                    className="btn-select selected me-2"
+                    onClick={() => {
+                      handleEdit(user);
+                      new bootstrap.Modal(document.getElementById("editUserModal")).show();
+                    }}
+                  >
+                    Edit
+                  </button>
+
+                  <button 
+                    className="btn-select"
+                    onClick={() => handleDelete(user._id)}>Delete
+                  </button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="5">No users found</td>
+              <td colSpan="5" className="text-center">No matching users found</td>
             </tr>
           )}
         </tbody>
       </table>
-
-      {editUser && (
-        <div>
-          <h4>Edit User</h4>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSave();
-            }}
+      {filteredUsers.length > 0 && (
+        <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+          <button
+            className=""
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
           >
-            <input
-              type="text"
-              value={editUser.username}
-              onChange={(e) => setEditUser({ ...editUser, username: e.target.value })}
-            />
-            <input
-              type="email"
-              value={editUser.email}
-              onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
-            />
-            <input
-              type="text"
-              value={editUser.phone}
-              onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
-            />
-            <input
-              type="password"
-              placeholder="New Password (Optional)"
-              value={editUser.password}
-              onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
-            />
-            <select
-              value={editUser.role}
-              onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button type="submit">Save</button>
-            <button type="button" onClick={() => setEditUser(null)}>
-              Cancel
-            </button>
-          </form>
+            Previous
+          </button>
+
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+
+          <button
+            className=""
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </button>
         </div>
       )}
+    </div>
+  </div>
+
+      {/* Modal Thêm User */}
+      <div className="modal fade" id="addUserModal" tabIndex="-1">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Add New User</h5>
+              <button className="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div className="modal-body">
+              <div className="mb-3">
+                <label className="form-label">Username</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={newUser.username}
+                  onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Email</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Phone</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  value={newUser.phone}
+                  onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label">Role</label>
+                <select
+                  className="form-select"
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="" data-bs-dismiss="modal">Cancel</button>
+              <button
+                className=""
+                onClick={() => {
+                  handleAddUser();
+                  bootstrap.Modal.getInstance(document.getElementById("addUserModal"))?.hide();
+                }}
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal Edit User */}
+    <div className="modal fade" id="editUserModal" tabIndex="-1">
+      <div className="modal-dialog">
+        <div className="modal-content">
+          {editUser && (
+            <>
+              <div className="modal-header">
+                <h5 className="modal-title">Edit User</h5>
+                <button
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  onClick={() => setEditUser(null)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3">
+                  <label className="form-label">Username</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={editUser.username}
+                    onChange={(e) => setEditUser({ ...editUser, username: e.target.value })}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Email</label>
+                  <input
+                    type="email"
+                    className="form-control"
+                    value={editUser.email}
+                    onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Phone</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={editUser.phone}
+                    onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Password</label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="New Password (Optional)"
+                    value={editUser.password}
+                    onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
+                  />
+                </div>
+
+                <div className="mb-3">
+                  <label className="form-label">Role</label>
+                  <select
+                    className="form-select"
+                    value={editUser.role}
+                    onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                  >
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className=""
+                  data-bs-dismiss="modal"
+                  onClick={() => setEditUser(null)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className=""
+                  onClick={() => {
+                    handleSave();
+                    bootstrap.Modal.getInstance(document.getElementById("editUserModal"))?.hide();
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
     </div>
   );
 }

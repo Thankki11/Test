@@ -105,26 +105,10 @@ function Detail() {
                     onChange={handleChange}
                     aria-label="lab API tabs example"
                   >
-                    <Tab
-                      label="Ingredient"
-                      value="1"
-                      style={{
-                        fontSize: "15px",
-                        fontFamily: "JosefinSans",
-                        fontWeight: "bold",
-                      }}
-                    />
+                   
                   </TabList>
                 </Box>
-                <TabPanel
-                  value="1"
-                  style={{ fontSize: "18px", fontFamily: "JosefinSans" }}
-                >
-                  <strong>Ingredients: </strong>
-                  {menu.ingredients
-                    ? menu.ingredients.join(", ") + "."
-                    : "No ingredients available."}
-                </TabPanel>
+              
                 <TabPanel
                   value="2"
                   style={{ fontSize: "18px", fontFamily: "JosefinSans" }}
