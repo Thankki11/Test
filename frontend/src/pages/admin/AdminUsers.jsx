@@ -15,10 +15,13 @@ function AdminUsers() {
   });
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortField, setSortField] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [selectedRole, setSelectedRole] = useState("");
   const usersPerPage = 10;
-useEffect(() => {
-  setCurrentPage(1);
-}, [searchKeyword]);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchKeyword]);
 
   useEffect(() => {
     fetchUsers();
@@ -119,13 +122,39 @@ useEffect(() => {
       }
     }
   };
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
-  const filteredUsers = users.filter((user) =>
-  user.username.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-  user.email.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-  user.phone.includes(searchKeyword)||
-  user.role.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
+  const filteredUsers = users
+  .filter((user) => {
+    const keyword = searchKeyword.toLowerCase();
+    const matchesSearch =
+      user.username.toLowerCase().includes(keyword) ||
+      user.email.toLowerCase().includes(keyword) ||
+      user.phone.includes(keyword) ||
+      user.role.toLowerCase().includes(keyword);
+
+    const matchesRole = selectedRole === "" || user.role === selectedRole;
+
+    return matchesSearch && matchesRole;
+  })
+  .sort((a, b) => {
+    if (!sortField) return 0;
+
+    const valA = a[sortField];
+    const valB = b[sortField];
+
+    return sortOrder === "asc"
+      ? valA.localeCompare(valB)
+      : valB.localeCompare(valA);
+  });
+
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
@@ -146,6 +175,20 @@ useEffect(() => {
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
           />
+          <select
+            className="form-select"
+            style={{ width: "160px" }}
+            value={selectedRole}
+            onChange={(e) => {
+              setSelectedRole(e.target.value);
+              setCurrentPage(1); // reset page
+            }}
+          >
+            <option value="">All roles</option>
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </select>
+
         <button
           className=""
           onClick={() => new bootstrap.Modal(document.getElementById("addUserModal")).show()}
@@ -162,7 +205,12 @@ useEffect(() => {
         <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
         <thead>
           <tr>
-            <th style={{ width: "24%" }}>Username</th>
+            <th
+              style={{ width: "24%", cursor: "pointer" }}
+              onClick={() => handleSort("username")}
+            >
+              Username {sortField === "username" && (sortOrder === "asc" ? "▲" : "▼")}
+            </th>
             <th style={{ width: "41.5%" }}>Email</th>
             <th style={{ width: "10%" }}>Phone</th>
             <th style={{ width: "4.5%" }}>Role</th>
@@ -246,7 +294,7 @@ useEffect(() => {
 
       {/* Modal Thêm User */}
       <div className="modal fade" id="addUserModal" tabIndex="-1">
-        <div className="modal-dialog">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Add New User</h5>
@@ -323,7 +371,7 @@ useEffect(() => {
 
       {/* Modal Edit User */}
     <div className="modal fade" id="editUserModal" tabIndex="-1">
-      <div className="modal-dialog">
+      <div className="modal-dialog modal-lg">
         <div className="modal-content">
           {editUser && (
             <>
