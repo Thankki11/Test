@@ -228,8 +228,10 @@ function EditProfile() {
                   <div className="text-center mt-1">
                     <p>Current Avatar</p>
                   </div>
-                  <div className="text-center mt-3">
-                    <button type="submit">Save Changes</button>
+                  <div className="text-center" style={{ marginTop: "15vh" }}>
+                    <button type="submit" className=" btn-select selected">
+                      Save Changes
+                    </button>
                   </div>
                 </div>
               </div>
