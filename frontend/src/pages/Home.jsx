@@ -296,14 +296,14 @@ function Home() {
               <div className="col-6">
                 <ContactBox
                   title={"Email"}
-                  emails={["hello@company.com", "info@company.com"]}
+                  emails={["namv2704@gmail.com", "company2@gmail.com"]}
                   logo="fa fa-envelope"
                 />
               </div>
               <div className="col-6">
                 <ContactBox
                   title={"Phone Numbers"}
-                  emails={["hello@company.com", "info@company.com"]}
+                  phoneNumbers={["0358109827", "0372817283"]}
                   logo="fa fa-phone"
                 />
               </div>

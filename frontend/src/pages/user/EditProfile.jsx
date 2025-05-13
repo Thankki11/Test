@@ -56,6 +56,12 @@ function EditProfile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
+      if (!phoneRegex.test(formData.phone)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+      }
+
       const token = localStorage.getItem("token");
 
       // Update profile information

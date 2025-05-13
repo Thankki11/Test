@@ -111,6 +111,12 @@ function CheckOut() {
   const handleSubmit = async (data) => {
     console.log("Form data:", data);
 
+    const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
+    if (!phoneRegex.test(data.phoneNumber)) {
+      alert("Phone number must be exactly 10 digits.");
+      return;
+    }
+
     const confirm = window.confirm("Bạn có chắc chắn muốn đặt hàng không?");
     if (!confirm) return;
 

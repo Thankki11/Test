@@ -25,8 +25,6 @@ function AdminChefs() {
   const chefsPerPage = 10; // Số chef mỗi trang
   const fileInputRef = useRef(null);
 
-
-
   useEffect(() => {
     fetchChefs();
   }, []);
@@ -53,6 +51,12 @@ function AdminChefs() {
 
   const handleCreate = async () => {
     try {
+      const phoneRegex = /^[0-9]{5,15}$/; // Biểu thức chính quy kiểm tra 10 chữ số
+      if (!phoneRegex.test(newChef.contact)) {
+        alert("Phone number must be 5-15 digits.");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("name", newChef.name);
       formData.append("specialty", newChef.specialty);
@@ -90,10 +94,17 @@ function AdminChefs() {
       ).hide();
     } catch (err) {
       console.error("Error creating chef:", err);
+      alert("Field ERROR");
     }
   };
 
   const handleSave = async () => {
+    const phoneRegex = /^[0-9]{5,15}$/; // Biểu thức chính quy kiểm tra 10 chữ số
+    if (!phoneRegex.test(editChef.contact)) {
+      alert("Phone number must be 5-15 digits.");
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append("name", editChef.name);
@@ -142,35 +153,34 @@ function AdminChefs() {
 
   // Filter chefs theo keyword
   const filteredChefs = chefs
-  .filter(
-    (chef) =>
-      chef.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
-      chef.specialty.toLowerCase().includes(searchKeyword.toLowerCase())
-  )
-  .sort((a, b) => {
-    if (!sortField) return 0;
+    .filter(
+      (chef) =>
+        chef.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+        chef.specialty.toLowerCase().includes(searchKeyword.toLowerCase())
+    )
+    .sort((a, b) => {
+      if (!sortField) return 0;
 
-    const valA = a[sortField];
-    const valB = b[sortField];
+      const valA = a[sortField];
+      const valB = b[sortField];
 
-    if (sortField === "experience") {
-      return sortOrder === "asc" ? valA - valB : valB - valA;
-    }
+      if (sortField === "experience") {
+        return sortOrder === "asc" ? valA - valB : valB - valA;
+      }
 
-    return sortOrder === "asc"
-      ? valA.localeCompare(valB)
-      : valB.localeCompare(valA);
-  });
-
+      return sortOrder === "asc"
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    });
 
   const handleSort = (field) => {
-  if (sortField === field) {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-  } else {
-    setSortField(field);
-    setSortOrder("asc");
-  }
-};
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   // Phân trang
   const indexOfLastChef = currentPage * chefsPerPage;
@@ -219,15 +229,27 @@ function AdminChefs() {
           <span style={{ fontWeight: "bold", fontSize: "20px" }}>
             Chefs List
           </span>
-          <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
+          <table
+            className="table table-striped table-bordered"
+            style={{ tableLayout: "fixed", width: "100%" }}
+          >
             <thead>
               <tr>
-                <th style={{ width: "12%", cursor: "pointer" }} onClick={() => handleSort("name")}>
-                  Name {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")}
+                <th
+                  style={{ width: "12%", cursor: "pointer" }}
+                  onClick={() => handleSort("name")}
+                >
+                  Name{" "}
+                  {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")}
                 </th>
                 <th style={{ width: "7%" }}>Specialty</th>
-                <th style={{ width: "8%", cursor: "pointer" }} onClick={() => handleSort("experience")}>
-                  Experience {sortField === "experience" && (sortOrder === "asc" ? "▲" : "▼")}
+                <th
+                  style={{ width: "8%", cursor: "pointer" }}
+                  onClick={() => handleSort("experience")}
+                >
+                  Experience{" "}
+                  {sortField === "experience" &&
+                    (sortOrder === "asc" ? "▲" : "▼")}
                 </th>
                 <th style={{ width: "10%" }}>Contact</th>
                 <th style={{ width: "15%" }}>Awards</th>
@@ -253,11 +275,9 @@ function AdminChefs() {
                   <td>{chef.experience} years</td>
                   <td>+{chef.contact}</td>
                   <td>
-                    {chef.awards
-                      ?.split("\n")
-                      .map((award, idx) => (
-                        <div key={idx}>{award}</div>
-                      ))}
+                    {chef.awards?.split("\n").map((award, idx) => (
+                      <div key={idx}>{award}</div>
+                    ))}
                   </td>
                   <td>{chef.description}</td>
                   <td
@@ -275,7 +295,9 @@ function AdminChefs() {
                           previewUrl: chef.imageUrl,
                           file: null,
                         });
-                        new Modal(document.getElementById("editChefModal")).show();
+                        new Modal(
+                          document.getElementById("editChefModal")
+                        ).show();
                       }}
                     >
                       Edit

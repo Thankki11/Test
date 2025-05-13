@@ -112,6 +112,11 @@ function AreasAndTables({ tables, reservations, onTableUpdated }) {
       capacity: editedTable.capacity,
     };
 
+    if (updatedData.capacity < 1) {
+      alert("INVALID CAPACITY");
+      return;
+    }
+
     console.log("Updated table data:", updatedData);
 
     // Gửi yêu cầu PUT hoặc POST đến server với axios

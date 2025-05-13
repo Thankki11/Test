@@ -39,27 +39,30 @@ const ReservationTable = ({ isInModal = false }) => {
   }, []);
 
   useEffect(() => {
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem("token"); // Lấy token từ localStorage
-      const response = await axios.get("http://localhost:3001/api/auth/user/info", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const user = response.data;
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Lấy token từ localStorage
+        const response = await axios.get(
+          "http://localhost:3001/api/auth/user/info",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        const user = response.data;
 
-      setFormData((prevData) => ({
-        ...prevData,
-        customerName: user.username || "",
-        emailAddress: user.email || "",
-        phoneNumber: user.phone || "",
-      }));
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
+        setFormData((prevData) => ({
+          ...prevData,
+          customerName: user.username || "",
+          emailAddress: user.email || "",
+          phoneNumber: user.phone || "",
+        }));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
 
-  fetchUserData();
-}, []);
+    fetchUserData();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,13 +72,30 @@ const ReservationTable = ({ isInModal = false }) => {
     });
   };
 
+  const isBeforeToday = (inputDate) => {
+    const today = new Date();
+    // Đặt thời gian về 00:00:00 để so sánh chỉ ngày
+    today.setHours(0, 0, 0, 0);
+
+    const dateToCheck = new Date(inputDate);
+    return dateToCheck < today;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
-      if (!phoneRegex.test(formData.phoneNumber)) {
-        alert("Phone number must be exactly 10 digits.");
-        return;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      alert("Phone number must be exactly 10 digits.");
+      return;
+    }
+    if (formData.numberOfGuest < 1) {
+      alert("Number of guests must be at least 1.");
+      return;
+    }
+    if (isBeforeToday(formData.dateTime)) {
+      alert("Invalid date");
+      return;
     }
 
     try {

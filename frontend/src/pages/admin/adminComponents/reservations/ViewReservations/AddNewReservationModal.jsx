@@ -43,10 +43,34 @@ function AddNewReservationModal({ onReservationUpdated }) {
     });
   };
 
+  const isBeforeToday = (inputDate) => {
+    const today = new Date();
+    // Đặt thời gian về 00:00:00 để so sánh chỉ ngày
+    today.setHours(0, 0, 0, 0);
+
+    const dateToCheck = new Date(inputDate);
+    return dateToCheck < today;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
+      if (!phoneRegex.test(formData.phoneNumber)) {
+        alert("Phone number must be exactly 10 digits.");
+        return;
+      }
+      if (formData.numberOfGuest < 1) {
+        alert("Number of guests must be at least 1.");
+        return;
+      }
+
+      if (isBeforeToday(formData.dateTime)) {
+        alert("INVALID Date");
+        return;
+      }
+
       console.log("Form Data Preview:", JSON.stringify(formData, null, 2));
       const response = await axios.post(
         "http://localhost:3001/api/reservations/add",

@@ -71,36 +71,35 @@ function AdminOrders() {
 
   // Filter orders theo search keyword
   const filteredOrders = orders
-  .filter((order) => {
-    const keyword = searchKeyword.toLowerCase();
-    const matchesSearch =
-      order.customerName.toLowerCase().includes(keyword) ||
-      order.phoneNumber.toLowerCase().includes(keyword) ||
-      order.emailAddress.toLowerCase().includes(keyword) ||
-      order.address.toLowerCase().includes(keyword);
+    .filter((order) => {
+      const keyword = searchKeyword.toLowerCase();
+      const matchesSearch =
+        order.customerName.toLowerCase().includes(keyword) ||
+        order.phoneNumber.toLowerCase().includes(keyword) ||
+        order.emailAddress.toLowerCase().includes(keyword) ||
+        order.address.toLowerCase().includes(keyword);
 
-    const matchesPayment =
-      selectedPaymentMethod === "" || order.paymentMethod === selectedPaymentMethod;
+      const matchesPayment =
+        selectedPaymentMethod === "" || order.status === selectedPaymentMethod;
 
-    return matchesSearch && matchesPayment;
-  })
-  .sort((a, b) => {
-    if (!sortField) return 0;
+      return matchesSearch && matchesPayment;
+    })
+    .sort((a, b) => {
+      if (!sortField) return 0;
 
-    const valA = a[sortField];
-    const valB = b[sortField];
+      const valA = a[sortField];
+      const valB = b[sortField];
 
-    if (sortField === "date") {
+      if (sortField === "date") {
+        return sortOrder === "asc"
+          ? new Date(valA) - new Date(valB)
+          : new Date(valB) - new Date(valA);
+      }
+
       return sortOrder === "asc"
-        ? new Date(valA) - new Date(valB)
-        : new Date(valB) - new Date(valA);
-    }
-
-    return sortOrder === "asc"
-      ? valA.localeCompare(valB)
-      : valB.localeCompare(valA);
-  });
-
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    });
 
   // Xử lý phân trang
   const indexOfLastOrder = currentPage * ordersPerPage;
@@ -233,13 +232,13 @@ function AdminOrders() {
   };
 
   const handleSort = (field) => {
-  if (sortField === field) {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-  } else {
-    setSortField(field);
-    setSortOrder("asc");
-  }
-};
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   return (
     <>
@@ -578,9 +577,9 @@ function AdminOrders() {
             }}
             style={{ width: "160px" }}
           >
-            <option value="">All methods</option>
-            <option value="cod">cod</option>
-            <option value="vnpay">vnpay</option>
+            <option value="">All Status</option>
+            <option value="completed">Completed</option>
+            <option value="delivering">Delivering</option>
           </select>
 
           <button
@@ -610,7 +609,9 @@ function AdminOrders() {
                     style={{ width: "9%", cursor: "pointer" }}
                     onClick={() => handleSort("customerName")}
                   >
-                    Customer Name {sortField === "customerName" && (sortOrder === "asc" ? "▲" : "▼")}
+                    Customer Name{" "}
+                    {sortField === "customerName" &&
+                      (sortOrder === "asc" ? "▲" : "▼")}
                   </th>
                   <th style={{ width: "7%" }}>Phone Number</th>
                   <th style={{ width: "10%" }}>Email Address</th>
@@ -632,7 +633,8 @@ function AdminOrders() {
                     }}
                     onClick={() => handleSort("date")}
                   >
-                    Date {sortField === "date" && (sortOrder === "asc" ? "▲" : "▼")}
+                    Date{" "}
+                    {sortField === "date" && (sortOrder === "asc" ? "▲" : "▼")}
                   </th>
                 </tr>
               </thead>
