@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo-black.png";
@@ -12,6 +12,40 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [captchaToken, setCaptchaToken] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Lấy token từ URL nếu có (dành cho Google/Facebook)
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    if (token) {
+      // Lưu token vào localStorage
+      localStorage.setItem("token", token);
+
+      // Lấy thông tin người dùng từ token
+      fetchUserInfo(token);
+
+      // Xóa token khỏi URL
+      window.history.replaceState({}, document.title, "/");
+
+      // Chuyển hướng đến trang chủ
+      navigate("/");
+    }
+  }, [navigate]);
+
+  const fetchUserInfo = async (token) => {
+    try {
+      const response = await fetch("http://localhost:3001/api/auth/user/info", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const user = await response.json();
+
+      // Lưu thông tin người dùng vào localStorage
+      localStorage.setItem("user", JSON.stringify(user));
+    } catch (err) {
+      console.error("Failed to fetch user info:", err);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -175,6 +209,26 @@ function Login() {
                 Login
               </button>
             </form>
+
+            <button
+              className="btn btn-danger w-100 mb-3"
+              onClick={() =>
+                (window.location.href =
+                  "http://localhost:3001/api/auth/user/google")
+              }
+            >
+              <i className="fab fa-google"></i> Login with Google
+            </button>
+
+            <button
+              className="btn btn-primary w-100"
+              onClick={() =>
+                (window.location.href =
+                  "http://localhost:3001/api/auth/user/facebook")
+              }
+            >
+              <i className="fab fa-facebook"></i> Login with Facebook
+            </button>
 
             <p className="text-center mt-4" style={{ fontSize: "16px" }}>
               Don't have an account?{" "}

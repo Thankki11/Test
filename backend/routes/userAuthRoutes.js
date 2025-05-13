@@ -1,7 +1,8 @@
 const express = require("express");
-const { register, login, updateUser, getUserInfo, updateAvatar, upload, getAllUsers, deleteUser } = require("../controllers/userAuthController");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
+const { register, login, updateUser, getUserInfo, updateAvatar, upload } = require("../controllers/userAuthController");
 const authenticateToken = require("../middleware/authMiddleware");
-const adminMiddleware = require("../middleware/adminMiddleware");
 
 const router = express.Router();
 
@@ -10,6 +11,42 @@ router.post("/register", register);
 
 // User Login
 router.post("/login", login);
+
+// Google OAuth
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get(
+  "/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  (req, res) => {
+    // Tạo token JWT
+    const token = jwt.sign(
+      { id: req.user._id, username: req.user.username, role: req.user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRATION }
+    );
+
+    // Chuyển hướng về frontend với token
+    res.redirect(`http://localhost:3000?token=${token}`);
+  }
+);
+
+// Facebook OAuth
+router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }));
+router.get(
+  "/facebook/callback",
+  passport.authenticate("facebook", { failureRedirect: "/login" }),
+  (req, res) => {
+    // Tạo token JWT
+    const token = jwt.sign(
+      { id: req.user._id, username: req.user.username, role: req.user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRATION }
+    );
+
+    // Chuyển hướng về frontend với token
+    res.redirect(`http://localhost:3000?token=${token}`);
+  }
+);
 
 // Get User Information
 router.get("/info", authenticateToken, getUserInfo);

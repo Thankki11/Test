@@ -12,30 +12,38 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    required: true,
     validate: {
       validator: function (v) {
         return /^[0-9]{10}$/.test(v); // Biểu thức chính quy kiểm tra 10 chữ số
       },
       message: (props) => `${props.value} is not a valid phone number!`,
     },
-  },
-  address: {
-    type: String, // Add address field
-    default: "",
+    required: function () {
+      return !this.isOAuth; // Chỉ yêu cầu phone nếu không phải từ OAuth
+    },
   },
   password: {
     type: String,
-    required: true,
+    required: function () {
+      return !this.isOAuth; // Chỉ yêu cầu password nếu không phải từ OAuth
+    },
+  },
+  avatar: {
+    type: String,
+    default: "http://localhost:3001/uploads/users/default-avatar.png",
   },
   role: {
     type: String,
     enum: ["user", "admin"],
     default: "user",
   },
-  avatar: {
-    type: String,
-    default: "http://localhost:3001/uploads/users/default-avatar.png",
+  isOAuth: {
+    type: Boolean,
+    default: false, // Đánh dấu tài khoản là từ OAuth
+  },
+  provider: {
+    type: String, // Lưu thông tin provider (google hoặc facebook)
+    default: null,
   },
   createdAt: {
     type: Date,
@@ -43,6 +51,4 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const User = mongoose.model("Users", userSchema);
-
-module.exports = User;
+module.exports = mongoose.model("User", userSchema);

@@ -170,4 +170,33 @@ exports.updateAvatar = async (req, res) => {
   }
 };
 
+exports.handleOAuthLogin = async (profile, provider) => {
+  try {
+    // Kiểm tra xem tài khoản đã tồn tại chưa
+    let user = await User.findOne({ email: profile.emails[0].value });
+
+    if (!user) {
+      // Nếu chưa tồn tại, tạo tài khoản mới
+      user = new User({
+        username: profile.displayName,
+        email: profile.emails[0].value,
+        avatar: profile.photos[0].value,
+        role: "user",
+        isOAuth: true, // Đánh dấu tài khoản là từ OAuth
+        provider, // Lưu thông tin provider (Google hoặc Facebook)
+      });
+      await user.save();
+    }
+
+    // Trả về thông tin người dùng
+    return user;
+  } catch (err) {
+    console.error("Error during OAuth login:", err);
+    throw new Error("Server error during OAuth login");
+  }
+};
+// module.exports = {
+//   ...module.exports,
+//   handleOAuthLogin,
+// };
 module.exports.upload = upload;

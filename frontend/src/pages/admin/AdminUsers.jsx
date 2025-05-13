@@ -33,9 +33,10 @@ function AdminUsers() {
       const response = await axios.get("http://localhost:3001/api/admin/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setUsers(response.data);
+      setUsers(response.data || []); // Đảm bảo `users` luôn là một mảng
     } catch (err) {
       console.error("Error fetching users:", err);
+      setUsers([]); // Đặt giá trị mặc định nếu xảy ra lỗi
     }
   };
 
@@ -131,29 +132,29 @@ function AdminUsers() {
     }
   };
 
-  const filteredUsers = users
-  .filter((user) => {
-    const keyword = searchKeyword.toLowerCase();
-    const matchesSearch =
-      user.username.toLowerCase().includes(keyword) ||
-      user.email.toLowerCase().includes(keyword) ||
-      user.phone.includes(keyword) ||
-      user.role.toLowerCase().includes(keyword);
+  const filteredUsers = (users || [])
+    .filter((user) => {
+      const keyword = searchKeyword.toLowerCase();
+      const matchesSearch =
+        user.username?.toLowerCase().includes(keyword) ||
+        user.email?.toLowerCase().includes(keyword) ||
+        user.phone?.includes(keyword) ||
+        user.role?.toLowerCase().includes(keyword);
 
-    const matchesRole = selectedRole === "" || user.role === selectedRole;
+      const matchesRole = selectedRole === "" || user.role === selectedRole;
 
-    return matchesSearch && matchesRole;
-  })
-  .sort((a, b) => {
-    if (!sortField) return 0;
+      return matchesSearch && matchesRole;
+    })
+    .sort((a, b) => {
+      if (!sortField) return 0;
 
-    const valA = a[sortField];
-    const valB = b[sortField];
+      const valA = a[sortField];
+      const valB = b[sortField];
 
-    return sortOrder === "asc"
-      ? valA.localeCompare(valB)
-      : valB.localeCompare(valA);
-  });
+      return sortOrder === "asc"
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    });
 
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
