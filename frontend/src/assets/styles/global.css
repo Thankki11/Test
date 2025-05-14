@@ -169,6 +169,42 @@ button:hover {
   color: white; /* Chữ trắng khi đã chọn */
 }
 
+/* Đảm bảo các nút có cùng kích thước và nằm cạnh nhau */
+td button {
+  display: flex; /* Sử dụng flexbox để căn giữa nội dung */
+  justify-content: center; /* Căn giữa theo chiều ngang */
+  align-items: center; /* Căn giữa theo chiều dọc */
+  width: 120px; /* Chiều rộng cố định */
+  height: 40px; /* Chiều cao cố định */
+  margin-right: 10px; /* Khoảng cách giữa các nút */
+  background-color: rgb(157, 0, 0); /* Màu nền */
+  color: white; /* Màu chữ */
+  border: 2px solid white; /* Viền */
+  border-radius: 5px; /* Bo góc */
+  cursor: pointer; /* Con trỏ chuột */
+  transition: all 0.3s ease; /* Hiệu ứng chuyển đổi */
+  text-transform: none; /* Không viết hoa chữ */
+  font-size: 14px; /* Kích thước chữ */
+  font-weight: 500; /* Độ đậm chữ */
+}
+
+/* Khi hover trên nút */
+td button:hover {
+  background-color: rgb(124, 0, 0); /* Màu nền khi hover */
+  color: white; /* Màu chữ khi hover */
+}
+
+/* Khi nút được chọn (có class "selected") */
+td button.selected {
+  background-color: green; /* Màu nền xanh khi đã chọn */
+  color: white; /* Màu chữ trắng khi đã chọn */
+}
+
+/* Khi hover trên nút đã chọn */
+td button.selected:hover {
+  background-color: darkgreen; /* Màu nền xanh đậm khi hover */
+}
+
 .section {
   padding: 50px 150px;
 }
@@ -202,3 +238,73 @@ button:hover {
 .css-1qltlow-MuiTabs-indicator {
   background-color: #b8860b !important;
 }
+
+/* Card hover effect */
+.rounded-lg {
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.rounded-lg:hover {
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.10), 0 1.5px 3px 0 rgba(0,0,0,0.08);
+  transform: translateY(-2px) scale(1.02);
+}
+
+/* Card icon background */
+.card-icon-bg {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 50%;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Title gradient */
+.dashboard-title {
+  background: linear-gradient(90deg, #007cf0 0%, #00dfd8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: bold;
+}
+
+/* Chart legend style */
+.chart-legend {
+  gap: 16px;
+  margin-top: 16px;
+}
+.chart-legend .flex {
+  gap: 8px;
+}
+
+/* Responsive padding for dashboard */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .p-6 {
+    padding: 1rem !important;
+  }
+}
+
+/* Custom scrollbar for dashboard */
+.container::-webkit-scrollbar {
+  width: 8px;
+  background: #f1f1f1;
+}
+.container::-webkit-scrollbar-thumb {
+  background: #c3cfe2;
+  border-radius: 8px;
+}
+
+/* Pie chart label style */
+.recharts-pie-label-text {
+  font-size: 13px;
+  font-weight: 500;
+  fill: #333;
+}
+
+/* Card shadow for dashboard */
+.shadow {
+  box-shadow: 0 4px 24px 0 rgba(0,0,0,0.07), 0 1.5px 3px 0 rgba(0,0,0,0.08);
+}
+
