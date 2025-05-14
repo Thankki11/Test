@@ -291,22 +291,23 @@ function Home() {
             </h2>
 
             <p style={{ color: "white" }} className="mb-5">
-              Whether you’re planning ahead or just passing by, our doors are
-              always open. Enjoy authentic flavors, cozy ambiance, and a dining
-              experience to remember—your table is ready when you are.
+            Dù bạn đang lên kế hoạch từ trước hay chỉ tình cờ ghé qua, 
+            cánh cửa của chúng tôi luôn rộng mở. Hãy tận hưởng hương vị 
+            đậm đà, không gian ấm cúng và một trải nghiệm ẩm thực đáng 
+            nhớ — bàn ăn của bạn luôn sẵn sàng bất cứ khi nào bạn đến.
             </p>
             <div className="row">
               <div className="col-6">
                 <ContactBox
                   title={"Email"}
-                  emails={["namv2704@gmail.com", "company2@gmail.com"]}
+                  emails={["nhom3.food@gmail.com"]}
                   logo="fa fa-envelope"
                 />
               </div>
               <div className="col-6">
                 <ContactBox
-                  title={"Phone Numbers"}
-                  phoneNumbers={["0358109827", "0372817283"]}
+                  title={"Phone Number"}
+                  phoneNumbers={["0966666666"]}
                   logo="fa fa-phone"
                 />
               </div>

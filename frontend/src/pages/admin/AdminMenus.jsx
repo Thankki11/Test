@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal } from "bootstrap";
 
-const categories = ["drink", "mainCourse", "dessert", "appetizer"];
+const categories = ["Best Seller", "Món chính", "Đồ ăn nhanh", "Đồ uống"];
 
 function AdminMenus() {
   const [menus, setMenus] = useState([]);
