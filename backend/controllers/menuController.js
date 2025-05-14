@@ -147,3 +147,44 @@ exports.createMenu = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+// Lấy đánh giá sản phẩm
+exports.getMenuReviews = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const menu = await Menu.findById(id);
+    if (!menu) return res.status(404).json({ message: "Menu not found" });
+    res.json(menu.reviews || []);
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Thêm đánh giá sản phẩm (chỉ cho user đã mua)
+exports.addMenuReview = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { rating, comment } = req.body;
+    const userId = req.user.id;
+    const username = req.user.username;
+    // Kiểm tra user đã mua sản phẩm chưa
+    const Order = require("../models/orderModel");
+    const orders = await Order.find({ userId, "items.menuItemId": id });
+    if (!orders || orders.length === 0) {
+      return res.status(403).json({ message: "Bạn phải mua sản phẩm này mới được đánh giá." });
+    }
+    // Thêm đánh giá
+    const menu = await Menu.findById(id);
+    if (!menu) return res.status(404).json({ message: "Menu not found" });
+    // Không cho phép đánh giá trùng user
+    const alreadyReviewed = menu.reviews.find(r => r.userId.toString() === userId);
+    if (alreadyReviewed) {
+      return res.status(400).json({ message: "Bạn đã đánh giá sản phẩm này rồi." });
+    }
+    menu.reviews.push({ userId, username, rating, comment });
+    await menu.save();
+    res.status(201).json({ message: "Đánh giá thành công!", reviews: menu.reviews });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};

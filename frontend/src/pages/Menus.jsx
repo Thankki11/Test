@@ -17,6 +17,7 @@ function Menus() {
   const [menus, setMenus] = useState([]);
   const [sortOption, setSortOption] = useState("default");
   const [value, setValue] = React.useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   //Chạy khi component được mount
   useEffect(() => {
@@ -113,6 +114,13 @@ function Menus() {
           <h2 style={{ fontSize: "45px", padding: "0px 65px" }}>
             Trendy And Popular Courses Offered
           </h2>
+           <input
+            type="text"
+            placeholder="Tìm kiếm món ăn..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ width: 300, padding: 8, marginTop: 16, borderRadius: 6, border: '1px solid #ccc' }}
+          />
         </div>
 
         <Box sx={{ width: "100%" }}>
