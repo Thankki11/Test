@@ -77,18 +77,6 @@ function AdminLayout({ children }) {
             </li>
             <li style={{ marginBottom: "10px" }}>
               <Link
-                to="/admin/chefs"
-                style={{ color: "#fff", textDecoration: "none" }}
-              >
-                <i
-                  className="fas fa-user-tie"
-                  style={{ marginRight: "10px" }}
-                ></i>
-                Manage Chefs
-              </Link>
-            </li>
-            <li style={{ marginBottom: "10px" }}>
-              <Link
                 to="/admin/orders"
                 style={{ color: "#fff", textDecoration: "none" }}
               >

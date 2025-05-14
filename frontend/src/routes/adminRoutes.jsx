@@ -1,5 +1,4 @@
 import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminChefs from "../pages/admin/AdminChefs";
 import AdminMenus from "../pages/admin/AdminMenus";
 import AdminLayout from "../layouts/AdminLayout";
 import AdminReservation from "../pages/admin/AdminReservation";
@@ -19,16 +18,6 @@ const adminRoutes = [
       <AdminRouteWrapper>
         <AdminLayout>
           <AdminDashboard />
-        </AdminLayout>
-      </AdminRouteWrapper>
-    ),
-  },
-  {
-    path: "/admin/chefs",
-    element: (
-      <AdminRouteWrapper>
-        <AdminLayout>
-          <AdminChefs />
         </AdminLayout>
       </AdminRouteWrapper>
     ),
@@ -64,11 +53,11 @@ const adminRoutes = [
     ),
   },
   {
-    path: "admin/users",
+    path: "/admin/users",
     element: (
       <AdminRouteWrapper>
         <AdminLayout>
-          <AdminUsers/>
+          <AdminUsers />
         </AdminLayout>
       </AdminRouteWrapper>
     ),
