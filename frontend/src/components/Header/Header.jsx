@@ -60,7 +60,7 @@ function Header() {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || {
         items: [],
       };
-      setItems(savedCart.items);
+      setItems(Array.isArray(savedCart.items) ? savedCart.items : []);
     };
 
     loadCart();
@@ -243,9 +243,9 @@ function Header() {
                 <li>
                   <Link to="/">Home</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="/chefs">Chefs</Link>
-                </li>
+                </li> */}
               </ul>
             </div>
 
@@ -293,9 +293,9 @@ function Header() {
                       </ul>
                     </div>
                   </li> */}
-                  <li>
+                  {/* <li>
                     <Link to="/reservation">Book table</Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
               <div>

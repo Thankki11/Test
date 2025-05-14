@@ -9,11 +9,10 @@ const Footer = () => {
           <div className="col-6 col-md-6">
             <h5 className="mb-4">About Us</h5>
             <p className="mb-4" style={{ paddingRight: "150px" }}>
-              We are dedicated to delivering innovative, reliable, and scalable
-              digital solutions that empower businesses to grow, adapt, and
-              thrive in an ever-evolving digital landscape. Our mission is to
-              support your success by combining cutting-edge technology with
-              deep industry insight and a commitment to excellence.
+            Chúng tôi mong muốn mang đến những bữa ăn ngon
+            và chất lượng cao cho mọi gia đình. Với nguồn nguyên
+            liệu tươi ngon và đội ngũ đầu bếp tận tâm, chúng tôi
+            cam kết mang lại trải nghiệm ẩm thực tuyệt vời.
             </p>
           </div>
 
@@ -26,21 +25,21 @@ const Footer = () => {
                   Home
                 </a>
               </li>
-              <li className="mb-2">
+              {/* <li className="mb-2">
                 <a href="/chefs" className={styles.footerLink}>
                   Discover chefs
                 </a>
-              </li>
+              </li> */}
               <li className="mb-2">
                 <a href="/menus" className={styles.footerLink}>
                   Discover menus
                 </a>
               </li>
-              <li className="mb-2">
+              {/* <li className="mb-2">
                 <a href="/reservation" className={styles.footerLink}>
                   Book table
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -58,11 +57,11 @@ const Footer = () => {
                   Register
                 </a>
               </li>
-              <li className="mb-2">
+              {/* <li className="mb-2">
                 <a href="/check-out" className={styles.footerLink}>
                   Check out
                 </a>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -72,12 +71,12 @@ const Footer = () => {
             <ul className="list-unstyled">
               <li className="mb-3">
                 <i className="fas fa-map-marker-alt me-2"></i>
-                123 Business Street, New York, NY 10001
+                96A Đ. Trần Phú, P. Mộ Lao, Hà Đông, Hà Nội
               </li>
               <li className="mb-3">
                 <i className="fas fa-phone me-2"></i>
-                <a href="tel:+1234567890" className={styles.footerLink}>
-                  +1 (234) 567-890
+                <a href="tel:+84966666666" className={styles.footerLink}>
+                  +84 966 666 666
                 </a>
               </li>
               <li className="mb-3">
@@ -86,7 +85,7 @@ const Footer = () => {
                   href="mailto:contact@example.com"
                   className={styles.footerLink}
                 >
-                  namv2704@gmail.com
+                  nhom3.food@gmail.com
                 </a>
               </li>
             </ul>
@@ -99,7 +98,7 @@ const Footer = () => {
             <hr className="mb-4" />
             <div className="text-center">
               <p className="mb-0">
-                &copy; 2025 A3Building. All rights reserved.
+                &copy; 2025 Nhóm 3. All rights reserved.
               </p>
             </div>
           </div>

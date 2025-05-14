@@ -56,11 +56,11 @@ function Home() {
       <PageHeader
         backgroundSrc={video}
         backgroundType={"video"}
-        buttonText={"Book a table"}
+        buttonText={"Đặt món ngay"}
         h2Title={"restaurant"}
         subTitle={"Welcome to our delicious corner"}
         title={"A3Building"}
-        buttonLink={"/reservation"}
+        buttonLink={"/menus"}
       />
       {/* ***** About Us Start ***** */}
       <div className="section">
@@ -68,10 +68,10 @@ function Home() {
           <div className="col-sm-3">
             <TitleWithSubtitle subTitle={"Our Story"} title={"About Us"} />
             <p>
-              At the heart of everything we do is a passion for creating
-              meaningful experiences. We started with a simple idea — to bring
-              beauty, purpose, and authenticity into everyday life. Today, that
-              vision continues to guide us as we grow and evolve.
+            Bắt đầu từ niềm đam mê ẩm thực của giới trẻ Việt Nam, chúng tôi quyết định
+            thành lập để mang đến những món ăn đậm chất Việt, được làm từ nguyên
+            liệu tươi ngon và công thức đa dạng. Mỗi món ăn là một câu chuyện,
+            và chúng tôi hy vọng được đồng hành cùng bạn trong hành trình thưởng thức!
             </p>
           </div>
           <div className="col-sm-3 justify-content-center d-flex">
@@ -93,13 +93,13 @@ function Home() {
           <div className="col-sm-9 ">
             <TitleWithSubtitle
               subTitle={"The culinary minds behind every unforgettable dish"}
-              title={"MEET OUR MASTER CHEFS"}
+              title={"OUR MASTER CHEFS"}
             />
           </div>
           <div className="col-sm-3 d-flex align-items-center">
-            <Link to="/chefs">
+            {/* <Link to="/chefs">
               <ButtonWhite buttontext={"Discover all Chefs"} />
-            </Link>
+            </Link> */}
           </div>
           <div className="col-sm-3">
             <OverlayCard
@@ -157,14 +157,15 @@ function Home() {
               subTitle="A3Building’s tasty offer"
             />
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas
-              unde corrupti a adipisci, doloribus nostrum cum consectetur odio
-              consequatur fugiat cumque numquam suscipit quos culpa, atque
-              iusto, ad perspiciatis mollitia?
+            Khám phá menu để trải nghiệm những món ăn đậm đà hương vị Việt,
+             được chế biến từ nguyên liệu tươi ngon nhất! Từ các món ăn vặt 
+             hấp dẫn đến những bữa cơm gia đình ấm cúng, chúng tôi có tất cả
+              để làm hài lòng khẩu vị của bạn. Hãy ghé thăm và tìm món yêu thích 
+              ngay hôm nay!
             </p>
 
             <Link to="/menus">
-              <ButtonWhite buttontext={"Explore our Menu"} />
+              <ButtonWhite buttontext={"Khám phá menu"} />
             </Link>
           </div>
         </div>
@@ -181,14 +182,16 @@ function Home() {
                 subTitle="Fast - Easy - Anywhere"
               />
               <p className="mb-5 me-5">
-                Enjoy the convenience of browsing and buying your favorite
-                products anytime, anywhere. From daily essentials to exclusive
-                finds, our online store is designed to make your shopping
-                experience fast, easy, and enjoyable.
+              Tận hưởng sự tiện lợi khi mua sắm mọi lúc, 
+              mọi nơi với những sản phẩm yêu thích của bạn. 
+              Từ các những cốc cafe đến những món ăn độc đáo, 
+              cửa hàng trực tuyến của chúng tôi được thiết kế 
+              để mang đến cho bạn trải nghiệm mua sắm nhanh chóng, 
+              dễ dàng và đầy thú vị.
               </p>
-              <Link to="/shop">
+              {/* <Link to="/shop">
                 <ButtonWhite buttontext={"Explore all category"} />
-              </Link>
+              </Link> */}
             </div>
           </div>
           <div className="col-sm-3">
@@ -222,10 +225,10 @@ function Home() {
           </div>
           <div className="col-sm-7">
             <p>
-              Whether you're looking to launch your career in the kitchen or
-              simply sharpen your skills, we welcome you to be part of our
-              vibrant culinary world. Explore two exciting ways to get involved
-              below.
+            Dù bạn đang tìm kiếm cơ hội bắt đầu sự nghiệp trong 
+            gian bếp hay đơn giản chỉ muốn trau dồi kỹ năng nấu nướng, 
+            chúng tôi luôn chào đón bạn trở thành một phần của thế giới 
+            ẩm thực sôi động này. Hãy liên lạc qua địa chỉ của chúng tôi ở dưới.
             </p>
           </div>
           <div className="col-sm-6">

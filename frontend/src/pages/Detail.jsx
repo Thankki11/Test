@@ -176,6 +176,7 @@ const sendProductToCart = (menu, quantity, isNotify = true) => {
 
   // Lấy giỏ hàng hiện tại từ localStorage hoặc khởi tạo giỏ hàng mới nếu không tồn tại
   let cart = JSON.parse(localStorage.getItem("cart")) || { cartId, items: [] };
+  if (!Array.isArray(cart.items)) cart.items = [];
 
   // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
   const existingItemIndex = cart.items.findIndex(
