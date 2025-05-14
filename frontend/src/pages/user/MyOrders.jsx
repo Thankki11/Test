@@ -131,8 +131,8 @@ function MyOrders() {
                       <th className="text-center align-middle">Order#</th>
                       <th className="text-center align-middle">Total Price</th>
                       <th className="text-center align-middle">Address</th>
-                      <th className="text-center align-middle">Date created</th>
                       <th className="text-center align-middle">Status</th>
+                      <th className="text-center align-middle">Date Created</th>
                       <th className="text-center align-middle">Details</th>
                     </tr>
                   </thead>

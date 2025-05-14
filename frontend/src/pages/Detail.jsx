@@ -22,6 +22,10 @@ function Detail() {
   const [value, setValue] = useState("1");
   const { id } = useParams(); // Lấy id từ URL
   const [quantity, setQuantity] = useState(1); // State để lưu số lượng món ăn
+  const [reviews, setReviews] = useState([]);
+  const [userCanReview, setUserCanReview] = useState(false);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
+  const [reviewMessage, setReviewMessage] = useState("");
 
   // Reset quantity về 1 mỗi khi id (menuId) thay đổi
   useEffect(() => {
@@ -52,12 +56,59 @@ function Detail() {
       });
   }, [id]); // useEffect sẽ được gọi lại khi id thay đổi
 
+  useEffect(() => {
+    if (!menu) return;
+    // Lấy đánh giá sản phẩm
+    axios.get(`http://localhost:3001/api/menus/${menu._id}/reviews`)
+      .then(res => setReviews(res.data))
+      .catch(() => setReviews([]));
+    // Kiểm tra user đã mua chưa
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.get("http://localhost:3001/api/orders/my-orders", { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => {
+          const orders = res.data || [];
+          const hasBought = orders.some(order =>
+            (order.items || []).some(item => (item.menuItemId === menu._id || item.menuItemId === menu._id?.toString()))
+          );
+          setUserCanReview(hasBought);
+        })
+        .catch(() => setUserCanReview(false));
+    } else {
+      setUserCanReview(false);
+    }
+  }, [menu]);
+
   if (!menu) {
     return <div>Loading...</div>; // Nếu chưa có dữ liệu món ăn, hiển thị loading
   }
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setReviewMessage("");
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setReviewMessage("Bạn cần đăng nhập để đánh giá.");
+        return;
+      }
+      await axios.post(
+        `http://localhost:3001/api/menus/${menu._id}/reviews`,
+        reviewForm,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setReviewMessage("Đánh giá thành công!");
+      setReviewForm({ rating: 5, comment: "" });
+      // Reload reviews
+      const res = await axios.get(`http://localhost:3001/api/menus/${menu._id}/reviews`);
+      setReviews(res.data);
+    } catch (err) {
+      setReviewMessage(err.response?.data?.message || "Có lỗi khi gửi đánh giá.");
+    }
   };
 
   return (
@@ -163,6 +214,42 @@ function Detail() {
             </div>
           ))}
         </div>
+        {/* Đánh giá sản phẩm */}
+        <div className="row mt-5">
+          <div className="col-12">
+            <h3>Đánh giá sản phẩm</h3>
+            {reviews.length === 0 && <p>Chưa có đánh giá nào.</p>}
+            {reviews.map((r, idx) => (
+              <div key={idx} style={{ borderBottom: '1px solid #eee', marginBottom: 8, paddingBottom: 8 }}>
+                <b>{r.username || 'Người dùng'}</b> - <span>{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
+                <div>{r.comment}</div>
+                <div style={{ fontSize: 12, color: '#888' }}>{new Date(r.createdAt).toLocaleString()}</div>
+              </div>
+            ))}
+            {userCanReview && (
+              <form onSubmit={handleReviewSubmit} style={{ marginTop: 16 }}>
+                <div>
+                  <label>Chọn số sao: </label>
+                  <select value={reviewForm.rating} onChange={e => setReviewForm(f => ({ ...f, rating: Number(e.target.value) }))}>
+                    {[1,2,3,4,5].map(star => <option key={star} value={star}>{star}</option>)}
+                  </select>
+                </div>
+                <div style={{ marginTop: 8 }}>
+                  <textarea
+                    value={reviewForm.comment}
+                    onChange={e => setReviewForm(f => ({ ...f, comment: e.target.value }))}
+                    placeholder="Nhận xét của bạn..."
+                    rows={3}
+                    style={{ width: '100%', borderRadius: 6, border: '1px solid #ccc', padding: 8 }}
+                  />
+                </div>
+                <button type="submit" style={{ marginTop: 8 }}>Gửi đánh giá</button>
+                {reviewMessage && <div style={{ color: reviewMessage.includes('thành công') ? 'green' : 'red', marginTop: 8 }}>{reviewMessage}</div>}
+              </form>
+            )}
+            {!userCanReview && <div style={{ color: '#888', marginTop: 8 }}>Chỉ khách đã mua sản phẩm này mới được đánh giá.</div>}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -199,8 +286,6 @@ const sendProductToCart = (menu, quantity, isNotify = true) => {
 
   // Lưu lại giỏ hàng vào localStorage
   localStorage.setItem("cart", JSON.stringify(cart));
-
-  // Gửi sự kiện custom để các component khác biết
   window.dispatchEvent(new Event("cartUpdated"));
 
   if (isNotify) {

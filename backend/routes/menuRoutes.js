@@ -7,7 +7,10 @@ const {
   updateMenu,
   createMenu,
   deleteMenu,
+  getMenuReviews,
+  addMenuReview,
 } = require("../controllers/menuController");
+const authenticateToken = require("../middleware/authMiddleware");
 
 // Route lấy tất cả menu
 router.get("/", getMenus);
@@ -26,5 +29,11 @@ router.post("/", createMenu);
 
 // Route xóa món ăn
 router.delete("/:id", deleteMenu);
+
+// Route lấy đánh giá sản phẩm
+router.get("/:id/reviews", getMenuReviews);
+
+// Route thêm đánh giá sản phẩm
+router.post("/:id/reviews", authenticateToken, addMenuReview);
 
 module.exports = router;

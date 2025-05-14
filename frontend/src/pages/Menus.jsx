@@ -17,6 +17,7 @@ function Menus() {
   const [menus, setMenus] = useState([]);
   const [sortOption, setSortOption] = useState("default");
   const [value, setValue] = React.useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   //Chạy khi component được mount
   useEffect(() => {
@@ -55,20 +56,24 @@ function Menus() {
   };
 
   const renderTabContent = (category) => {
-    //filter các item theo thể loại
+    //filter các item theo thể loại và searchTerm
     const filteredItems = menus.filter((item) => {
-      switch (category) {
-        case 0:
-          return item.category === "appetizer";
-        case 1:
-          return item.category === "mainCourse";
-        case 2:
-          return item.category === "dessert";
-        case 3:
-          return item.category === "drink";
-        default:
-          return false;
-      }
+      const matchCategory = (() => {
+        switch (category) {
+          case 0:
+            return item.category === "Best Seller";
+          case 1:
+            return item.category === "Món chính";
+          case 2:
+            return item.category === "Đồ ăn nhanh";
+          case 3:
+            return item.category === "Đồ uống";
+          default:
+            return false;
+        }
+      })();
+      const matchSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchCategory && matchSearch;
     });
 
     //sắp xếp các item đã filter theo loại sort đã chọn
@@ -112,6 +117,13 @@ function Menus() {
           <h2 style={{ fontSize: "45px", padding: "0px 65px" }}>
             Trendy And Popular Courses Offered
           </h2>
+          <input
+            type="text"
+            placeholder="Tìm kiếm món ăn..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            style={{ width: 300, padding: 8, marginTop: 16, borderRadius: 6, border: '1px solid #ccc' }}
+          />
         </div>
 
         <Box sx={{ width: "100%" }}>
@@ -131,22 +143,22 @@ function Menus() {
               aria-label="basic tabs example"
             >
               <Tab
-                label="Appetizer"
+                label="Best Seller"
                 {...a11yProps(0)}
                 style={{ fontSize: "16px" }}
               />
               <Tab
-                label="Main Courses"
+                label="Món chính"
                 {...a11yProps(1)}
                 style={{ fontSize: "16px" }}
               />
               <Tab
-                label="Dessert"
+                label="Đồ ăn nhanh"
                 {...a11yProps(2)}
                 style={{ fontSize: "16px" }}
               />
               <Tab
-                label="Drinks"
+                label="Đồ uống"
                 {...a11yProps(3)}
                 style={{ fontSize: "16px" }}
               />

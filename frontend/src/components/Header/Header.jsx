@@ -298,7 +298,12 @@ function Header() {
                   </li> */}
                 </ul>
               </div>
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                {isLoggedIn && (
+                  <Link to="/admin/login" style={{ textDecoration: 'none', marginRight: '10px' }}>
+                    <span style={{ fontWeight: 'bold', color: '#b8860b', fontSize: '18px', cursor: 'pointer' }}>Tới trang quản trị</span>
+                  </Link>
+                )}
                 {isLoggedIn ? (
                   <div
                     className="dropdown"

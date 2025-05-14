@@ -233,7 +233,7 @@ function CheckOut() {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || {
         items: [],
       };
-      setItems(savedCart.items);
+      setItems(Array.isArray(savedCart.items) ? savedCart.items : []);
     };
 
     fetchUserInfo();
