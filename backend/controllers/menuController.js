@@ -198,3 +198,28 @@ exports.resetAllQuantities = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// Lấy các món ăn được đánh giá cao nhất
+exports.getTopRatedMenus = async (req, res) => {
+  try {
+    // Tìm các món ăn, tính trung bình rating và sắp xếp giảm dần theo rating
+    const menus = await Menu.aggregate([
+      {
+        $addFields: {
+          averageRating: { $avg: "$reviews.rating" }, // Tính trung bình rating
+        },
+      },
+      {
+        $sort: { averageRating: -1 }, // Sắp xếp giảm dần theo averageRating
+      },
+      {
+        $limit: 4, // Lấy 4 món ăn đầu tiên
+      },
+    ]);
+
+    res.json(menus);
+  } catch (err) {
+    console.error("Error fetching top-rated menus:", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};

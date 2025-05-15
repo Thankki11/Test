@@ -264,35 +264,8 @@ function Header() {
                   <li>
                     <Link to="/menus">Menus</Link>
                   </li>
-                  {/* <li>
-                    <div className="dropdown">
-                      <div
-                        className={
-                          styles.dropdownText + " dropdown-toggle text-dark"
-                        }
-                        data-bs-toggle="dropdown"
-                        role="button"
-                        style={{ cursor: "pointer" }}
-                      >
-                        Join with us
-                      </div>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <a className="dropdown-item" href="/register-class">
-                            Register a cooking class
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="/recuitment">
-                            Recruitment
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </li> */}
-                  <li>
-                    <Link to="/reservation">Book table</Link>
-                  </li>
+                 
+                 
                 </ul>
               </div>
               <div>

@@ -14,6 +14,19 @@ exports.getEmployees = async (req, res) => {
 exports.addEmployee = async (req, res) => {
   try {
     const { name, email, phone, position, salary } = req.body;
+
+    // Kiểm tra trùng email
+    const existingEmail = await Employee.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Cannot add employee. Email already exists." });
+    }
+
+    // Kiểm tra trùng phone
+    const existingPhone = await Employee.findOne({ phone });
+    if (existingPhone) {
+      return res.status(400).json({ message: "Cannot add employee. Phone number already exists." });
+    }
+
     const newEmployee = new Employee({ name, email, phone, position, salary });
     await newEmployee.save();
     res.status(201).json({ message: "Employee added successfully", employee: newEmployee });
@@ -26,8 +39,25 @@ exports.addEmployee = async (req, res) => {
 exports.updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const updatedData = req.body;
-    const updatedEmployee = await Employee.findByIdAndUpdate(id, updatedData, { new: true });
+    const { email, phone, ...updatedData } = req.body;
+
+    // Kiểm tra trùng email
+    const existingEmail = await Employee.findOne({ email, _id: { $ne: id } });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Cannot update employee. Email already exists." });
+    }
+
+    // Kiểm tra trùng phone
+    const existingPhone = await Employee.findOne({ phone, _id: { $ne: id } });
+    if (existingPhone) {
+      return res.status(400).json({ message: "Cannot update employee. Phone number already exists." });
+    }
+
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      id,
+      { email, phone, ...updatedData },
+      { new: true }
+    );
     res.status(200).json({ message: "Employee updated successfully", employee: updatedEmployee });
   } catch (err) {
     res.status(500).json({ message: "Error updating employee", error: err });

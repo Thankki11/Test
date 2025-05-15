@@ -147,32 +147,29 @@ function AdminOrders() {
   };
 
   const handleStatusUpdate = async (orderId, newStatus) => {
-    if (window.confirm("Do you want to CONFIRM this order?")) {
-      try {
-        const token = localStorage.getItem("adminToken");
+  if (window.confirm(`Do you want to update this order to ${newStatus}?`)) {
+    try {
+      const token = localStorage.getItem("adminToken");
 
-        // Gọi API cập nhật trạng thái đơn hàng
-        await axios.put(
-          `http://localhost:3001/api/orders/${orderId}/status`,
-          { status: newStatus },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+      // Gọi API cập nhật trạng thái đơn hàng
+      await axios.put(
+        `http://localhost:3001/api/orders/${orderId}/status`,
+        { status: newStatus },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-        alert("Order confirmed successfully");
+      alert("Order status updated successfully");
 
-        // Gửi sự kiện để AdminMenus cập nhật danh sách menu
-        window.dispatchEvent(new CustomEvent("orderConfirmed"));
-
-        // Reload danh sách đơn hàng
-        fetchOrders();
-      } catch (err) {
-        console.error("Error confirming order:", err);
-        alert("Failed to confirm order.");
-      }
+      // Reload danh sách đơn hàng
+      fetchOrders();
+    } catch (err) {
+      console.error("Error updating order status:", err);
+      alert("Failed to update order status.");
     }
-  };
+  }
+};
 
   // Xóa đơn hàng
   const handleDelete = async (id) => {

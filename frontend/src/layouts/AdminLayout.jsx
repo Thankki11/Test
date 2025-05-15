@@ -87,18 +87,7 @@ function AdminLayout({ children }) {
                 Manage Orders
               </Link>
             </li>
-            <li style={{ marginBottom: "10px" }}>
-              <Link
-                to="/admin/reservations"
-                style={{ color: "#fff", textDecoration: "none" }}
-              >
-                <i
-                  className="fas fa-calendar-check"
-                  style={{ marginRight: "10px" }}
-                ></i>
-                Manage Reservations
-              </Link>
-            </li>
+          
             {/* Thêm User Management */}
             <li style={{ marginBottom: "10px" }}>
               <Link
@@ -116,6 +105,12 @@ function AdminLayout({ children }) {
               <Link to="/admin/employees" style={{ color: "#fff", textDecoration: "none" }}>
                 <i className="fas fa-users" style={{ marginRight: "10px" }}></i>
                 Manage Employees
+              </Link>
+            </li>
+            <li style={{ marginBottom: "10px" }}>
+              <Link to="/admin/vouchers" style={{ color: "#fff", textDecoration: "none" }}>
+                <i className="fas fa-tags" style={{ marginRight: "10px" }}></i>
+                Manage Vouchers
               </Link>
             </li>
           </ul>

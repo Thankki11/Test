@@ -12,12 +12,11 @@ const menuRoutes = require("./routes/menuRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
-const reservationRoutes = require("./routes/reservationRoutes");
-const tableRoutes = require("./routes/tableRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const paymentRouter = require("./routes/paymentRoutes");
 const userAuthRoutes = require("./routes/userAuthRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
+const voucherRoutes = require("./routes/voucherRoutes");
 const app = express();
 
 // Kết nối đến MongoDB
@@ -50,8 +49,6 @@ app.use("/api/menus", menuRoutes);
 app.use("/api/carts", cartRoutes);
 
 app.use("/api/orders", orderRoutes);
-app.use("/api/reservations", reservationRoutes);
-app.use("/api/tables", tableRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/payment", paymentRouter);
 app.use("/api/auth/user", userAuthRoutes);
@@ -65,6 +62,9 @@ app.use("/uploads", express.static("uploads"));
 
 // Thêm route employees
 app.use("/api/employees", employeeRoutes);
+
+// Thêm route voucher
+app.use("/api/vouchers", voucherRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

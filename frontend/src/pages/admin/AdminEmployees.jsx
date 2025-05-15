@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Modal } from "bootstrap";
+
 import * as bootstrap from "bootstrap";
 
 function AdminEmployees() {
@@ -37,8 +37,12 @@ function AdminEmployees() {
       setNewEmployee({ name: "", email: "", phone: "", position: "", salary: "" });
       fetchEmployees();
     } catch (err) {
-      console.error("Error adding employee:", err);
-      alert("Failed to add employee. Please try again.");
+      if (err.response && err.response.status === 400) {
+        alert(err.response.data.message); // Hiển thị thông báo lỗi từ backend
+      } else {
+        console.error("Error adding employee:", err);
+        alert("Failed to add employee. Please try again.");
+      }
     }
   };
 
@@ -56,8 +60,12 @@ function AdminEmployees() {
       setEditEmployee(null);
       fetchEmployees();
     } catch (err) {
-      console.error("Error updating employee:", err);
-      alert("Failed to update employee. Please try again.");
+      if (err.response && err.response.status === 400) {
+        alert(err.response.data.message); // Hiển thị thông báo lỗi từ backend
+      } else {
+        console.error("Error updating employee:", err);
+        alert("Failed to update employee. Please try again.");
+      }
     }
   };
 

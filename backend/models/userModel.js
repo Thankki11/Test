@@ -45,6 +45,10 @@ const userSchema = new mongoose.Schema({
     type: String, // Lưu thông tin provider (google hoặc facebook)
     default: null,
   },
+  address: {
+    type: String, // Thêm trường address
+    default: "", // Đặt giá trị mặc định là chuỗi rỗng
+  },
   createdAt: {
     type: Date,
     default: Date.now,
