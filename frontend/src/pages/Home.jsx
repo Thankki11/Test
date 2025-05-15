@@ -1,34 +1,28 @@
 // Components
-import PageHeader from "../components/PageHeader/PageHeader";
 import OverlayCard from "../components/OverlayCard/OverlayCard";
 import TitleWithSubtitle from "../components/TitleWithSubtitle/TitleWithSubtitle";
-import ImageBox from "../components/Box/ImageBox";
 import ButtonWhite from "../components/Buttons/ButtonWhite";
-import BasicSlider from "../components/Slider/BasicSlider";
-import Reservation from "../components/Forms/Reservation";
 import ContactBox from "../components/Box/ContactBox";
 import ReservationForm from "../components/ReservationForm";
+import ButtonWhite2 from "../components/Buttons/ButtonWhite2";
 
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 // media
-import imgAboutUs1 from "../assets/images/about-us-1.jpg";
-import imgAboutUs2 from "../assets/images/about-us-2.jpg";
-import imgAboutUs3 from "../assets/images/about-us-3.jpg";
+import logo from "../assets/images/logo-white.png";
 import video from "../assets/videos/introduction.mp4";
-import chef1 from "../assets/images/chefs/chef-1.jpg";
-import chef2 from "../assets/images/chefs/chef-2.jpg";
-import chef3 from "../assets/images/chefs/chef-3.jpg";
-import chef4 from "../assets/images/chefs/chef-4.jpg";
-import menuslider1 from "../assets/images/menus/menu-slider-1.jpg";
-import menuslider2 from "../assets/images/menus/menu-slider-2.jpg";
-import menuslider3 from "../assets/images/menus/menu-slider-3.jpg";
-import shopping1 from "../assets/images/shopping/title-wines.jpg";
-import shopping2 from "../assets/images/shopping/title-cakes.jpg";
+import food1 from "../assets/images/homefood1.jpg";
+import food2 from "../assets/images/homefood2.jpg";
+import food3 from "../assets/images/homefood3.jpg";
+import food4 from "../assets/images/homefood4.jpg";
+import combo1 from "../assets/images/combo1.jpg";
+import combo2 from "../assets/images/combo2.jpg";
+import combo3 from "../assets/images/combo3.jpg";
 import imgBeginnerClass from "../assets/images/beginner-class.jpg";
 import imgAdvanceClass from "../assets/images/advance-class.jpg";
 import ReservationBackground from "../assets/images/reservation-background.jpg";
+import CardHome from "../components/CardHome";
 
 function Home() {
   const location = useLocation();
@@ -53,163 +47,237 @@ function Home() {
 
   return (
     <div>
-      <PageHeader
-        backgroundSrc={video}
-        backgroundType={"video"}
-        buttonText={"Book a table"}
-        h2Title={"restaurant"}
-        subTitle={"Welcome to our delicious corner"}
-        title={"A3Building"}
-        buttonLink={"/reservation"}
-      />
-      {/* ***** About Us Start ***** */}
-      <div className="section">
-        <div className="row">
-          <div className="col-sm-3">
-            <TitleWithSubtitle subTitle={"Our Story"} title={"About Us"} />
-            <p>
-              At the heart of everything we do is a passion for creating
-              meaningful experiences. We started with a simple idea — to bring
-              beauty, purpose, and authenticity into everyday life. Today, that
-              vision continues to guide us as we grow and evolve.
-            </p>
-          </div>
-          <div className="col-sm-3 justify-content-center d-flex">
-            <ImageBox src={imgAboutUs1} height={"450px"} />
-          </div>
-          <div className="col-sm-3">
-            <ImageBox src={imgAboutUs2} height={"450px"} />
-          </div>
-          <div className="col-sm-3">
-            <ImageBox src={imgAboutUs3} height={"450px"} />
+      {/* Page Header Start */}
+      <div
+        style={{
+          position: "relative",
+          height: "85vh",
+          width: "100%",
+          overflow: "hidden",
+        }}
+      >
+        {/* Video background */}
+        <video
+          autoPlay
+          loop
+          muted
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        >
+          <source src={video} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+        {/* Lớp mờ */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        />
+
+        {/* Nội dung */}
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            color: "white",
+            padding: "2rem",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            height: "100%",
+          }}
+        >
+          <div className="container">
+            <div className="row">
+              <div className="col-8">
+                <img
+                  src={logo}
+                  style={{ width: "auto", height: "100px" }}
+                ></img>
+                <h6>CFK Fast food</h6>
+                <h1 style={{ fontSize: "80px" }}>Best fast food in galaxy</h1>
+                <p style={{ color: "white" }}>You can find your food here !</p>
+                <ButtonWhite2
+                  buttontext={"Discover our menu"}
+                  fontSize={"50px"}
+                >
+                  Discover our menu
+                </ButtonWhite2>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-      {/* ***** About Us End ***** */}
+      {/* Page Header End  */}
 
-      {/* ***** Our Chefs Start ***** */}
+      {/* ***** Our Menus Start ***** */}
       <div className="section" style={{ backgroundColor: "#fffafa" }}>
         <div className="row">
           <div className="col-sm-9 ">
             <TitleWithSubtitle
               subTitle={"The culinary minds behind every unforgettable dish"}
-              title={"MEET OUR MASTER CHEFS"}
+              title={"DISCOVER OUR DELICIOUS FOODS"}
             />
           </div>
           <div className="col-sm-3 d-flex align-items-center">
-            <Link to="/chefs">
-              <ButtonWhite buttontext={"Discover all Chefs"} />
+            <Link to="/menus">
+              <ButtonWhite buttontext={"Discover all Menus"} />
             </Link>
           </div>
           <div className="col-sm-3">
             <OverlayCard
-              title={"Randy Walker "}
-              description={["Pastry Chef"]}
-              imageSrc={chef1}
+              title={"Burgers"}
+              description={[""]}
+              imageSrc={food1}
               height={"450px"}
             />
           </div>
           <div className="col-sm-3">
             <OverlayCard
-              title={"Randy Walker "}
-              description={["Pastry Chef"]}
-              imageSrc={chef2}
+              title={"Pizzas"}
+              description={[""]}
+              imageSrc={food2}
               height={"450px"}
             />
           </div>
           <div className="col-sm-3">
             <OverlayCard
-              title={"David Martin "}
-              description={["Cookie Chef"]}
-              imageSrc={chef3}
+              title={"Fried Chickens"}
+              description={[""]}
+              imageSrc={food3}
               height={"450px"}
             />
           </div>
           <div className="col-sm-3">
             <OverlayCard
-              title={"Peter Perkson"}
-              description={["Pancake Chef"]}
-              imageSrc={chef4}
+              title={"Combos"}
+              description={[""]}
+              imageSrc={food4}
               height={"450px"}
             />
           </div>
         </div>
       </div>
-      {/* ***** Our Chefs End ***** */}
+      {/* ***** Our Menus End ***** */}
 
-      {/* ***** Our Menu Start ***** */}
+      {/* ***** Our Best Seller Start ***** */}
+      <div className="section" style={{ backgroundColor: "#b2281f" }}>
+        <div className="row">
+          <div className="col-sm-2"></div>
+          <div className="col-sm-8 ">
+            <h6 className="text-center text-white">
+              The culinary minds behind every unforgettable dish
+            </h6>
+            <h2 className="text-center text-white">Our best seller</h2>
+          </div>
+          <div className="col-sm-2"></div>
+          <div className="col-sm-6 mt-3">
+            <CardHome
+              title={"Burgers"}
+              img={food1}
+              description={
+                " Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae eligendi eos deserunt sit pariatur, fugit laborum, voluptas fugiat perferendis ut modi, labore cum! Numquam quaerat, eligendi autem quos omnis libero?"
+              }
+              price={"$20"}
+            ></CardHome>
+          </div>
+          <div className="col-sm-6 mt-3">
+            <CardHome
+              title={"Burgers"}
+              img={food1}
+              description={
+                " Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae eligendi eos deserunt sit pariatur, fugit laborum, voluptas fugiat perferendis ut modi, labore cum! Numquam quaerat, eligendi autem quos omnis libero?"
+              }
+              price={"$20"}
+            ></CardHome>
+          </div>
+          <div className="col-sm-6 mt-3">
+            <CardHome
+              title={"Burgers"}
+              img={food1}
+              description={
+                " Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae eligendi eos deserunt sit pariatur, fugit laborum, voluptas fugiat perferendis ut modi, labore cum! Numquam quaerat, eligendi autem quos omnis libero?"
+              }
+              price={"$20"}
+            ></CardHome>
+          </div>
+          <div className="col-sm-6 mt-3">
+            <CardHome
+              title={"Burgers"}
+              img={food1}
+              description={
+                " Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae eligendi eos deserunt sit pariatur, fugit laborum, voluptas fugiat perferendis ut modi, labore cum! Numquam quaerat, eligendi autem quos omnis libero?"
+              }
+              price={"$20"}
+            ></CardHome>
+          </div>
+        </div>
+      </div>
+      {/* ***** Our Best Seller End ***** */}
+
+      {/* ***** Promotion Start ***** */}
       <div className="section">
         <div className="row">
-          <div className="col-7">
-            <BasicSlider
-              images={[
-                { src: menuslider1, alt: "Menu Slider 1" },
-                { src: menuslider2, alt: "Menu Slider 2" },
-                { src: menuslider3, alt: "Menu Slider 3" },
-              ]}
-              width="100%"
-              height="450px"
-            />
-          </div>
-          <div className="col-5">
-            <TitleWithSubtitle
-              title="Best dishes from our Menu"
-              subTitle="A3Building’s tasty offer"
-            />
+          <div className="col-sm-7">
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas
-              unde corrupti a adipisci, doloribus nostrum cum consectetur odio
-              consequatur fugiat cumque numquam suscipit quos culpa, atque
-              iusto, ad perspiciatis mollitia?
+              Whether you're looking to launch your career in the kitchen or
+              simply sharpen your skills, we welcome you to be part of our
+              vibrant culinary world. Explore two exciting ways to get involved
+              below.
             </p>
-
-            <Link to="/menus">
-              <ButtonWhite buttontext={"Explore our Menu"} />
-            </Link>
           </div>
-        </div>
-      </div>
-      {/* ***** Our Menu End ***** */}
+          <div className="col-sm-5 text-end">
+            <h6>Discover New Opportunities</h6>
+            <h2>Combos</h2>
+          </div>
 
-      {/* ***** E-Shopping ***** */}
-      <div className="section" style={{ backgroundColor: "#fffafa" }}>
-        <div className="row">
-          <div className="col-sm-6 d-flex align-items-center">
+          <div className="col-sm-6">
             <div>
-              <TitleWithSubtitle
-                title="E-Shopping"
-                subTitle="Fast - Easy - Anywhere"
-              />
-              <p className="mb-5 me-5">
-                Enjoy the convenience of browsing and buying your favorite
-                products anytime, anywhere. From daily essentials to exclusive
-                finds, our online store is designed to make your shopping
-                experience fast, easy, and enjoyable.
-              </p>
-              <Link to="/shop">
-                <ButtonWhite buttontext={"Explore all category"} />
+              <Link to="register-class">
+                <OverlayCard
+                  imageSrc={combo1}
+                  height={"245px"}
+                  title="Combo 1"
+                  description={["1 Fried potatoes, 2 Burgers, 1 Coke"]}
+                />
+              </Link>
+            </div>
+            <div style={{ marginTop: "10px" }}>
+              <Link to="register-class">
+                <OverlayCard
+                  imageSrc={combo2}
+                  height={"245px"}
+                  title="Combo 2"
+                  description={[
+                    "1 Small Fried Chickens, 1 Salad, 1 Fried potatoes, 1 Coke",
+                  ]}
+                />
               </Link>
             </div>
           </div>
-          <div className="col-sm-3">
-            <OverlayCard
-              imageSrc={shopping1}
-              height={"500px"}
-              title="Wines"
-              description={["nice wines is here"]}
-            />
-          </div>
-          <div className="col-sm-3">
-            <OverlayCard
-              imageSrc={shopping2}
-              height={"500px"}
-              title="Cakes"
-              description={["we have delicious cakes"]}
-            />
+          <div className="col-sm-6">
+            <Link to="/recuitment">
+              <OverlayCard
+                imageSrc={combo3}
+                height={"500px"}
+                title="Combo 3"
+                description={["2 BanhMi, 1 Large Fried potatoes, 2 Cokes"]}
+              />
+            </Link>
           </div>
         </div>
       </div>
-      {/* ***** E-Shopping End ***** */}
+      {/* ***** Promotion End ***** */}
 
       {/* ***** Join us Start ***** */}
       <div className="section">
