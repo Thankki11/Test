@@ -5,6 +5,7 @@ import AdminReservation from "../pages/admin/AdminReservation";
 import AdminOrder from "../pages/admin/AdminOrder";
 import AdminLogin from "../pages/admin/AdminLogin";
 import AdminUsers from "../pages/admin/AdminUsers";
+import AdminEmployees from "../pages/admin/AdminEmployees";
 import { Navigate } from "react-router-dom";
 
 const adminRoutes = [
@@ -58,6 +59,16 @@ const adminRoutes = [
       <AdminRouteWrapper>
         <AdminLayout>
           <AdminUsers />
+        </AdminLayout>
+      </AdminRouteWrapper>
+    ),
+  },
+  {
+    path: "/admin/employees",
+    element: (
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminEmployees />
         </AdminLayout>
       </AdminRouteWrapper>
     ),

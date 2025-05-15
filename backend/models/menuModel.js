@@ -15,7 +15,7 @@ const menuSchema = new mongoose.Schema({
       createdAt: { type: Date, default: Date.now }
     }
   ],
-  quantity: { type: Number, required: true, min: 0, default: 1 }, // Thêm giá trị mặc định
+  quantity: { type: Number, required: true, min: 0, default: 200 }, // Thêm giá trị mặc định
 });
 
 const Menu = mongoose.model("Menu", menuSchema);

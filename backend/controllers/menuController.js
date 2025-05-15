@@ -188,3 +188,13 @@ exports.addMenuReview = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// Reset all menu quantities to 200
+exports.resetAllQuantities = async (req, res) => {
+  try {
+    await Menu.updateMany({}, { $set: { quantity: 200 } });
+    res.json({ message: "All menu quantities have been reset to 200." });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};

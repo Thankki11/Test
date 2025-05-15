@@ -20,11 +20,24 @@ function AdminMenus() {
     imageBuffer: null,
     fileName: "",
     previewUrl: "",
-    quantity: "", // Added quantity field
+    quantity: "200", // Added quantity field
   });
 
   useEffect(() => {
     fetchMenus();
+  }, []);
+
+  useEffect(() => {
+    const handleOrderConfirmed = () => {
+      // Gọi lại API lấy danh sách menu
+      fetchMenus();
+    };
+
+    window.addEventListener("orderConfirmed", handleOrderConfirmed);
+
+    return () => {
+      window.removeEventListener("orderConfirmed", handleOrderConfirmed);
+    };
   }, []);
 
   const fetchMenus = async () => {
@@ -258,6 +271,59 @@ const handleEditImageUpload = (e) => {
   }
 };
 
+  // Hàm reset quantity
+  const handleResetQuantities = async () => {
+    if (window.confirm("Bạn có chắc muốn đặt lại số lượng tất cả món ăn về 200?")) {
+      try {
+        await axios.post("http://localhost:3001/api/menus/reset-quantities");
+        alert("Đã đặt lại số lượng tất cả món ăn về 200!");
+        fetchMenus();
+      } catch (err) {
+        alert("Có lỗi xảy ra khi reset quantity!");
+      }
+    }
+  };
+
+  const handleOrderStatusUpdate = async (orderId) => {
+    try {
+      // Sau khi xác nhận đơn hàng thành công:
+      await axios.put(`http://localhost:3001/api/orders/${orderId}/status`, { status: "delivering" });
+      // Gọi lại fetchMenus nếu bạn đang ở trang AdminMenus
+      if (typeof fetchMenus === "function") fetchMenus();
+    } catch (err) {
+      console.error("Error updating order status:", err);
+    }
+  };
+
+  // Giả sử bạn có danh sách orders đã xác nhận (status "completed" hoặc "delivering")
+  const updateMenuQuantitiesByOrders = (orders) => {
+    // Lọc các đơn đã xác nhận
+    const confirmedOrders = orders.filter(
+      (order) => order.status === "completed" || order.status === "delivering"
+    );
+
+    // Tạo bản sao menus mới
+    let updatedMenus = [...menus];
+
+    confirmedOrders.forEach((order) => {
+      order.items.forEach((item) => {
+        // Tìm menu tương ứng
+        const menuIndex = updatedMenus.findIndex(
+          (menu) => menu._id === item.menuItemId
+        );
+        if (menuIndex !== -1) {
+          // Giảm quantity đi số lượng đã bán
+          updatedMenus[menuIndex].quantity =
+            (updatedMenus[menuIndex].quantity || 0) - item.quantity;
+          if (updatedMenus[menuIndex].quantity < 0)
+            updatedMenus[menuIndex].quantity = 0;
+        }
+      });
+    });
+
+    setMenus(updatedMenus);
+  };
+
   return (
     <div className="container">
       {/* //Modal add new */}
@@ -390,7 +456,7 @@ const handleEditImageUpload = (e) => {
           value={searchKeyword}
           onChange={(e) => {
             setSearchKeyword(e.target.value);
-            setCurrentPage(1); // ✅ reset về page 1 khi tìm kiếm
+            setCurrentPage(1); //  reset về page 1 khi tìm kiếm
           }}
         />
       <select
@@ -417,6 +483,13 @@ const handleEditImageUpload = (e) => {
           }}
         >
           Add menu
+        </button>
+        {/* Nút Reset Quantity */}
+        <button
+         
+          onClick={handleResetQuantities}
+        >
+          Reset Quantity
         </button>
       </div>
 

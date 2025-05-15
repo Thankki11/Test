@@ -9,6 +9,7 @@ const {
   deleteMenu,
   getMenuReviews,
   addMenuReview,
+  resetAllQuantities,
 } = require("../controllers/menuController");
 
 const authenticateToken = require("../middleware/authMiddleware");
@@ -35,5 +36,8 @@ router.get("/:id/reviews", getMenuReviews);
 
 // Route thêm đánh giá sản phẩm
 router.post("/:id/reviews", authenticateToken, addMenuReview);
+
+// Route to reset all quantities
+router.post("/reset-quantities", resetAllQuantities);
 
 module.exports = router;

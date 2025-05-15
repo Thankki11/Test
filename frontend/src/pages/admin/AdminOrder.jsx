@@ -138,6 +138,7 @@ function AdminOrders() {
         alert("Order confirmed successfully");
 
         fetchOrders(); // ✅ Reload lại danh sách => đơn đã confirm sẽ không còn trong pendingOrders
+        window.dispatchEvent(new CustomEvent("orderConfirmed"));
       } catch (err) {
         console.error("Error confirming order:", err);
         alert("Failed to confirm order.");
@@ -150,9 +151,10 @@ function AdminOrders() {
       try {
         const token = localStorage.getItem("adminToken");
 
+        // Gọi API cập nhật trạng thái đơn hàng
         await axios.put(
           `http://localhost:3001/api/orders/${orderId}/status`,
-          { status: "completed" },
+          { status: newStatus },
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -160,7 +162,11 @@ function AdminOrders() {
 
         alert("Order confirmed successfully");
 
-        fetchOrders(); // ✅ Reload lại danh sách => đơn đã confirm sẽ không còn trong pendingOrders
+        // Gửi sự kiện để AdminMenus cập nhật danh sách menu
+        window.dispatchEvent(new CustomEvent("orderConfirmed"));
+
+        // Reload danh sách đơn hàng
+        fetchOrders();
       } catch (err) {
         console.error("Error confirming order:", err);
         alert("Failed to confirm order.");

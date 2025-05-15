@@ -137,17 +137,41 @@ function Detail() {
             <TitleWithSubtitle title={menu.name} subTitle={menu.category} />
             <h5 style={{ fontSize: "25px" }}>$ {menu.price}</h5>
             <p style={{ margin: "35px 0px" }}>{menu.description}</p>
+            {/* Hiển thị số lượng còn lại */}
+            <div style={{ marginBottom: 16, fontWeight: 500 }}>
+              {menu.quantity > 0
+                ? `Còn lại: ${menu.quantity} sản phẩm`
+                : <span style={{ color: "red" }}>Out of stock</span>
+              }
+            </div>
             {/* button quantity, add to cart, buy now */}
             <div style={{ display: "flex", gap: "30px", margin: "40px 0px" }}>
-              <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
+              <QuantitySelector
+                quantity={quantity}
+                setQuantity={setQuantity}
+                disabled={menu.quantity <= 0}
+              />
               <ButtonWhite
                 buttontext={"Add to cart"}
-                onClick={() => sendProductToCart(menu, quantity)}
+                onClick={() => {
+                  if (menu.quantity <= 0) {
+                    alert("Đã Hết Hàng");
+                  } else {
+                    sendProductToCart(menu, quantity);
+                  }
+                }}
               />
-              <Link to={"/check-out"}>
+              <Link to={menu.quantity > 0 ? "/check-out" : "#"}>
                 <ButtonWhite
                   buttontext={"Buy now"}
-                  onClick={() => sendProductToCart(menu, quantity, false)}
+                  onClick={e => {
+                    if (menu.quantity <= 0) {
+                      e.preventDefault();
+                      alert("Đã Hết Hàng");
+                    } else {
+                      sendProductToCart(menu, quantity, false);
+                    }
+                  }}
                 />
               </Link>
             </div>
