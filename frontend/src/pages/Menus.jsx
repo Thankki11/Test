@@ -32,6 +32,31 @@ function Menus() {
       });
   }, []);
 
+  useEffect(() => {
+    if (searchTerm.trim() === "") return;
+
+    // Tìm category của món ăn đầu tiên khớp với từ khóa tìm kiếm
+    const foundCategory = menus.find((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )?.category;
+
+    // Chuyển tab dựa trên category tìm thấy
+    if (foundCategory) {
+      const categoryIndex =
+        foundCategory === "appetizer"
+          ? 0
+          : foundCategory === "mainCourse"
+          ? 1
+          : foundCategory === "dessert"
+          ? 2
+          : foundCategory === "drink"
+          ? 3
+          : 0;
+
+      setValue(categoryIndex); // Chuyển tab
+    }
+  }, [searchTerm, menus]);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -56,44 +81,53 @@ function Menus() {
   };
 
   const renderTabContent = (category) => {
+    // Lọc món ăn theo category
     const filteredItems = menus.filter((item) => {
-      switch (category) {
-        case 0:
-          return item.category === "appetizer";
-        case 1:
-          return item.category === "mainCourse";
-        case 2:
-          return item.category === "dessert";
-        case 3:
-          return item.category === "drink";
-        default:
-          return false;
-      }
+      const matchesCategory =
+        category === 0
+          ? item.category === "appetizer"
+          : category === 1
+          ? item.category === "mainCourse"
+          : category === 2
+          ? item.category === "dessert"
+          : category === 3
+          ? item.category === "drink"
+          : false;
+
+      // Lọc món ăn theo từ khóa tìm kiếm
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+
+      return matchesCategory && matchesSearch;
     });
 
+    // Sắp xếp món ăn
     const sortedItems = sortMenus(filteredItems);
 
     return (
       <div className="row">
-        {sortedItems.map((item, index) => (
-          <div className="col-3 mb-4" key={index}>
-            <Link to={`/detail/${item._id}`}>
-              <OverlayCard
-                title={item.name}
-                description={[
-                  `$ ${item.price}`,
-                  item.quantity > 0 ? `In Stock: ${item.quantity}` : "Out of Stock",
-                ]}
-                height="350px"
-                imageSrc={`http://localhost:3001${
-                  item.imageUrl.startsWith("/uploads")
-                    ? item.imageUrl
-                    : "/uploads/" + item.imageUrl
-                }`}
-              />
-            </Link>
-          </div>
-        ))}
+        {sortedItems.length > 0 ? (
+          sortedItems.map((item, index) => (
+            <div className="col-3 mb-4" key={index}>
+              <Link to={`/detail/${item._id}`}>
+                <OverlayCard
+                  title={item.name}
+                  description={[
+                    `$ ${item.price}`,
+                    item.quantity > 0 ? `In Stock: ${item.quantity}` : "Out of Stock",
+                  ]}
+                  height="350px"
+                  imageSrc={`http://localhost:3001${
+                    item.imageUrl.startsWith("/uploads")
+                      ? item.imageUrl
+                      : "/uploads/" + item.imageUrl
+                  }`}
+                />
+              </Link>
+            </div>
+          ))
+        ) : (
+          <div className="text-center mt-4">No items found</div>
+        )}
       </div>
     );
   };
