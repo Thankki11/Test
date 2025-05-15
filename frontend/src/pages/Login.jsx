@@ -211,7 +211,8 @@ function Login() {
             </form>
 
             <button
-              className="btn btn-danger w-100 mb-3"
+              className="w-100 mb-3 mt-3 btn-select "
+              style={{ border: "1px solid black" }}
               onClick={() =>
                 (window.location.href =
                   "http://localhost:3001/api/auth/user/google")
@@ -221,7 +222,8 @@ function Login() {
             </button>
 
             <button
-              className="btn btn-primary w-100"
+              className="w-100"
+              style={{ backgroundColor: "#3b5998", color: "#fff" }}
               onClick={() =>
                 (window.location.href =
                   "http://localhost:3001/api/auth/user/facebook")
@@ -246,7 +248,7 @@ function Login() {
               src={loginPhoto}
               alt="description"
               className="img-fluid w-100 object-cover"
-              style={{ height: "65vh", objectFit: "cover" }}
+              style={{ height: "100vh", objectFit: "cover" }}
             />
           </div>
         </div>

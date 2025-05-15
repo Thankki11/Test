@@ -32,10 +32,10 @@ function Register() {
     e.preventDefault();
 
     const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
-      if (!phoneRegex.test(formData.phone)) {
-        alert("Phone number must be exactly 10 digits.");
-        return;
-      }
+    if (!phoneRegex.test(formData.phone)) {
+      alert("Phone numbe2 must be exactly 10 digits.");
+      return;
+    }
 
     if (!captchaToken) {
       alert("Please verify that you are not a robot.");
@@ -99,7 +99,7 @@ function Register() {
       >
         <div className="row d-flex align-items-center">
           <div className="col-5">
-            <div className="text-center mb-4">
+            <div className="text-center mb-2">
               <img
                 src={logo}
                 alt="logo"
@@ -109,14 +109,14 @@ function Register() {
             </div>
 
             <h2
-              className="text-center mb-4 text-uppercase fw-semibold"
+              className="text-center mb-2 text-uppercase fw-semibold"
               style={{ letterSpacing: "20px" }}
             >
               Sign Up
             </h2>
 
             <form onSubmit={handleSubmit}>
-              <div className="mb-4">
+              <div className="mb-2">
                 <label
                   htmlFor="username"
                   className="form-label"
@@ -137,7 +137,7 @@ function Register() {
                 />
               </div>
 
-              <div className="mb-4">
+              <div className="mb-2">
                 <label
                   htmlFor="email"
                   className="form-label"
@@ -158,7 +158,7 @@ function Register() {
                 />
               </div>
 
-              <div className="mb-4">
+              <div className="mb-2">
                 <label
                   htmlFor="phone"
                   className="form-label"
@@ -174,12 +174,12 @@ function Register() {
                   onChange={handleChange}
                   className="form-control form-control-lg"
                   id="phone"
-                  placeholder="Enter your phone number"
+                  placeholder="Enter your phone numbe2"
                   required
                 />
               </div>
 
-              <div className="mb-4 position-relative">
+              <div className="mb-2 position-relative">
                 <label
                   htmlFor="password"
                   className="form-label"
@@ -249,7 +249,7 @@ function Register() {
               src={registerPhoto}
               alt="description"
               className="img-fluid w-100 object-cover"
-              style={{ height: "80vh", objectFit: "cover" }}
+              style={{ height: "100vh", objectFit: "cover" }}
             />
           </div>
         </div>
