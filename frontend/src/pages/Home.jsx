@@ -19,6 +19,7 @@ import food4 from "../assets/images/homefood4.jpg";
 import combo1 from "../assets/images/combo1.jpg";
 import combo2 from "../assets/images/combo2.jpg";
 import combo3 from "../assets/images/combo3.jpg";
+import combomore from "../assets/images/combomore.jpg";
 import imgBeginnerClass from "../assets/images/beginner-class.jpg";
 import imgAdvanceClass from "../assets/images/advance-class.jpg";
 import ReservationBackground from "../assets/images/reservation-background.jpg";
@@ -135,36 +136,48 @@ function Home() {
             </Link>
           </div>
           <div className="col-sm-3">
-            <OverlayCard
-              title={"Burgers"}
-              description={[""]}
-              imageSrc={food1}
-              height={"450px"}
-            />
+            <Link to="/menus?tab=burger">
+              <OverlayCard
+                title={"Burgers"}
+                description={[
+                  "Juicy, mouthwatering burgers with unique flavors.",
+                ]}
+                imageSrc={food1}
+                height={"350px"}
+              />
+            </Link>
           </div>
           <div className="col-sm-3">
-            <OverlayCard
-              title={"Pizzas"}
-              description={[""]}
-              imageSrc={food2}
-              height={"450px"}
-            />
+            <Link to="/menus?tab=pizza">
+              <OverlayCard
+                title={"Pizzas"}
+                description={["Crispy, cheesy pizzas with fresh toppings."]}
+                imageSrc={food2}
+                height={"350px"}
+              />
+            </Link>
           </div>
           <div className="col-sm-3">
-            <OverlayCard
-              title={"Fried Chickens"}
-              description={[""]}
-              imageSrc={food3}
-              height={"450px"}
-            />
+            <Link to="/menus?tab=friedchicken">
+              <OverlayCard
+                title={"Fried Chickens"}
+                description={[
+                  "Crispy fried chicken with bold, savory seasoning.",
+                ]}
+                imageSrc={food3}
+                height={"350px"}
+              />
+            </Link>
           </div>
           <div className="col-sm-3">
-            <OverlayCard
-              title={"Combos"}
-              description={[""]}
-              imageSrc={food4}
-              height={"450px"}
-            />
+            <Link to="/menus?tab=drink">
+              <OverlayCard
+                title={"Drinks"}
+                description={["Refreshing drinks to quench your thirst."]}
+                imageSrc={food4}
+                height={"350px"}
+              />
+            </Link>
           </div>
         </div>
       </div>
@@ -230,18 +243,19 @@ function Home() {
         <div className="row">
           <div className="col-sm-7">
             <p>
-              Whether you're looking to launch your career in the kitchen or
-              simply sharpen your skills, we welcome you to be part of our
-              vibrant culinary world. Explore two exciting ways to get involved
-              below.
+              Indulge in our carefully crafted combos, offering the perfect mix
+              of your favorite dishes at an unbeatable price. Whether you're
+              craving a burger and fries, a pizza with refreshing drinks, or a
+              hearty fried chicken platter, we've got the ideal combo to satisfy
+              your hunger. Enjoy great value without compromising on taste!
             </p>
           </div>
           <div className="col-sm-5 text-end">
-            <h6>Discover New Opportunities</h6>
+            <h6>Amazing Combo Offers Just for You</h6>
             <h2>Combos</h2>
           </div>
 
-          <div className="col-sm-6">
+          <div className="col-sm-5">
             <div>
               <Link to="register-class">
                 <OverlayCard
@@ -265,13 +279,23 @@ function Home() {
               </Link>
             </div>
           </div>
-          <div className="col-sm-6">
+          <div className="col-sm-5">
             <Link to="/recuitment">
               <OverlayCard
                 imageSrc={combo3}
                 height={"500px"}
                 title="Combo 3"
                 description={["2 BanhMi, 1 Large Fried potatoes, 2 Cokes"]}
+              />
+            </Link>
+          </div>
+          <div className="col-sm 2">
+            <Link to="/combos">
+              <OverlayCard
+                imageSrc={combomore}
+                height={"500px"}
+                title="More"
+                description={[""]}
               />
             </Link>
           </div>

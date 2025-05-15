@@ -243,6 +243,9 @@ function Header() {
                 <li>
                   <Link to="/">Home</Link>
                 </li>
+                <li>
+                  <Link to="/menus">Menus</Link>
+                </li>
               </ul>
             </div>
 
@@ -262,7 +265,7 @@ function Header() {
               <div>
                 <ul className={styles.mainMenus}>
                   <li>
-                    <Link to="/menus">Menus</Link>
+                    <Link to="/combos">Combos</Link>
                   </li>
                   {/* <li>
                     <div className="dropdown">
@@ -296,7 +299,6 @@ function Header() {
                 </ul>
               </div>
               <div>
-              
                 {isLoggedIn ? (
                   <div
                     className="dropdown"
