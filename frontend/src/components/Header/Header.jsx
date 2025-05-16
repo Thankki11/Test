@@ -268,11 +268,11 @@ function Header() {
                     <Link to="/combos">Combos</Link>
                   </li>
                   <li>
-                    <a href ="#footer">About Us</a>
+                    <Link to="/about-us">About us</Link>
                   </li>
                 </ul>
               </div>
-              
+
               <div>
                 {isLoggedIn ? (
                   <div

@@ -1,10 +1,16 @@
-import ReservationForm from "../components/ReservationForm";
 import ReservationBackground from "../assets/images/reservation-background.jpg";
 import ContactBox from "../components/Box/ContactBox";
-import ChatBot from "../components/ChatBot/ChatBot";
 import logo from "../assets/images/logo-white.png";
 
+import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+
 function Reservation() {
+  const navigate = useNavigate();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [navigate]);
+
   return (
     <div
       className="section"
@@ -31,11 +37,45 @@ function Reservation() {
       <div className="row" style={{ position: "relative", zIndex: 2 }}>
         <div className="col-5 p-2 rounded" style={{ backgroundColor: "white" }}>
           <div className="container">
-            <div>
-              <img src={logo} style={{ width: "auto", height: "100px" }} />
+            <div className="text-center">
+              <img
+                src={logo}
+                alt="CFK Logo"
+                style={{ width: "auto", height: "200px" }}
+              />
+            </div>
+            <div style={{ margin: "0px 30px" }}>
+              {" "}
+              <h2 className="text-center mt-3" style={{ fontSize: "40px" }}>
+                CFK-Fast Food Restaurant
+              </h2>
+              <p
+                className="text-center mt-2"
+                style={{ fontSize: "16px", fontStyle: "italic" }}
+              >
+                Your go-to place for delicious and fast food!
+              </p>
+              <div className="mt-4">
+                <h6>About Us</h6>
+                <p style={{ fontStyle: "italic" }}>
+                  "At CFK, we serve a wide variety of fast food options that are
+                  both delicious and affordable. Whether you're craving burgers,
+                  fries, pizza, or a quick snack, we have something for
+                  everyone.
+                </p>
+                <p style={{ fontStyle: "italic" }}>
+                  Our mission is to provide fast, fresh, and tasty meals that
+                  can be enjoyed on the go. All of our ingredients are carefully
+                  selected to ensure the best quality for our customers."
+                </p>
+              </div>
+              <div className="mt-4 text-center">
+                <p>Come and enjoy the best fast food experience at CFK!</p>
+              </div>
             </div>
           </div>
         </div>
+
         <div className="col-1"></div>
         <div className="col-6">
           <h6 style={{ color: "white" }}>Your table, your way</h6>

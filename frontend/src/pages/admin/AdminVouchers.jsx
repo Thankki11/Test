@@ -321,8 +321,6 @@ function AdminVouchers() {
       </div>
 
       <div className="container">
-        <h2 className="text-center mb-3">Manage Vouchers</h2>
-
         {/* Danh sách voucher */}
         <div className="card">
           <div className="card-body" style={{ minHeight: "500px" }}>
