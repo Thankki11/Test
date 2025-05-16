@@ -248,6 +248,7 @@ function CheckOut() {
             quantity: item.quantity,
             price: item.price,
           })),
+       // Sử dụng discount từ voucher
         totalPrice: discountedTotal.toFixed(2), // Sử dụng tổng tiền sau giảm giá
         createdAt: new Date().toISOString(),
       };

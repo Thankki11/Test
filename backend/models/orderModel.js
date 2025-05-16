@@ -16,6 +16,7 @@ const orderSchema = new mongoose.Schema({
       price: { type: Number, required: true },
     },
   ],
+  
   totalPrice: { type: Number, required: true },
   date: { type: Date, default: Date.now },
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 

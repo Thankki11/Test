@@ -20,8 +20,8 @@ import combo1 from "../assets/images/combo1.jpg";
 import combo2 from "../assets/images/combo2.jpg";
 import combo3 from "../assets/images/combo3.jpg";
 import combomore from "../assets/images/combomore.jpg";
-import imgBeginnerClass from "../assets/images/beginner-class.jpg";
-import imgAdvanceClass from "../assets/images/advance-class.jpg";
+import imgBeginnerClass from "../assets/images/image.png";
+import imgAdvanceClass from "../assets/images/fast-food.jpg";
 
 function Home() {
   const location = useLocation();
@@ -285,38 +285,38 @@ function Home() {
         <div className="row">
           <div className="col-sm-5">
             <TitleWithSubtitle
-              title="JOIN US"
-              subTitle="Discover New Opportunities"
+              title="VouCher"
+              subTitle="Join us and get a discount"
             />
           </div>
           <div className="col-sm-7">
             <p>
-              Whether you're looking to launch your career in the kitchen or
-              simply sharpen your skills, we welcome you to be part of our
-              vibrant culinary world. Explore two exciting ways to get involved
-              below.
+             Sign up to receive exclusive offers, discounts, and updates on our
+              latest menu items. Join our community and enjoy special perks as a
+              valued member. Don't miss out on the chance to savor delicious
+              meals at unbeatable prices!
             </p>
           </div>
           <div className="col-sm-6">
-            <Link to="register-class">
+            <Link to="register">
               <OverlayCard
                 imageSrc={imgBeginnerClass}
                 height={"400px"}
-                title="Be our Student"
+                title="SIGN UP RIGHT NOW"
                 description={[
-                  "Learn from talented chefs, explore new cuisines, and master the art of cooking.",
+                  "Join us and get a discount on your first order!",
                 ]}
               />
             </Link>
           </div>
           <div className="col-sm-6">
-            <Link to="/recuitment">
+            <Link to="/about-us">
               <OverlayCard
                 imageSrc={imgAdvanceClass}
                 height={"400px"}
-                title="Be our Chef"
+                title="See what us can do then u can have a discount"
                 description={[
-                  "Share your culinary passion, earn income, and inspire food lovers around the world.",
+                  "Many Discount waite for you",
                 ]}
               />
             </Link>
