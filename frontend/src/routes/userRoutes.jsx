@@ -15,6 +15,7 @@ import OrderDetail from "../pages/user/OrderDetail";
 import MyOrders from "../pages/user/MyOrders";
 import Combo from "../pages/Combo";
 import Reservation from "../pages/Reservation";
+import ComboDetail from "../pages/ComboDetail";
 // Layout
 import UserLayout from "../layouts/UserLayout";
 
@@ -64,6 +65,14 @@ const routes = [
     element: (
       <UserLayout>
         <Detail />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/combo-detail/:id",
+    element: (
+      <UserLayout>
+        <ComboDetail />
       </UserLayout>
     ),
   },
