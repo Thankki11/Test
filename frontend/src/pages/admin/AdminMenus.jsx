@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal } from "bootstrap";
 
-const categories = ["Best Seller", "Món chính", "Đồ ăn nhanh", "Đồ uống"];
-
+// const categories = ["drink", "mainCourse", "dessert", "appetizer"];
+const categories = ["burger", "pizza", "fried-chicken", "drink"];
 function AdminMenus() {
   const [menus, setMenus] = useState([]);
   const [editMenu, setEditMenu] = useState(null);
@@ -83,15 +83,12 @@ function AdminMenus() {
       }
     });
 
-
   // ✅ Phân trang: Tính toán danh sách menu cần hiển thị
   const indexOfLastMenu = currentPage * menusPerPage;
   const indexOfFirstMenu = indexOfLastMenu - menusPerPage;
   const currentMenus = filteredMenus.slice(indexOfFirstMenu, indexOfLastMenu);
 
   const totalPages = Math.ceil(filteredMenus.length / menusPerPage);
-
-
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this menu?")) {
@@ -113,41 +110,42 @@ function AdminMenus() {
     });
   };
 
-
   const handleSave = async () => {
-  try {
-    const {
-      name,
-      description,
-      category,
-      price,
-      fileName,
-      imageBuffer,
-      mimeType,
-      quantity, // Đảm bảo quantity được gửi
-    } = editMenu;
+    try {
+      const {
+        name,
+        description,
+        category,
+        price,
+        fileName,
+        imageBuffer,
+        mimeType,
+        quantity, // Đảm bảo quantity được gửi
+      } = editMenu;
 
-    const payload = {
-      name,
-      description,
-      category,
-      price: parseFloat(price),
-      imageBuffer,
-      fileName,
-      mimeType,
-      quantity: parseInt(quantity), // Chuyển quantity thành số nguyên
-    };
+      const payload = {
+        name,
+        description,
+        category,
+        price: parseFloat(price),
+        imageBuffer,
+        fileName,
+        mimeType,
+        quantity: parseInt(quantity), // Chuyển quantity thành số nguyên
+      };
 
-    await axios.put(`http://localhost:3001/api/menus/${editMenu._id}`, payload);
+      await axios.put(
+        `http://localhost:3001/api/menus/${editMenu._id}`,
+        payload
+      );
 
-    alert("Menu updated successfully");
-    setEditMenu(null);
-    fetchMenus();
-  } catch (err) {
-    console.error("Error updating menu:", err);
-  }
-};
-
+      alert("Menu updated successfully");
+      setEditMenu(null);
+      fetchMenus();
+    } catch (err) {
+      console.error("Error updating menu:", err);
+    }
+  };
 
   const handleChange = (e) => {
     setEditMenu({ ...editMenu, [e.target.name]: e.target.value });
@@ -184,77 +182,85 @@ function AdminMenus() {
       });
   };
 
-const handleEditImageUpload = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleEditImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const formData = new FormData();
-  formData.append("image", file);
-  formData.append("category", editMenu.category || "mainCourse"); // fallback
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("category", editMenu.category || "burger"); // fallback
 
-  axios
-    .post("http://localhost:3001/api/upload", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    })
-    .then((response) => {
-      const { fileName, imageBuffer, mimeType } = response.data;
+    axios
+      .post("http://localhost:3001/api/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then((response) => {
+        const { fileName, imageBuffer, mimeType } = response.data;
 
-      const previewUrl = URL.createObjectURL(file);
+        const previewUrl = URL.createObjectURL(file);
 
-      setEditMenu((prev) => ({
-        ...prev,
-        fileName,
-        imageBuffer,
-        mimeType,
-        previewUrl,
-      }));
-    })
-    .catch((err) => {
-      console.error("Error uploading image:", err);
-    });
-};
+        setEditMenu((prev) => ({
+          ...prev,
+          fileName,
+          imageBuffer,
+          mimeType,
+          previewUrl,
+        }));
+      })
+      .catch((err) => {
+        console.error("Error uploading image:", err);
+      });
+  };
 
   const handleCreateMenu = async () => {
-  const { name, description, price, category, quantity, fileName, imageBuffer } = newMenu;
-
-  // Kiểm tra các trường bắt buộc
-  if (!name || !description || !price || !category || !quantity) {
-    alert("Please fill in all required fields.");
-    return;
-  }
-
-  try {
-    // Gửi yêu cầu tạo món ăn
-    const response = await axios.post("http://localhost:3001/api/menus", {
+    const {
       name,
       description,
-      price: parseFloat(price), // Chuyển giá thành số thực
+      price,
       category,
-      quantity: parseInt(quantity), // Chuyển số lượng thành số nguyên
+      quantity,
       fileName,
       imageBuffer,
-    });
+    } = newMenu;
 
-    alert("Menu created successfully");
-    setNewMenu({
-      name: "",
-      description: "",
-      imageUrl: "",
-      category: "",
-      price: "",
-      quantity: "", // Reset quantity
-      imageBuffer: null,
-      fileName: "",
-      previewUrl: "",
-    });
-    fetchMenus(); // Tải lại danh sách menu
-    const modal = Modal.getInstance(document.getElementById("addNewMenu"));
-    modal.hide(); // Đóng modal
-  } catch (err) {
-    console.error("Error creating menu:", err);
-    alert("Failed to create menu.");
-  }
-};
+    // Kiểm tra các trường bắt buộc
+    if (!name || !description || !price || !category || !quantity) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      // Gửi yêu cầu tạo món ăn
+      const response = await axios.post("http://localhost:3001/api/menus", {
+        name,
+        description,
+        price: parseFloat(price), // Chuyển giá thành số thực
+        category,
+        quantity: parseInt(quantity), // Chuyển số lượng thành số nguyên
+        fileName,
+        imageBuffer,
+      });
+
+      alert("Menu created successfully");
+      setNewMenu({
+        name: "",
+        description: "",
+        imageUrl: "",
+        category: "",
+        price: "",
+        quantity: "", // Reset quantity
+        imageBuffer: null,
+        fileName: "",
+        previewUrl: "",
+      });
+      fetchMenus(); // Tải lại danh sách menu
+      const modal = Modal.getInstance(document.getElementById("addNewMenu"));
+      modal.hide(); // Đóng modal
+    } catch (err) {
+      console.error("Error creating menu:", err);
+      alert("Failed to create menu.");
+    }
+  };
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -263,17 +269,17 @@ const handleEditImageUpload = (e) => {
   };
 
   const handleSort = (field) => {
-  if (sortField === field) {
-    setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-  } else {
-    setSortField(field);
-    setSortOrder("asc");
-  }
-};
+    if (sortField === field) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
 
   // Hàm reset quantity
   const handleResetQuantities = async () => {
-    if (window.confirm("Bạn có chắc muốn đặt lại số lượng tất cả món ăn về 200?")) {
+    if (window.confirm("You want to reset all menu quantities to 200?")) {
       try {
         await axios.post("http://localhost:3001/api/menus/reset-quantities");
         alert("Đã đặt lại số lượng tất cả món ăn về 200!");
@@ -287,7 +293,9 @@ const handleEditImageUpload = (e) => {
   const handleOrderStatusUpdate = async (orderId) => {
     try {
       // Sau khi xác nhận đơn hàng thành công:
-      await axios.put(`http://localhost:3001/api/orders/${orderId}/status`, { status: "delivering" });
+      await axios.put(`http://localhost:3001/api/orders/${orderId}/status`, {
+        status: "delivering",
+      });
       // Gọi lại fetchMenus nếu bạn đang ở trang AdminMenus
       if (typeof fetchMenus === "function") fetchMenus();
     } catch (err) {
@@ -459,22 +467,22 @@ const handleEditImageUpload = (e) => {
             setCurrentPage(1); // ✅ reset về page 1 khi tìm kiếm
           }}
         />
-      <select
-        className="form-select"
-        value={selectedCategory}
-        onChange={(e) => {
-          setSelectedCategory(e.target.value);
-          setCurrentPage(1); // reset trang
-        }}
-        style={{ width: "200px" }}
-      >
-        <option value="">All categories</option>
-        {categories.map((cat) => (
-          <option key={cat} value={cat}>
-            {cat}
-          </option>
-        ))}
-      </select>
+        <select
+          className="form-select"
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setCurrentPage(1); // reset trang
+          }}
+          style={{ width: "150px" }}
+        >
+          <option value="">All categories</option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
 
         <button
           onClick={() => {
@@ -485,94 +493,133 @@ const handleEditImageUpload = (e) => {
           Add menu
         </button>
         {/* Nút Reset Quantity */}
-        <button
-         
-          onClick={handleResetQuantities}
-        >
-          Reset Quantity
-        </button>
+        <button onClick={handleResetQuantities}>Reset Quantity</button>
       </div>
 
       <div>
         {/* Menu Table */}
         <div className="card">
-  <div className="card-body" style={{ minHeight: "500px" }}>
-    <div>
-      <span style={{ fontWeight: "bold", fontSize: "20px" }}>
-        Menus List
-      </span>
-    </div>
-    <div className="table-responsive">
-      <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
-        <thead>
-          <tr>
-            <th style={{ width: "8%", cursor: "pointer" }} onClick={() => handleSort("name")}>
-              Name {sortField === "name" && (sortOrder === "asc" ? "▲" : "▼")}
-            </th>
-            <th style={{ width: "25%" }}>Description</th>
-            <th style={{ width: "4%", cursor: "pointer" }} onClick={() => handleSort("category")}>
-              Category
-            </th>
-            <th style={{ width: "6%", cursor: "pointer" }} onClick={() => handleSort("price")}>
-              Price {sortField === "price" && (sortOrder === "asc" ? "▲" : "▼")}
-            </th>
-            <th style={{ width: "6%" }}>Quantity</th>
-            <th style={{ width: "11%", position: "sticky", right: 0, background: "#fff", zIndex: 1 }}>
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentMenus.map((menu) => (
-            <tr key={menu._id}>
-              <td>{menu.name}</td>
-              <td>{menu.description}</td>
-              <td>{menu.category}</td>
-              <td>${menu.price ? Number(menu.price).toFixed(2) : "0.00"}</td>
-              <td>{menu.quantity}</td>
-              <td style={{ position: "sticky", right: 0, background: "#fff" }}>
-                <button
-                  className="btn-select selected me-2"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editMenuModal"
-                  onClick={() => handleEdit(menu)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="btn-select"
-                  onClick={() => handleDelete(menu._id)}
-                >
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          <div className="card-body" style={{ minHeight: "500px" }}>
+            <div>
+              <span style={{ fontWeight: "bold", fontSize: "20px" }}>
+                Menus List
+              </span>
+            </div>
+            <div className="table-responsive">
+              <table
+                className="table table-striped table-bordered"
+                style={{ tableLayout: "fixed", width: "100%" }}
+              >
+                <thead>
+                  <tr>
+                    <th
+                      style={{ width: "8%", cursor: "pointer" }}
+                      onClick={() => handleSort("name")}
+                    >
+                      Name{" "}
+                      {sortField === "name" &&
+                        (sortOrder === "asc" ? "▲" : "▼")}
+                    </th>
+                    <th style={{ width: "30%" }}>Description</th>
+                    <th
+                      style={{ width: "4%", cursor: "pointer" }}
+                      onClick={() => handleSort("category")}
+                    >
+                      Category
+                    </th>
+                    <th
+                      style={{ width: "6%", cursor: "pointer" }}
+                      onClick={() => handleSort("price")}
+                    >
+                      Price{" "}
+                      {sortField === "price" &&
+                        (sortOrder === "asc" ? "▲" : "▼")}
+                    </th>
+                    <th style={{ width: "5%" }}>Quantity</th>
+                    <th
+                      style={{
+                        width: "10%",
+                        position: "sticky",
+                        right: 0,
+                        background: "#fff",
+                        zIndex: 1,
+                      }}
+                    >
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentMenus.map((menu) => (
+                    <tr key={menu._id}>
+                      <td>{menu.name}</td>
+                      <td>{menu.description}</td>
+                      <td>{menu.category}</td>
+                      <td>
+                        ${menu.price ? Number(menu.price).toFixed(2) : "0.00"}
+                      </td>
+                      <td>{menu.quantity}</td>
+                      <td
+                        style={{
+                          position: "sticky",
+                          right: 0,
+                          background: "#fff",
+                        }}
+                      >
+                        <div className="d-flex gap-2">
+                          <button
+                            className="btn-select selected me-2"
+                            data-bs-toggle="modal"
+                            data-bs-target="#editMenuModal"
+                            onClick={() => handleEdit(menu)}
+                            style={{
+                              padding: "0px 0px",
+                              margin: "0px 0px",
+                              paddingLeft: "5px",
+                            }}
+                          >
+                            <i class="fa fa-edit"></i>
+                          </button>
+                          <button
+                            className="btn-select"
+                            onClick={() => handleDelete(menu._id)}
+                            style={{ padding: "0px 0px" }}
+                          >
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-    {/* ✅ Pagination cố định dưới bảng */}
-    <div className="d-flex justify-content-center align-items-center gap-3 mt-3" style={{ minHeight: "40px" }}>
-      <button
-        className=""
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-      >
-        Previous
-      </button>
-      <span>Page {currentPage} of {totalPages}</span>
-      <button
-        className=""
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      >
-        Next
-      </button>
-    </div>
-  </div>
-</div>
-
+            {/* ✅ Pagination cố định dưới bảng */}
+            <div
+              className="d-flex justify-content-center align-items-center gap-3 mt-3"
+              style={{ minHeight: "40px" }}
+            >
+              <button
+                className=""
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                className=""
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* Edit Menu Modal */}
 
@@ -645,7 +692,6 @@ const handleEditImageUpload = (e) => {
                           }}
                         />
                       )}
-
                     </div>
                     <div className="mb-3">
                       <label className="form-label">Category</label>

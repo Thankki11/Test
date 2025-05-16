@@ -1,0 +1,625 @@
+[{
+  "_id": {
+    "$oid": "682710e07ada2d2255fb4d85"
+  },
+  "name": "Classic Beef Burger",
+  "description": "Traditional beef burger with lettuce, tomato, and cheese.",
+  "imageUrl": "/uploads/menus/burgers/07a57d23-ca85-4dfc-bddb-612a927011ba.jpg",
+  "category": "burger",
+  "price": 55,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682711197ada2d2255fb4d88"
+  },
+  "name": "Cheese Burger",
+  "description": "Juicy beef patty topped with melted cheddar cheese.",
+  "imageUrl": "/uploads/menus/burgers/f949ee09-f3e5-4bde-89a5-d720875856fc.webp",
+  "category": "burger",
+  "price": 60,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6827116a7ada2d2255fb4d8b"
+  },
+  "name": "Double Beef Burger",
+  "description": "Double beef patties with cheese and signature sauce.",
+  "imageUrl": "/uploads/menus/burgers/95aeb5ac-51aa-4a77-b93f-9d5eed4ea355.jpg",
+  "category": "burger",
+  "price": 75,
+  "quantity": 50,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682711f07ada2d2255fb4d8e"
+  },
+  "name": "Chicken Burger",
+  "description": "Crispy fried chicken burger with mayo and fresh veggies.",
+  "imageUrl": "/uploads/menus/burgers/bcf4b564-b6f6-44c0-8c69-eb5581265ee1.webp",
+  "category": "burger",
+  "price": 58,
+  "quantity": 99,
+  "reviews": [
+    {
+      "userId": {
+        "$oid": "68270d427ada2d2255fb4d63"
+      },
+      "username": "thanh",
+      "rating": 5,
+      "comment": "được bao nên 5s",
+      "_id": {
+        "$oid": "682732d3f303e4b6a45b2e3d"
+      },
+      "createdAt": {
+        "$date": "2025-05-16T12:42:59.120Z"
+      }
+    }
+  ],
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "682712247ada2d2255fb4d91"
+  },
+  "name": "Spicy Chicken Burger",
+  "description": "Spicy chicken fillet with chili sauce and lettuce.",
+  "imageUrl": "/uploads/menus/burgers/24637389-3328-4868-b759-0699f5dd6976.webp",
+  "category": "burger",
+  "price": 60,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682712627ada2d2255fb4d98"
+  },
+  "name": "Bacon Cheese Burger",
+  "description": "Grilled beef burger with crispy bacon and cheese.",
+  "imageUrl": "/uploads/menus/burgers/47a4212e-b8e1-4392-9c4a-34eb6fb6fb4b.jpg",
+  "category": "burger",
+  "price": 69,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682712a37ada2d2255fb4d9b"
+  },
+  "name": "BBQ Beef Burger",
+  "description": "Beef patty with smoky BBQ sauce and caramelized onions.",
+  "imageUrl": "/uploads/menus/burgers/12b0c8ae-a029-4942-a31a-9cdabba1ed24.webp",
+  "category": "burger",
+  "price": 68,
+  "quantity": 97,
+  "reviews": [
+    {
+      "userId": {
+        "$oid": "68270d427ada2d2255fb4d63"
+      },
+      "username": "thanh",
+      "rating": 2,
+      "comment": "ngon nhưng no ăn không hết nên cho 2 sao",
+      "_id": {
+        "$oid": "682732b1f303e4b6a45b2e14"
+      },
+      "createdAt": {
+        "$date": "2025-05-16T12:42:25.716Z"
+      }
+    }
+  ],
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "682713e97ada2d2255fb4d9e"
+  },
+  "name": "Mushroom Swiss Burger",
+  "description": "Beef burger with sautéed mushrooms and Swiss cheese.",
+  "imageUrl": "/uploads/menus/burgers/b4a54431-2d2f-4c09-bae0-cb8fd16d7fa7.jpg",
+  "category": "burger",
+  "price": 70,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6827141e7ada2d2255fb4da1"
+  },
+  "name": "Fish Burger",
+  "description": "Crispy fish fillet burger with tartar sauce and greens.",
+  "imageUrl": "/uploads/menus/burgers/caba3074-7508-478a-a3c1-76140f17b964.webp",
+  "category": "burger",
+  "price": 62,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6827145e7ada2d2255fb4da4"
+  },
+  "name": "Veggie Burger",
+  "description": "Healthy plant-based patty with fresh vegetables.",
+  "imageUrl": "/uploads/menus/burgers/230c2931-96c2-4ddd-8512-8f3c316b5900.jpg",
+  "category": "burger",
+  "price": 56,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6827176e7ada2d2255fb4db3"
+  },
+  "name": "Margherita Pizza",
+  "description": "Classic pizza with tomato sauce, mozzarella, and fresh basil.",
+  "imageUrl": "/uploads/menus/pizzas/46d09d3b-7bde-4b5a-95c1-3b1b87e58330.webp",
+  "category": "pizza",
+  "price": 89,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682717b27ada2d2255fb4db6"
+  },
+  "name": "Pepperoni Pizza",
+  "description": "All-time favorite topped with spicy pepperoni and cheese",
+  "imageUrl": "/uploads/menus/pizzas/1712c344-2ef3-4eed-bb70-01aab83992fa.webp",
+  "category": "pizza",
+  "price": 99,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682717e87ada2d2255fb4db9"
+  },
+  "name": "Hawaiian Pizza",
+  "description": "Sweet and savory combo of ham and pineapple.",
+  "imageUrl": "/uploads/menus/pizzas/6f914d23-6b4a-4781-8b84-10af9b6082e2.webp",
+  "category": "pizza",
+  "price": 95,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682718177ada2d2255fb4dbc"
+  },
+  "name": "BBQ Chicken Pizza",
+  "description": "Grilled chicken, BBQ sauce, and red onions on a cheesy crust.",
+  "imageUrl": "/uploads/menus/pizzas/b39fd3fd-f0d5-4728-aa8b-8e0f188b9879.jpg",
+  "category": "pizza",
+  "price": 105,
+  "quantity": 60,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682718667ada2d2255fb4dbf"
+  },
+  "name": "Meat Lover’s Pizza",
+  "description": "Loaded with sausage, pepperoni, bacon, and ham.",
+  "imageUrl": "/uploads/menus/pizzas/67e56674-051d-4519-8b2e-ed00098776e5.jpg",
+  "category": "pizza",
+  "price": 115,
+  "quantity": 48,
+  "reviews": [
+    {
+      "userId": {
+        "$oid": "68270d427ada2d2255fb4d63"
+      },
+      "username": "thanh",
+      "rating": 1,
+      "comment": "giá cao ngang lòng se điếu",
+      "_id": {
+        "$oid": "682732f9f303e4b6a45b2e68"
+      },
+      "createdAt": {
+        "$date": "2025-05-16T12:43:37.036Z"
+      }
+    }
+  ],
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "682718a47ada2d2255fb4dc2"
+  },
+  "name": "Veggie Delight Pizza",
+  "description": "Topped with bell peppers, olives, mushrooms, and onions.",
+  "imageUrl": "/uploads/menus/pizzas/6da7659a-1272-45c3-bd40-853bf9364395.avif",
+  "category": "pizza",
+  "price": 92,
+  "quantity": 73,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682718f27ada2d2255fb4dc5"
+  },
+  "name": "Seafood Pizza",
+  "description": "Shrimp, squid, and crab sticks with creamy garlic sauce.",
+  "imageUrl": "/uploads/menus/pizzas/bbf164b3-c2e6-4e5b-9bc5-837408abc068.jpg",
+  "category": "pizza",
+  "price": 120,
+  "quantity": 32,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682719387ada2d2255fb4dc8"
+  },
+  "name": "Four Cheese Pizza",
+  "description": "Mozzarella, cheddar, parmesan, and blue cheese combo.",
+  "imageUrl": "/uploads/menus/pizzas/27b09f16-1816-4b80-b282-664c0ed1bb0f.jpg",
+  "category": "pizza",
+  "price": 108,
+  "quantity": 74,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "6827196e7ada2d2255fb4dcb"
+  },
+  "name": "Spicy Sausage Pizza",
+  "description": "Hot sausage slices with jalapeños and chili flakes.",
+  "imageUrl": "/uploads/menus/pizzas/0b92ef82-d5ea-4bb3-a235-6f56fe725e57.jpg",
+  "category": "pizza",
+  "price": 99,
+  "quantity": 50,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682719ad7ada2d2255fb4dce"
+  },
+  "name": "Mushroom & Truffle Pizza",
+  "description": "Sautéed mushrooms with a drizzle of truffle oil.",
+  "imageUrl": "/uploads/menus/pizzas/53bab857-8a23-4865-9946-ed302d74ac09.jpg",
+  "category": "pizza",
+  "price": 125,
+  "quantity": 30,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271a207ada2d2255fb4dd1"
+  },
+  "name": "Classic Fried Chicken",
+  "description": "Crispy golden-brown chicken seasoned to perfection.",
+  "imageUrl": "/uploads/menus/fried-chickens/f691daa8-1319-4745-9f27-26b979f928d4.webp",
+  "category": "fried-chicken",
+  "price": 45,
+  "quantity": 200,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271a6f7ada2d2255fb4dd4"
+  },
+  "name": "Spicy Fried Chicken",
+  "description": "Extra crispy chicken with a bold spicy kick.",
+  "imageUrl": "/uploads/menus/fried-chickens/b4a859e7-be55-48bb-a0c5-697836f9c66a.jpg",
+  "category": "fried-chicken",
+  "price": 50,
+  "quantity": 200,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271ab77ada2d2255fb4dd7"
+  },
+  "name": "Chicken Wings (6 pcs)",
+  "description": "Juicy wings tossed in your choice of sauce.",
+  "imageUrl": "/uploads/menus/fried-chickens/8e49a7a8-f147-4ecc-b98d-de541248dcd4.jpg",
+  "category": "fried-chicken",
+  "price": 72,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271afd7ada2d2255fb4dda"
+  },
+  "name": "Honey Garlic Chicken",
+  "description": "Sweet and savory chicken glazed with honey garlic sauce.",
+  "imageUrl": "/uploads/menus/fried-chickens/d74272b9-958a-4a8c-8247-bf4dba70aba4.webp",
+  "category": "fried-chicken",
+  "price": 75,
+  "quantity": 94,
+  "reviews": [
+    {
+      "userId": {
+        "$oid": "68270d427ada2d2255fb4d63"
+      },
+      "username": "thanh",
+      "rating": 5,
+      "comment": "ngon hơn nyc",
+      "_id": {
+        "$oid": "6827330af303e4b6a45b2e95"
+      },
+      "createdAt": {
+        "$date": "2025-05-16T12:43:54.049Z"
+      }
+    }
+  ],
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68271b3b7ada2d2255fb4ddd"
+  },
+  "name": "Korean Spicy Chicken",
+  "description": "Crispy chicken coated in spicy gochujang sauce.",
+  "imageUrl": "/uploads/menus/fried-chickens/359fb97b-8185-4a11-a0f6-d8c8127444b5.jpg",
+  "category": "fried-chicken",
+  "price": 78,
+  "quantity": 96,
+  "reviews": [
+    {
+      "userId": {
+        "$oid": "68270d427ada2d2255fb4d63"
+      },
+      "username": "thanh",
+      "rating": 5,
+      "comment": "hình ảnh mang tính chất thực tế",
+      "_id": {
+        "$oid": "68273376f303e4b6a45b2ef9"
+      },
+      "createdAt": {
+        "$date": "2025-05-16T12:45:42.783Z"
+      }
+    }
+  ],
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68271b997ada2d2255fb4de0"
+  },
+  "name": "Boneless Chicken Bites",
+  "description": "Bite-sized boneless chicken pieces, lightly fried.",
+  "imageUrl": "/uploads/menus/fried-chickens/aed014bd-9b1c-4563-8a0e-f85815f961d6.webp",
+  "category": "fried-chicken",
+  "price": 67,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271bea7ada2d2255fb4de3"
+  },
+  "name": "Chicken Tenders (4 pcs)",
+  "description": "Tender chicken strips served with dipping sauce",
+  "imageUrl": "/uploads/menus/fried-chickens/aca95072-6af9-4737-8f68-14bbab68d4e9.webp",
+  "category": "fried-chicken",
+  "price": 69,
+  "quantity": 70,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271c357ada2d2255fb4de6"
+  },
+  "name": "Cheese-stuffed Chicken",
+  "description": "Crispy fried chicken filled with melted cheese inside.",
+  "imageUrl": "/uploads/menus/fried-chickens/6e6873a7-5c9d-4286-b700-751e254593f7.jpg",
+  "category": "fried-chicken",
+  "price": 81,
+  "quantity": 50,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271c6f7ada2d2255fb4de9"
+  },
+  "name": "Garlic Parmesan Chicken",
+  "description": "Fried chicken tossed in buttery garlic parmesan sauce.",
+  "imageUrl": "/uploads/menus/fried-chickens/8b213111-ae28-43f7-b16d-a471afa2236b.jpg",
+  "category": "fried-chicken",
+  "price": 77,
+  "quantity": 80,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271ca97ada2d2255fb4dec"
+  },
+  "name": "Chicken Popcorn",
+  "description": "Mini fried chicken bites perfect for snacking.",
+  "imageUrl": "/uploads/menus/fried-chickens/b98ec1ac-40fb-4dd1-ac1e-67beb00002dc.jpg",
+  "category": "fried-chicken",
+  "price": 50,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271d877ada2d2255fb4def"
+  },
+  "name": "Brown Sugar Milk Tea",
+  "description": "Creamy milk tea swirled with rich brown sugar syrup.",
+  "imageUrl": "/uploads/menus/drinks/f632cf3e-a015-4f25-888c-142755097392.jpg",
+  "category": "drink",
+  "price": 35,
+  "quantity": 98,
+  "reviews": [
+    {
+      "userId": {
+        "$oid": "68270d427ada2d2255fb4d63"
+      },
+      "username": "thanh",
+      "rating": 5,
+      "comment": "quá tuyệt vời",
+      "_id": {
+        "$oid": "6827327df303e4b6a45b2ded"
+      },
+      "createdAt": {
+        "$date": "2025-05-16T12:41:33.080Z"
+      }
+    }
+  ],
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68271dc47ada2d2255fb4df2"
+  },
+  "name": "Taro Milk Tea",
+  "description": "Sweet and creamy purple taro milk tea topped with foam.",
+  "imageUrl": "/uploads/menus/drinks/1f3f6a2c-b43c-4480-8799-b69cc9dceb02.webp",
+  "category": "drink",
+  "price": 36,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271df67ada2d2255fb4df5"
+  },
+  "name": "Matcha Latte",
+  "description": "Smooth Japanese matcha blended with fresh milk.",
+  "imageUrl": "/uploads/menus/drinks/0fbf3b9f-48e9-4395-9d76-1aa997dc19c2.jpg",
+  "category": "drink",
+  "price": 38,
+  "quantity": 99,
+  "reviews": [
+    {
+      "userId": {
+        "$oid": "68270d427ada2d2255fb4d63"
+      },
+      "username": "thanh",
+      "rating": 4,
+      "comment": "uống được nhưng ghét \"trà xanh\"",
+      "_id": {
+        "$oid": "68273332f303e4b6a45b2ec6"
+      },
+      "createdAt": {
+        "$date": "2025-05-16T12:44:34.747Z"
+      }
+    }
+  ],
+  "__v": 1
+},
+{
+  "_id": {
+    "$oid": "68271e2b7ada2d2255fb4df8"
+  },
+  "name": "Lychee Peach Tea",
+  "description": "Fruity black tea infused with lychee and peach flavor.",
+  "imageUrl": "/uploads/menus/drinks/1a13f6f3-8927-4c4f-9cf6-b4e4ec3485e3.jpg",
+  "category": "drink",
+  "price": 40,
+  "quantity": 140,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68271e687ada2d2255fb4dfb"
+  },
+  "name": "Strawberry Yogurt Smoothie",
+  "description": "Refreshing smoothie with real strawberries and yogurt.",
+  "imageUrl": "/uploads/menus/drinks/c16578cb-d526-428f-8834-ee3887d62334.webp",
+  "category": "drink",
+  "price": 42,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682720af7ada2d2255fb4e18"
+  },
+  "name": "Vietnamese Iced Coffee",
+  "description": "Bold Robusta coffee with sweetened condensed milk.",
+  "imageUrl": "/uploads/menus/drinks/dd6794ee-0806-4349-8221-2f7a3431ecb0.avif",
+  "category": "drink",
+  "price": 30,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682720ea7ada2d2255fb4e1b"
+  },
+  "name": "Mango Smoothie",
+  "description": "Thick and refreshing mango smoothie, perfect for summer.",
+  "imageUrl": "/uploads/menus/drinks/4c3b6cd7-e969-4ebd-98e5-693ccf1cf65d.jpg",
+  "category": "drink",
+  "price": 36,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682721b27ada2d2255fb4e1e"
+  },
+  "name": "Milk Foam Oolong Tea",
+  "description": "Cold oolong tea topped with rich salted milk foam.",
+  "imageUrl": "/uploads/menus/drinks/7066e595-97b4-41fa-8110-ade458596e51.jpg",
+  "category": "drink",
+  "price": 35,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682721e87ada2d2255fb4e21"
+  },
+  "name": "Coconut Coffee",
+  "description": "Vietnamese coffee blended with creamy coconut milk.",
+  "imageUrl": "/uploads/menus/drinks/c43fbbb4-0efe-4a66-bb99-65c21cf84bd4.jpg",
+  "category": "drink",
+  "price": 42,
+  "quantity": 100,
+  "reviews": [],
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "682723467ada2d2255fb4e51"
+  },
+  "name": "Fresh Passion Fruit Tea",
+  "description": "Iced tea with real passion fruit and basil seeds.",
+  "imageUrl": "/uploads/menus/drinks/cb3a0085-fb3d-49da-9ddb-f2de09d825a5.avif",
+  "category": "drink",
+  "price": 45,
+  "quantity": 200,
+  "reviews": [],
+  "__v": 0
+}]

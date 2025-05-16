@@ -30,9 +30,12 @@ function AdminUsers() {
   const fetchUsers = async () => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await axios.get("http://localhost:3001/api/admin/users", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        "http://localhost:3001/api/admin/users",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setUsers(response.data || []); // Đảm bảo `users` luôn là một mảng
     } catch (err) {
       console.error("Error fetching users:", err);
@@ -62,7 +65,13 @@ function AdminUsers() {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("User added successfully");
-      setNewUser({ username: "", email: "", phone: "", password: "", role: "user" });
+      setNewUser({
+        username: "",
+        email: "",
+        phone: "",
+        password: "",
+        role: "user",
+      });
       fetchUsers();
     } catch (err) {
       if (err.response && err.response.data && err.response.data.message) {
@@ -161,38 +170,38 @@ function AdminUsers() {
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
-
   return (
     <div className="container">
       <h2 className="text-center mb-3">User Management</h2>
-      
 
       <div className="d-flex align-items-center justify-content-center gap-3 mb-2 text-center">
         <span style={{ fontWeight: "bold", marginRight: "10px" }}>Search:</span>
-          <input
-            type="text"
-            className="form-control w-50"
-            placeholder="Search by username, email, phone, role..."
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-          />
-          <select
-            className="form-select"
-            style={{ width: "160px" }}
-            value={selectedRole}
-            onChange={(e) => {
-              setSelectedRole(e.target.value);
-              setCurrentPage(1); // reset page
-            }}
-          >
-            <option value="">All roles</option>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
+        <input
+          type="text"
+          className="form-control w-50"
+          placeholder="Search by username, email, phone, role..."
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+        />
+        <select
+          className="form-select"
+          style={{ width: "160px" }}
+          value={selectedRole}
+          onChange={(e) => {
+            setSelectedRole(e.target.value);
+            setCurrentPage(1); // reset page
+          }}
+        >
+          <option value="">All roles</option>
+          <option value="user">User</option>
+          <option value="admin">Admin</option>
+        </select>
 
         <button
           className=""
-          onClick={() => new bootstrap.Modal(document.getElementById("addUserModal")).show()}
+          onClick={() =>
+            new bootstrap.Modal(document.getElementById("addUserModal")).show()
+          }
         >
           Add User
         </button>
@@ -203,95 +212,109 @@ function AdminUsers() {
           <span style={{ fontWeight: "bold", fontSize: "20px" }}>
             Users List
           </span>
-        <table className="table table-striped table-bordered" style={{ tableLayout: "fixed", width: "100%" }}>
-        <thead>
-          <tr>
-            <th
-              style={{ width: "24%", cursor: "pointer" }}
-              onClick={() => handleSort("username")}
-            >
-              Username {sortField === "username" && (sortOrder === "asc" ? "▲" : "▼")}
-            </th>
-            <th style={{ width: "41.5%" }}>Email</th>
-            <th style={{ width: "10%" }}>Phone</th>
-            <th style={{ width: "4.5%" }}>Role</th>
-            <th
-              style={{
-                width: "20%",
-                position: "sticky",
-                right: 0,
-                background: "#fff",
-                zIndex: 1,
-              }}
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentUsers.length > 0 ? (
-            currentUsers.map((user) => (
-              <tr key={user._id}>
-                <td>{user.username}</td>
-                <td>{user.email}</td>
-                <td>{user.phone}</td>
-                <td>{user.role}</td>
-                <td
+          <table
+            className="table table-striped table-bordered"
+            style={{ tableLayout: "fixed", width: "100%" }}
+          >
+            <thead>
+              <tr>
+                <th
+                  style={{ width: "24%", cursor: "pointer" }}
+                  onClick={() => handleSort("username")}
+                >
+                  Username{" "}
+                  {sortField === "username" &&
+                    (sortOrder === "asc" ? "▲" : "▼")}
+                </th>
+                <th style={{ width: "41.5%" }}>Email</th>
+                <th style={{ width: "10%" }}>Phone</th>
+                <th style={{ width: "10.5%" }}>Role</th>
+                <th
                   style={{
+                    width: "14%",
                     position: "sticky",
                     right: 0,
                     background: "#fff",
+                    zIndex: 1,
                   }}
                 >
-                  <button
-                    className="btn-select selected me-2"
-                    onClick={() => {
-                      handleEdit(user);
-                      new bootstrap.Modal(document.getElementById("editUserModal")).show();
-                    }}
-                  >
-                    Edit
-                  </button>
-
-                  <button 
-                    className="btn-select"
-                    onClick={() => handleDelete(user._id)}>Delete
-                  </button>
-                </td>
+                  Actions
+                </th>
               </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="5" className="text-center">No matching users found</td>
-            </tr>
+            </thead>
+            <tbody>
+              {currentUsers.length > 0 ? (
+                currentUsers.map((user) => (
+                  <tr key={user._id}>
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                    <td>{user.phone}</td>
+                    <td>{user.role}</td>
+                    <td
+                      style={{
+                        position: "sticky",
+                        right: 0,
+                        background: "#fff",
+                      }}
+                    >
+                      <div className="d-flex gap-2">
+                        <button
+                          className="btn-select selected me-2"
+                          onClick={() => {
+                            handleEdit(user);
+                            new bootstrap.Modal(
+                              document.getElementById("editUserModal")
+                            ).show();
+                          }}
+                        >
+                          <i class="fa fa-edit"></i>
+                        </button>
+                        <button
+                          className="btn-select"
+                          onClick={() => handleDelete(user._id)}
+                        >
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="text-center">
+                    No matching users found
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+          {filteredUsers.length > 0 && (
+            <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+              <button
+                className=""
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                className=""
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
           )}
-        </tbody>
-      </table>
-      {filteredUsers.length > 0 && (
-        <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
-          <button
-            className=""
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-
-          <span>
-            Page {currentPage} of {totalPages}
-          </span>
-
-          <button
-            className=""
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
         </div>
-      )}
-    </div>
-  </div>
+      </div>
 
       {/* Modal Thêm User */}
       <div className="modal fade" id="addUserModal" tabIndex="-1">
@@ -308,7 +331,9 @@ function AdminUsers() {
                   type="text"
                   className="form-control"
                   value={newUser.username}
-                  onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, username: e.target.value })
+                  }
                 />
               </div>
 
@@ -318,7 +343,9 @@ function AdminUsers() {
                   type="email"
                   className="form-control"
                   value={newUser.email}
-                  onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, email: e.target.value })
+                  }
                 />
               </div>
 
@@ -328,7 +355,9 @@ function AdminUsers() {
                   type="text"
                   className="form-control"
                   value={newUser.phone}
-                  onChange={(e) => setNewUser({ ...newUser, phone: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, phone: e.target.value })
+                  }
                 />
               </div>
 
@@ -338,7 +367,9 @@ function AdminUsers() {
                   type="password"
                   className="form-control"
                   value={newUser.password}
-                  onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, password: e.target.value })
+                  }
                 />
               </div>
 
@@ -347,7 +378,9 @@ function AdminUsers() {
                 <select
                   className="form-select"
                   value={newUser.role}
-                  onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, role: e.target.value })
+                  }
                 >
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
@@ -355,12 +388,16 @@ function AdminUsers() {
               </div>
             </div>
             <div className="modal-footer">
-              <button className="" data-bs-dismiss="modal">Cancel</button>
+              <button className="btn-selected" data-bs-dismiss="modal">
+                Cancel
+              </button>
               <button
-                className=""
+                className="btn-selected selected"
                 onClick={() => {
                   handleAddUser();
-                  bootstrap.Modal.getInstance(document.getElementById("addUserModal"))?.hide();
+                  bootstrap.Modal.getInstance(
+                    document.getElementById("addUserModal")
+                  )?.hide();
                 }}
               >
                 Add
@@ -371,96 +408,108 @@ function AdminUsers() {
       </div>
 
       {/* Modal Edit User */}
-    <div className="modal fade" id="editUserModal" tabIndex="-1">
-      <div className="modal-dialog modal-lg">
-        <div className="modal-content">
-          {editUser && (
-            <>
-              <div className="modal-header">
-                <h5 className="modal-title">Edit User</h5>
-                <button
-                  className="btn-close"
-                  data-bs-dismiss="modal"
-                  onClick={() => setEditUser(null)}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <div className="mb-3">
-                  <label className="form-label">Username</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={editUser.username}
-                    onChange={(e) => setEditUser({ ...editUser, username: e.target.value })}
-                  />
+      <div className="modal fade" id="editUserModal" tabIndex="-1">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            {editUser && (
+              <>
+                <div className="modal-header">
+                  <h5 className="modal-title">Edit User</h5>
+                  <button
+                    className="btn-close"
+                    data-bs-dismiss="modal"
+                    onClick={() => setEditUser(null)}
+                  ></button>
                 </div>
+                <div className="modal-body">
+                  <div className="mb-3">
+                    <label className="form-label">Username</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editUser.username}
+                      onChange={(e) =>
+                        setEditUser({ ...editUser, username: e.target.value })
+                      }
+                    />
+                  </div>
 
-                <div className="mb-3">
-                  <label className="form-label">Email</label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    value={editUser.email}
-                    onChange={(e) => setEditUser({ ...editUser, email: e.target.value })}
-                  />
+                  <div className="mb-3">
+                    <label className="form-label">Email</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      value={editUser.email}
+                      onChange={(e) =>
+                        setEditUser({ ...editUser, email: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Phone</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={editUser.phone}
+                      onChange={(e) =>
+                        setEditUser({ ...editUser, phone: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      placeholder="New Password (Optional)"
+                      value={editUser.password}
+                      onChange={(e) =>
+                        setEditUser({ ...editUser, password: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Role</label>
+                    <select
+                      className="form-select"
+                      value={editUser.role}
+                      onChange={(e) =>
+                        setEditUser({ ...editUser, role: e.target.value })
+                      }
+                    >
+                      <option value="user">User</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                  </div>
                 </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Phone</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={editUser.phone}
-                    onChange={(e) => setEditUser({ ...editUser, phone: e.target.value })}
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Password</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    placeholder="New Password (Optional)"
-                    value={editUser.password}
-                    onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label className="form-label">Role</label>
-                  <select
-                    className="form-select"
-                    value={editUser.role}
-                    onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                <div className="modal-footer">
+                  <button
+                    className=""
+                    data-bs-dismiss="modal"
+                    onClick={() => setEditUser(null)}
                   >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                  </select>
+                    Cancel
+                  </button>
+                  <button
+                    className=""
+                    onClick={() => {
+                      handleSave();
+                      bootstrap.Modal.getInstance(
+                        document.getElementById("editUserModal")
+                      )?.hide();
+                    }}
+                  >
+                    Save
+                  </button>
                 </div>
-              </div>
-              <div className="modal-footer">
-                <button
-                  className=""
-                  data-bs-dismiss="modal"
-                  onClick={() => setEditUser(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  className=""
-                  onClick={() => {
-                    handleSave();
-                    bootstrap.Modal.getInstance(document.getElementById("editUserModal"))?.hide();
-                  }}
-                >
-                  Save
-                </button>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
         </div>
       </div>
-    </div>
     </div>
   );
 }

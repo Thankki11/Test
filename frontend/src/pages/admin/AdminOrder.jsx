@@ -147,29 +147,29 @@ function AdminOrders() {
   };
 
   const handleStatusUpdate = async (orderId, newStatus) => {
-  if (window.confirm(`Do you want to update this order to ${newStatus}?`)) {
-    try {
-      const token = localStorage.getItem("adminToken");
+    if (window.confirm(`Do you want to update this order to ${newStatus}?`)) {
+      try {
+        const token = localStorage.getItem("adminToken");
 
-      // Gọi API cập nhật trạng thái đơn hàng
-      await axios.put(
-        `http://localhost:3001/api/orders/${orderId}/status`,
-        { status: newStatus },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        // Gọi API cập nhật trạng thái đơn hàng
+        await axios.put(
+          `http://localhost:3001/api/orders/${orderId}/status`,
+          { status: newStatus },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-      alert("Order status updated successfully");
+        alert("Order status updated successfully");
 
-      // Reload danh sách đơn hàng
-      fetchOrders();
-    } catch (err) {
-      console.error("Error updating order status:", err);
-      alert("Failed to update order status.");
+        // Reload danh sách đơn hàng
+        fetchOrders();
+      } catch (err) {
+        console.error("Error updating order status:", err);
+        alert("Failed to update order status.");
+      }
     }
-  }
-};
+  };
 
   // Xóa đơn hàng
   const handleDelete = async (id) => {
@@ -448,19 +448,22 @@ function AdminOrders() {
 
             {/* Modal Body */}
             <div className="modal-body">
-              <table className="table table-striped mt-4">
+              <table
+                className="table table-striped table-bordered mt-4"
+                style={{ tableLayout: "fixed", width: "100%" }}
+              >
                 <thead>
                   <tr>
-                    <th>Action</th>
-                    <th>Customer Name</th>
-                    <th>Phone Number</th>
-                    <th>Email Address</th>
-                    <th>Address</th>
-                    <th>Payment Method</th>
-                    <th>Note</th>
-                    <th>Items</th>
-                    <th>Total Price</th>
-                    <th>Date</th>
+                    <th style={{ width: "10%" }}>Action</th>
+                    <th style={{ width: "10%" }}>Customer Name</th>
+                    <th style={{ width: "7%" }}>Phone Number</th>
+                    <th style={{ width: "10%" }}>Email Address</th>
+                    <th style={{ width: "10%" }}>Address</th>
+                    <th style={{ width: "5%" }}>Payment Method</th>
+                    <th style={{ width: "7%" }}>Note</th>
+                    <th style={{ width: "10%" }}>Items</th>
+                    <th style={{ width: "5%" }}>Total Price</th>
+                    <th style={{ width: "7%" }}>Date</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -472,12 +475,14 @@ function AdminOrders() {
                         <div className="d-flex">
                           {/* Nút Xóa */}
                           <button
-                            className="btn btn-sm btn-outline-danger me-2"
+                            className="me-2"
                             title="Delete"
                             onClick={() => handleDelete(order._id)}
                             style={{
                               padding: "0.25rem 0.5rem",
                               fontSize: "0.8rem",
+                              height: "30px",
+                              paddingLeft: "10px",
                             }}
                           >
                             <i
@@ -492,23 +497,28 @@ function AdminOrders() {
 
                           {/* Nút Sửa */}
                           <button
-                            className="btn btn-sm btn-outline-primary me-2 text-center"
+                            className="me-2 text-center"
                             title="Edit"
                             onClick={() => handleEdit(order._id)}
                             style={{
                               padding: "0.25rem 0.5rem",
                               fontSize: "0.8rem",
+                              height: "30px",
+                              paddingLeft: "10px",
+                              backgroundColor: "#007bff",
                             }}
                           >
                             <i className="fa-solid fa-pen"></i>
                           </button>
                           <button
-                            className="btn btn-sm btn-outline-success"
+                            className="btn-selected selected "
                             title="Confirm"
                             onClick={() => handleConfirm(order._id)}
                             style={{
                               padding: "0.25rem 0.5rem",
                               fontSize: "0.8rem",
+                              height: "30px",
+                              paddingLeft: "10px",
                             }}
                           >
                             <i className="fa fa-check"></i>
@@ -609,25 +619,8 @@ function AdminOrders() {
               <thead>
                 <tr>
                   <th
-                    style={{ width: "9%", cursor: "pointer" }}
-                    onClick={() => handleSort("customerName")}
-                  >
-                    Customer Name{" "}
-                    {sortField === "customerName" &&
-                      (sortOrder === "asc" ? "▲" : "▼")}
-                  </th>
-                  <th style={{ width: "7%" }}>Phone Number</th>
-                  <th style={{ width: "10%" }}>Email Address</th>
-                  <th style={{ width: "12%" }}>Address</th>
-                  <th style={{ width: "6%" }}>Payment Method</th>
-                  <th style={{ width: "7%" }}>Note</th>
-                  <th style={{ width: "14%" }}>Items</th>
-                  <th style={{ width: "6%" }}>Total Price</th>
-                  <th style={{ width: "7%" }}>Status</th>
-                  <th style={{ width: "8%" }}>Action</th>
-                  <th
                     style={{
-                      width: "14%",
+                      width: "7%",
                       position: "sticky",
                       right: 0,
                       background: "#fff",
@@ -639,6 +632,24 @@ function AdminOrders() {
                     Date{" "}
                     {sortField === "date" && (sortOrder === "asc" ? "▲" : "▼")}
                   </th>
+                  <th
+                    style={{ width: "9%", cursor: "pointer" }}
+                    onClick={() => handleSort("customerName")}
+                  >
+                    Customer Name{" "}
+                    {sortField === "customerName" &&
+                      (sortOrder === "asc" ? "▲" : "▼")}
+                  </th>
+                  <th style={{ width: "10%" }}>Phone Number</th>
+                  <th style={{ width: "12%" }}>Email Address</th>
+                  <th style={{ width: "12%" }}>Address</th>
+                  <th style={{ width: "6%" }}>Payment Method</th>
+                  <th style={{ width: "7%" }}>Note</th>
+                  <th style={{ width: "19%" }}>Items</th>
+                  <th style={{ width: "6%" }}>Total Price</th>
+                  <th style={{ width: "7%" }}>Status</th>
+
+                  <th style={{ width: "7%" }}>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -650,6 +661,17 @@ function AdminOrders() {
                   )
                   .map((order) => (
                     <tr key={order._id}>
+                      <td
+                        style={{
+                          position: "sticky",
+                          right: 0,
+                          background: "#fff",
+
+                          width: "100%",
+                        }}
+                      >
+                        {new Date(order.date).toLocaleString()}
+                      </td>
                       <td>{order.customerName}</td>
                       <td>{order.phoneNumber}</td>
                       <td>{order.emailAddress}</td>
@@ -680,10 +702,12 @@ function AdminOrders() {
                             order.status.slice(1)}
                         </span>
                       </td>
+
                       <td>
                         {/* Chỉ hiển thị nút khi trạng thái là delivering */}
                         {order.status === "delivering" && (
                           <button
+                            className="btn-selected selected p-0 m-0 w-100"
                             onClick={() =>
                               handleStatusUpdate(order._id, "completed")
                             }
@@ -691,16 +715,6 @@ function AdminOrders() {
                             <i className="fa fa-check"></i>
                           </button>
                         )}
-                      </td>
-                      <td
-                        style={{
-                          position: "sticky",
-                          right: 0,
-                          background: "#fff",
-                          whiteSpace: "nowrap",
-                        }}
-                      >
-                        {new Date(order.date).toLocaleString()}
                       </td>
                     </tr>
                   ))}

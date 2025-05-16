@@ -7,10 +7,14 @@ import img1 from "../assets/images/menus/menu-slider-1.jpg";
 
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import { Modal } from "bootstrap";
 
 function CheckOut() {
   const navigate = useNavigate();
   const [items, setItems] = useState([]); // Mỗi sản phẩm sẽ có trường `discount`
+  const [vouchers, setVouchers] = useState([]); // Danh sách voucher
+  const [availableVouchers, setAvailableVouchers] = useState([]); // Danh sách voucher có sẵn
+  const [appliedVoucher, setAppliedVoucher] = useState(null); // Voucher đã áp dụng
   const [selectedItems, setSelectedItems] = useState([]);
   const [formData, setFormData] = useState({
     customerName: "",
@@ -30,14 +34,71 @@ function CheckOut() {
     }
   }, [navigate]);
 
+  // Hàm fetch dữ liệu voucher từ API
+  useEffect(() => {
+    const fetchVouchers = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/api/vouchers");
+        setVouchers(response.data); // Lưu danh sách voucher vào state
+      } catch (err) {
+        alert("Failed to load vouchers.");
+      }
+    };
+    fetchVouchers();
+  }, []);
+
   const selectedData = items
-  .filter((item) => selectedItems.includes(item._id))
-  .map((item) => ({
-    ...item,
-    total: item.discount
-      ? item.price * item.quantity * (1 - item.discount / 100)
-      : item.price * item.quantity, // Áp dụng giảm giá nếu có
-  }));
+    .filter((item) => selectedItems.includes(item._id))
+    .map((item) => ({
+      ...item,
+      // Tính subtotal cho từng item (chỉ áp dụng discount của item nếu có)
+      discounted: appliedVoucher
+        ? appliedVoucher.type === "PERCENT"
+          ? item.price * item.quantity * (appliedVoucher.value / 100) // Giảm giá theo phần trăm cho từng item
+          : 0 // Giảm giá cố định cho từng item, đảm bảo không âm
+        : item.price * item.quantity, // Nếu không có voucher, giữ nguyên giá
+      total: item.price * item.quantity,
+    }));
+
+  //Kiểm tra voucher có hợp lệ hay không
+  const isVoucherApplicable = (voucher) => {
+    const currentDate = new Date();
+    const startDate = new Date(voucher.start_date);
+    const endDate = new Date(voucher.end_date);
+
+    // Kiểm tra ngày hiệu lực
+    const isDateValid = currentDate >= startDate && currentDate <= endDate;
+
+    // Kiểm tra giá trị đơn hàng tối thiểu
+    const isMinOrderValid = subtotal >= voucher.min_order_value;
+
+    // Kiểm tra voucher có active không
+    const isActive = voucher.isActive;
+
+    // Kiểm tra nếu voucher có áp dụng cho sản phẩm cụ thể
+    const isProductSpecific =
+      voucher.applied_products && voucher.applied_products.length > 0;
+
+    // Nếu voucher áp dụng cho sản phẩm cụ thể, kiểm tra xem có sản phẩm nào trong giỏ hàng khớp không
+    const hasMatchingProduct = isProductSpecific
+      ? selectedItems.some((itemId) => {
+          const item = items.find((i) => i._id === itemId);
+          return item && voucher.applied_products.includes(item._id);
+        })
+      : true;
+
+    return isDateValid && isMinOrderValid && isActive && hasMatchingProduct;
+  };
+
+  // Tính tổng tiền trước khi áp voucher
+  const subtotal = selectedData.reduce((sum, item) => sum + item.total, 0);
+
+  // Tính tổng tiền sau khi áp voucher
+  const discountedTotal = appliedVoucher
+    ? appliedVoucher.type === "PERCENT"
+      ? subtotal * (1 - appliedVoucher.value / 100) // Giảm giá theo %
+      : Math.max(0, subtotal - appliedVoucher.value) // Giảm giá cố định, đảm bảo không âm
+    : subtotal; // Không có voucher
 
   const columns = [
     { header: "Name", accessor: "name" },
@@ -48,6 +109,22 @@ function CheckOut() {
       cell: (value) => `$${value.toFixed(2)}`,
     },
     {
+      header: "Discounted ($)",
+      accessor: "discounted",
+      cell: (value, row) => {
+        // Kiểm tra nếu discountType là FIXED
+        if (!appliedVoucher) {
+          return `-`;
+        } else {
+          if (appliedVoucher.type === "FIXED") {
+            return "Applied Fixed"; // Hiển thị "Applied Fixed"
+          } else {
+            return `$${value.toFixed(2)}`; // Hiển thị số tiền giảm giá nếu discountType không phải FIXED
+          }
+        }
+      },
+    },
+    {
       header: "Subtotal ($)",
       accessor: "total",
       cell: (value) => `$${value.toFixed(2)}`,
@@ -55,8 +132,6 @@ function CheckOut() {
   ];
 
   const totalAmount = selectedData.reduce((sum, item) => sum + item.total, 0);
-
-  const discountedTotal = totalAmount - (totalAmount * discount) / 100; // Tổng tiền sau giảm giá
 
   const fields = [
     {
@@ -112,42 +187,42 @@ function CheckOut() {
     },
   ];
 
-  const handleApplyVoucher = async (itemId) => {
-    try {
-      if (!voucherCode.trim()) {
-        // Nếu mã voucher để trống
-        const updatedItems = items.map((item) =>
-          item._id === itemId ? { ...item, discount: null } : item
-        );
-        setItems(updatedItems);
-        alert("Voucher code cannot be empty.");
-        return;
-      }
+  const handleSetVoucherCode = (content) => {
+    setVoucherCode(content); // Cập nhật giá trị của voucherCode
+  };
 
-      const response = await axios.post(
-        "http://localhost:3001/api/vouchers/validate",
-        { code: voucherCode }
-      );
-      const { discount } = response.data;
-
-      // Cập nhật giảm giá cho sản phẩm được chọn
-      const updatedItems = items.map((item) =>
-        item._id === itemId ? { ...item, discount } : item
-      );
-      setItems(updatedItems);
-
-      alert(`Voucher applied successfully! Discount: ${discount}% for item ${itemId}`);
-    } catch (err) {
-      console.error("Error validating voucher:", err);
-
-      // Nếu mã voucher không hợp lệ
-      const updatedItems = items.map((item) =>
-        item._id === itemId ? { ...item, discount: null } : item
-      );
-      setItems(updatedItems);
-
-      alert("Invalid voucher code. Please try again.");
+  const handleApplyVoucher = async () => {
+    if (!voucherCode) {
+      alert("Please enter a voucher code");
+      return;
     }
+
+    if (selectedItems.length === 0) {
+      alert("Please select at least one item to apply voucher");
+      return;
+    }
+
+    const foundVoucher = vouchers.find((v) => v.voucherCode === voucherCode);
+
+    if (!foundVoucher) {
+      alert("Voucher code not found");
+      return;
+    }
+
+    // Kiểm tra xem voucher có thể áp dụng hay không
+    const isApplicable = isVoucherApplicable(foundVoucher);
+
+    if (!isApplicable) {
+      alert("Voucher is not applicable. Please check the conditions.");
+      return;
+    }
+
+    // Nếu voucher hợp lệ, áp dụng voucher
+    setAppliedVoucher({
+      code: foundVoucher.voucherCode,
+      type: foundVoucher.discount_type,
+      value: foundVoucher.discount_value,
+    });
   };
 
   const handleSubmit = async (data) => {
@@ -173,7 +248,7 @@ function CheckOut() {
             quantity: item.quantity,
             price: item.price,
           })),
-        totalPrice: discountedTotal, // Sử dụng tổng tiền sau giảm giá
+        totalPrice: discountedTotal.toFixed(2), // Sử dụng tổng tiền sau giảm giá
         createdAt: new Date().toISOString(),
       };
       const token = localStorage.getItem("token");
@@ -331,6 +406,90 @@ function CheckOut() {
 
   return (
     <>
+      <div className="modal fade" id="viewVouchers">
+        <div className="modal-dialog modal-lg">
+          <div className="modal-content">
+            {/* <!-- Modal Header --> */}
+            <div className="modal-header">
+              <h4 className="modal-title" style={{ fontSize: "30px" }}>
+                Select Voucher
+              </h4>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+              ></button>
+            </div>
+
+            {/* <!-- Modal body --> */}
+            <div className="modal-body">
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th style={{ width: "15%" }}>Voucher Code</th>
+                    <th style={{ width: "55%" }}>Description</th>
+                    <th style={{ width: "10%" }}>End Date</th>
+                    <th style={{ width: "20%" }}>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {vouchers.map((voucher) => {
+                    const canApply = isVoucherApplicable(voucher);
+                    const isSelected =
+                      appliedVoucher?.code === voucher.voucherCode;
+
+                    return (
+                      <tr key={voucher._id}>
+                        <td>{voucher.voucherCode}</td>
+                        <td>{voucher.name}</td>
+                        <td>
+                          {new Date(voucher.end_date).toLocaleDateString()}
+                        </td>
+                        <td>
+                          {canApply ? (
+                            <button
+                              onClick={() => {
+                                if (!isSelected) {
+                                  handleSetVoucherCode(voucher.voucherCode);
+                                  setAppliedVoucher({
+                                    code: voucher.voucherCode,
+                                    type: voucher.discount_type,
+                                    value: voucher.discount_value,
+                                  });
+                                } else {
+                                  // Nếu đã chọn rồi thì click lại sẽ bỏ chọn
+                                  setAppliedVoucher(null);
+                                  setVoucherCode("");
+                                }
+                              }}
+                              className={`btn-voucher ${
+                                isSelected ? "" : "selected"
+                              }`}
+                              disabled={!canApply}
+                            >
+                              {isSelected ? "Selected" : "Select"}
+                            </button>
+                          ) : (
+                            <span
+                              className="text-center"
+                              style={{ color: "red", fontWeight: "bold" }}
+                            >
+                              Not applicable
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* <!-- Modal footer --> */}
+          </div>
+        </div>
+      </div>
+
       <PageHeader
         backgroundType={"image"}
         backgroundSrc={img1}
@@ -413,36 +572,6 @@ function CheckOut() {
                                     ? "Selected"
                                     : "Unselect"}
                                 </button>
-                                {showVoucherInput === item._id ? (
-                                  <div style={{ marginTop: "10px" }}>
-                                    <input
-                                      type="text"
-                                      placeholder="Enter voucher code"
-                                      value={voucherCode}
-                                      onChange={(e) =>
-                                        setVoucherCode(e.target.value)
-                                      }
-                                      className="form-control mb-2"
-                                    />
-                                    <button
-                                      onClick={() =>
-                                        handleApplyVoucher(item._id)
-                                      }
-                                      className="btn btn-primary"
-                                    >
-                                      Apply Voucher
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <button
-                                    onClick={() =>
-                                      setShowVoucherInput(item._id)
-                                    }
-                                    className="btn btn-secondary mt-2"
-                                  >
-                                    Add Voucher
-                                  </button>
-                                )}
                               </>
                             }
                           />
@@ -457,7 +586,64 @@ function CheckOut() {
                 <div className="card">
                   <div className="card-body">
                     <div className=" d-flex justify-content-center align-items-center">
-                      <h2 style={{ fontSize: "35px" }}>2. Review Your Order</h2>
+                      <h2 style={{ fontSize: "35px" }}>2. Apply Voucher</h2>
+                    </div>
+                    <div className="d-flex justify-content-center align-items-center gap-3">
+                      <input
+                        type="text"
+                        placeholder="Enter voucher code"
+                        value={voucherCode}
+                        onChange={(e) => setVoucherCode(e.target.value)}
+                        style={{
+                          width: "450px",
+                          padding: "10px",
+                          borderRadius: "5px",
+                          border: "1px solid #ccc",
+                        }}
+                      />
+                      <button
+                        onClick={() => handleApplyVoucher(selectedItems[0])}
+                      >
+                        Apply
+                      </button>
+                      <button
+                        onClick={() => {
+                          const modal = new Modal(
+                            document.getElementById("viewVouchers")
+                          );
+                          modal.show();
+                        }}
+                      >
+                        Vouchers
+                      </button>
+                    </div>
+                    <div className="ms-3 mt-3">
+                      {appliedVoucher ? (
+                        <div>
+                          <p>
+                            <strong>Voucher Code:</strong> {appliedVoucher.code}
+                          </p>
+                          <p>
+                            <strong>Discount Type:</strong>{" "}
+                            {appliedVoucher.type === "PERCENT"
+                              ? "Percentage"
+                              : "Fixed Amount"}
+                          </p>
+                          <p>
+                            <strong>Discount Value:</strong>{" "}
+                            {appliedVoucher.value}
+                          </p>
+                        </div>
+                      ) : (
+                        <p>No voucher applied</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <div className="card mt-3">
+                  <div className="card-body">
+                    <div className=" d-flex justify-content-center align-items-center">
+                      <h2 style={{ fontSize: "35px" }}>3. Review Your Order</h2>
                     </div>
                     <ul>
                       <li>
@@ -465,12 +651,21 @@ function CheckOut() {
                       </li>
                       <li>
                         <h2 style={{ fontSize: "18px", marginTop: "20px" }}>
-                          Total: ${discountedTotal.toFixed(2)}{" "}
-                          {/* {discount > 0 && (
-                            <span style={{ color: "green" }}>
-                              (Discount applied: {discount}%)
-                            </span>
-                          )} */}
+                          Subtotal: ${subtotal.toFixed(2)}
+                        </h2>
+                        {appliedVoucher && (
+                          <h2
+                            style={{
+                              fontSize: "18px",
+                              marginTop: "20px",
+                              color: "green",
+                            }}
+                          >
+                            Discount: ${(subtotal - discountedTotal).toFixed(2)}
+                          </h2>
+                        )}
+                        <h2 style={{ fontSize: "18px", marginTop: "20px" }}>
+                          Final Total: ${discountedTotal.toFixed(2)}
                         </h2>
                       </li>
                     </ul>
@@ -480,7 +675,7 @@ function CheckOut() {
                   {selectedItems.length > 0 ? (
                     <>
                       <h2 className="text-center" style={{ fontSize: "35px" }}>
-                        3. Billing details
+                        4. Billing details
                       </h2>
                       <CustomForm
                         fields={fields}

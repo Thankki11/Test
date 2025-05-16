@@ -30,10 +30,10 @@ exports.uploadImage = (req, res) => {
 
 const getFolderByCategory = (category) => {
   const formatted = category?.trim().toLowerCase();
-  if (formatted === "maincourse") return "main-courses";
+  if (formatted === "burger") return "burgers";
+  if (formatted === "pizza") return "pizzas";
+  if (formatted === "fried-chicken") return "fried-chickens";
   if (formatted === "drink") return "drinks";
-  if (formatted === "dessert") return "desserts";
-  if (formatted === "appetizer") return "appetizers";
   throw new Error("Invalid category");
 };
 

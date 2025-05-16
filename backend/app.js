@@ -17,6 +17,7 @@ const paymentRouter = require("./routes/paymentRoutes");
 const userAuthRoutes = require("./routes/userAuthRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const voucherRoutes = require("./routes/voucherRoutes");
+const comboRoutes = require("./routes/comboRoutes");
 const app = express();
 
 // Kết nối đến MongoDB
@@ -65,6 +66,9 @@ app.use("/api/employees", employeeRoutes);
 
 // Thêm route voucher
 app.use("/api/vouchers", voucherRoutes);
+
+// Thêm route combos
+app.use("/api/combos", comboRoutes);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {

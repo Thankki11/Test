@@ -1,5 +1,5 @@
 // Routes
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routes } from "./routes/userRoutes";
 import adminRoutes from "./routes/adminRoutes";
 // CSS
@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./assets/styles/global.css";
 
 // Components
-import Header from "./components/Header/Header";
+
 import PaymentSuccess from "./pages/PaymentSuccess";
 import ChatBot from "./components/ChatBot/ChatBot";
 

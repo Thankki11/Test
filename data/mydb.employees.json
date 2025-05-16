@@ -1,0 +1,100 @@
+[{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b54"
+  },
+  "name": "Nguyễn Văn An",
+  "email": "an.nguyen@example.com",
+  "phone": "0912345678",
+  "position": "Quản lý",
+  "salary": 12000000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b55"
+  },
+  "name": "Trần Thị Bình",
+  "email": "binh.tran@example.com",
+  "phone": "0912456789",
+  "position": "Thu ngân",
+  "salary": 8000000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b56"
+  },
+  "name": "Lê Văn Cường",
+  "email": "cuong.le@example.com",
+  "phone": "0912567890",
+  "position": "Bếp chính",
+  "salary": 10000000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b57"
+  },
+  "name": "Phạm Thị Dung",
+  "email": "dung.pham@example.com",
+  "phone": "0912678901",
+  "position": "Phục vụ",
+  "salary": 7000000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b58"
+  },
+  "name": "Hoàng Văn Duy",
+  "email": "duy.hoang@example.com",
+  "phone": "0912789012",
+  "position": "Phục vụ",
+  "salary": 7000000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b59"
+  },
+  "name": "Vũ Thị Hồng",
+  "email": "hong.vu@example.com",
+  "phone": "0912890123",
+  "position": "Bếp phụ",
+  "salary": 8500000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b5a"
+  },
+  "name": "Bùi Văn Kiên",
+  "email": "kien.bui@example.com",
+  "phone": "0912901234",
+  "position": "Bảo vệ",
+  "salary": 6000000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b5b"
+  },
+  "name": "Đỗ Thị Lan",
+  "email": "lan.do@example.com",
+  "phone": "0912012345",
+  "position": "Thu ngân",
+  "salary": 8000000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b5c"
+  },
+  "name": "Ngô Văn Minh",
+  "email": "minh.ngo@example.com",
+  "phone": "0912123456",
+  "position": "Bếp chính",
+  "salary": 10000000
+},
+{
+  "_id": {
+    "$oid": "68270bbbeac349fa736c3b5d"
+  },
+  "name": "Chu Thị Nhung",
+  "email": "nhung.chu@example.com",
+  "phone": "0912234567",
+  "position": "Phục vụ",
+  "salary": 7000000
+}]

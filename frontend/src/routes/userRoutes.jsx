@@ -13,9 +13,10 @@ import EditProfile from "../pages/user/EditProfile";
 import UserInfo from "../pages/user/UserInfo";
 import OrderDetail from "../pages/user/OrderDetail";
 import MyOrders from "../pages/user/MyOrders";
+import Combo from "../pages/Combo";
+import Reservation from "../pages/Reservation";
 // Layout
 import UserLayout from "../layouts/UserLayout";
-import Reservation from "../pages/Reservation";
 
 const routes = [
   {
@@ -39,6 +40,14 @@ const routes = [
     element: (
       <UserLayout>
         <Blogs />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/combos",
+    element: (
+      <UserLayout>
+        <Combo />
       </UserLayout>
     ),
   },
@@ -71,14 +80,6 @@ const routes = [
     element: (
       <UserLayout>
         <Login />
-      </UserLayout>
-    ),
-  },
-  {
-    path: "/reservation",
-    element: (
-      <UserLayout>
-        <Reservation />
       </UserLayout>
     ),
   },
@@ -129,7 +130,23 @@ const routes = [
         <MyOrders />
       </UserLayout>
     ),
-  }
+  },
+  {
+    path: "/combos",
+    element: (
+      <UserLayout>
+        <Combo />
+      </UserLayout>
+    ),
+  },
+  {
+    path: "/about-us",
+    element: (
+      <UserLayout>
+        <Reservation />
+      </UserLayout>
+    ),
+  },
 ];
 
 function UserRoutes() {
