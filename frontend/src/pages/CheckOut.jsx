@@ -203,6 +203,21 @@ function CheckOut() {
     }
 
     const foundVoucher = vouchers.find((v) => v.voucherCode === voucherCode);
+
+    if (!foundVoucher) {
+      alert("Voucher code not found");
+      return;
+    }
+
+    // Kiểm tra xem voucher có thể áp dụng hay không
+    const isApplicable = isVoucherApplicable(foundVoucher);
+
+    if (!isApplicable) {
+      alert("Voucher is not applicable. Please check the conditions.");
+      return;
+    }
+
+    // Nếu voucher hợp lệ, áp dụng voucher
     setAppliedVoucher({
       code: foundVoucher.voucherCode,
       type: foundVoucher.discount_type,
