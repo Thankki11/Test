@@ -9,8 +9,9 @@ function Combo() {
   const [combos, setCombos] = useState([]);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/api/combos")
-      .then(res => setCombos(res.data))
+    axios
+      .get("http://localhost:3001/api/combos")
+      .then((res) => setCombos(res.data))
       .catch(() => setCombos([]));
   }, []);
 
@@ -34,12 +35,18 @@ function Combo() {
             {combos.map((combo) => (
               <div className="col-6 mt-3" key={combo._id}>
                 <OverlayCard
-                  imageSrc={combo.imageUrl}
+                  imageSrc={`http://localhost:3001${
+                    combo.imageUrl.startsWith("/uploads")
+                      ? combo.imageUrl
+                      : "/uploads/" + combo.imageUrl
+                  }`}
                   height={"245px"}
                   title={combo.name}
                   description={[
                     combo.description,
-                    ...combo.items.map(item => `${item.name} x${item.quantity}`)
+                    ...combo.items.map(
+                      (item) => `${item.name} x${item.quantity}`
+                    ),
                   ]}
                 />
               </div>
