@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const crypto = require("crypto"); // Thêm dòng này
+const crypto = require("crypto");
 const User = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
@@ -9,7 +9,7 @@ const axios = require("axios");
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/users"); // Save files in the "uploads" folder
+    cb(null, "uploads/users");
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -23,24 +23,32 @@ exports.register = async (req, res) => {
   const { username, email, phone, password, confirmPassword } = req.body;
 
   try {
-    // Kiểm tra email đã tồn tại
+    // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: "Email already registered" });
     }
 
-    // Kiểm tra xác nhận mật khẩu
+    // Validate password: at least 8 characters, at least one uppercase letter
+    if (password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long" });
+    }
+    if (!/[A-Z]/.test(password)) {
+      return res.status(400).json({ message: "Password must contain at least one uppercase letter" });
+    }
+
+    // Check if passwords match
     if (password !== confirmPassword) {
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    // Hash mật khẩu
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Đặt avatar mặc định
+    // Set default avatar
     const defaultAvatar = "http://localhost:3001/uploads/users/default-avatar.png";
 
-    // Tạo người dùng mới
+    // Create new user
     const newUser = new User({
       username,
       email,
@@ -63,7 +71,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password, captchaToken } = req.body;
 
-  // Xác minh reCAPTCHA
+  // Verify reCAPTCHA
   const secretKey = process.env.RECAPTCHA_SECRET_KEY;
   try {
     const captchaResponse = await axios.post(
@@ -85,9 +93,9 @@ exports.login = async (req, res) => {
     return res.status(500).json({ message: "Captcha verification error" });
   }
 
-  // Xử lý đăng nhập
+  // Handle login
   try {
-    const user = await User.findOne({ email, role: "user" }); // Đảm bảo chỉ tìm người dùng có role là "user"
+    const user = await User.findOne({ email, role: "user" });
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
@@ -110,9 +118,10 @@ exports.login = async (req, res) => {
   }
 };
 
+// Update User
 exports.updateUser = async (req, res) => {
   const { username, email, phone, address } = req.body;
-  const userId = req.user.id; // Assuming `req.user` is populated by middleware
+  const userId = req.user.id;
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -132,10 +141,11 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+// Get User Info
 exports.getUserInfo = async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming `req.user` is populated by middleware
-    const user = await User.findById(userId).select("-password"); // Exclude the password field
+    const userId = req.user.id;
+    const user = await User.findById(userId).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -148,10 +158,10 @@ exports.getUserInfo = async (req, res) => {
   }
 };
 
-// Update user avatar
+// Update User Avatar
 exports.updateAvatar = async (req, res) => {
   try {
-    const userId = req.user.id; // Assuming `req.user` is populated by middleware
+    const userId = req.user.id;
     const avatarPath = `http://localhost:3001/uploads/users/${req.file.filename}`;
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -171,28 +181,27 @@ exports.updateAvatar = async (req, res) => {
   }
 };
 
+// Handle OAuth Login
 exports.handleOAuthLogin = async (profile, provider) => {
   try {
     let user = await User.findOne({ email: profile.emails[0].value });
 
     if (!user) {
-      // Tạo mật khẩu random
       const randomPassword = crypto.randomBytes(12).toString("hex");
       const hashedPassword = await bcrypt.hash(randomPassword, 10);
 
       user = new User({
         username: profile.displayName,
         email: profile.emails[0].value,
-        password: hashedPassword, // Lưu mật khẩu random đã hash
-        avatar: profile.photos?.[0]?.value, 
+        password: hashedPassword,
+        avatar: profile.photos?.[0]?.value,
         role: "user",
         isOAuth: true,
         provider,
       });
       await user.save();
     }
-    
-    // Không cần kiểm tra mật khẩu khi login bằng Google
+
     return user;
   } catch (err) {
     console.error("Error during OAuth login:", err);
