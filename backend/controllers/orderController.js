@@ -133,41 +133,32 @@ const deleteOrder = async (req, res) => {
 };
 // Cập nhật trạng thái đơn hàng (ví dụ: confirmed, delivering, etc.)
 const updateOrderStatus = async (req, res) => {
+  const { id } = req.params; // ID của đơn hàng
+  const { status } = req.body; // Trạng thái mới
+
   try {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    if (!status) {
-      return res.status(400).json({ message: "Status is required" });
-    }
-
+    // Tìm đơn hàng
     const order = await Order.findById(id);
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
-    }
-
-    // Nếu trạng thái chuyển sang "Completed" hoặc "Delivering", giảm quantity
-    if (
-      (order.status === "pending" || order.status === "delivering") &&
-      (status === "completed" || status === "delivering")
-    ) {
-      for (const item of order.items) {
-        // Giảm quantity của món ăn trong database
-        await Menu.findOneAndUpdate(
-          { _id: item.menuItemId },
-          { $inc: { quantity: -item.quantity } }
-        );
-      }
     }
 
     // Cập nhật trạng thái đơn hàng
     order.status = status;
     await order.save();
 
-    res.status(200).json({
-      message: "Order status updated successfully",
-      order,
-    });
+    // Nếu trạng thái là "delivering" hoặc "completed", giảm số lượng món ăn
+    if (status === "delivering") {
+      for (const item of order.items) {
+        const menu = await Menu.findById(item.menuItemId);
+        if (menu) {
+          menu.quantity = Math.max(menu.quantity - item.quantity, 0); // Đảm bảo không giảm dưới 0
+          await menu.save();
+        }
+      }
+    }
+
+    res.status(200).json({ message: "Order status updated successfully" });
   } catch (err) {
     console.error("Error updating order status:", err);
     res.status(500).json({ message: "Server error" });

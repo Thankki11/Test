@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
+import { Autocomplete } from "@react-google-maps/api";
 
 function EditProfile() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,7 @@ function EditProfile() {
   });
   const [avatar, setAvatar] = useState(null); // State for avatar file
   const [previewAvatar, setPreviewAvatar] = useState(""); // State for avatar preview
+  const [autocomplete, setAutocomplete] = useState(null);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -51,6 +53,13 @@ function EditProfile() {
     const file = e.target.files[0];
     setAvatar(file);
     setPreviewAvatar(URL.createObjectURL(file)); // Show a preview of the uploaded avatar
+  };
+
+  const handlePlaceSelect = () => {
+    if (autocomplete) {
+      const place = autocomplete.getPlace();
+      setFormData({ ...formData, address: place.formatted_address });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -209,13 +218,18 @@ function EditProfile() {
 
                   <div className="mb-3">
                     <label className="form-label">Address</label>
-                    <input
-                      type="text"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleChange}
-                      className="form-control"
-                    />
+                    <Autocomplete
+                      onLoad={(auto) => setAutocomplete(auto)}
+                      onPlaceChanged={handlePlaceSelect}
+                    >
+                      <input
+                        type="text"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className="form-control"
+                      />
+                    </Autocomplete>
                   </div>
                 </div>
                 <div className="col-4">

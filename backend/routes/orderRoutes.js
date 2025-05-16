@@ -20,8 +20,8 @@ router.get("/:id", authenticateToken, orderController.getOrderById);
 // Route cập nhật thông tin đơn hàng (admin)
 router.put("/:id", authenticateToken, adminMiddleware, orderController.updateOrder);
 
-// Route cập nhật trạng thái đơn hàng (admin)
-router.put("/:id/status", adminMiddleware, orderController.updateOrder);
+// Cập nhật trạng thái đơn hàng
+router.put("/:id/status", orderController.updateOrderStatus);
 
 // Route xóa đơn hàng (admin)
 router.delete("/:id", authenticateToken, adminMiddleware, orderController.deleteOrder);

@@ -1,11 +1,12 @@
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminMenus from "../pages/admin/AdminMenus";
 import AdminLayout from "../layouts/AdminLayout";
-import AdminReservation from "../pages/admin/AdminReservation";
+
 import AdminOrder from "../pages/admin/AdminOrder";
 import AdminLogin from "../pages/admin/AdminLogin";
 import AdminUsers from "../pages/admin/AdminUsers";
 import AdminEmployees from "../pages/admin/AdminEmployees";
+import AdminVouchers from "../pages/admin/AdminVouchers.jsx";
 import { Navigate } from "react-router-dom";
 
 const adminRoutes = [
@@ -33,16 +34,7 @@ const adminRoutes = [
       </AdminRouteWrapper>
     ),
   },
-  {
-    path: "/admin/reservations",
-    element: (
-      <AdminRouteWrapper>
-        <AdminLayout>
-          <AdminReservation />
-        </AdminLayout>
-      </AdminRouteWrapper>
-    ),
-  },
+  
   {
     path: "/admin/orders",
     element: (
@@ -69,6 +61,16 @@ const adminRoutes = [
       <AdminRouteWrapper>
         <AdminLayout>
           <AdminEmployees />
+        </AdminLayout>
+      </AdminRouteWrapper>
+    ),
+  },
+  {
+    path: "/admin/vouchers",
+    element: (
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminVouchers />
         </AdminLayout>
       </AdminRouteWrapper>
     ),
