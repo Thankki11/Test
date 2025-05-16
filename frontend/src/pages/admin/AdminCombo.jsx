@@ -41,6 +41,7 @@ function AdminCombo() {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
     setComboImage(file);
     setComboPreviewUrl(file ? URL.createObjectURL(file) : "");
   };
@@ -53,49 +54,61 @@ function AdminCombo() {
   };
 
   const handleCreateCombo = async () => {
-    if (!comboName || !comboPrice || !comboImage || selectedItems.length === 0) {
-      alert("Please fill all required fields and select at least one item.");
+    // Validate input
+    if (
+      !comboName ||
+      !comboPrice ||
+      !comboImage ||
+      selectedItems.length === 0
+    ) {
+      alert("Vui lòng điền đầy đủ thông tin và chọn ít nhất một món");
       return;
     }
 
-    // Upload combo image
-    let imageUrl = "";
     try {
+      // Tạo FormData cho cả ảnh và thông tin combo
       const formData = new FormData();
-      formData.append("image", comboImage);
-      formData.append("category", "combo");
-      const uploadRes = await axios.post("http://localhost:3001/api/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      formData.append("name", comboName);
+      formData.append("description", comboDescription || "");
+      formData.append("price", comboPrice);
+      selectedItems.forEach((itemId) => {
+        formData.append("items", itemId); // Gửi từng item riêng lẻ
       });
-      // Nếu backend trả về fileName, bạn cần tự ghép đường dẫn:
-      imageUrl = `/uploads/combos/${uploadRes.data.fileName}`;
-      // Nếu backend đã trả về imageUrl đầy đủ, chỉ cần: imageUrl = uploadRes.data.imageUrl;
-    } catch (err) {
-      alert("Failed to upload combo image");
-      return;
-    }
+      formData.append("image", comboImage); // File ảnh
 
-    // Tạo combo
-    try {
-      await axios.post("http://localhost:3001/api/combos", {
-        name: comboName,
-        description: comboDescription,
-        price: parseFloat(comboPrice),
-        items: selectedItems,
-        imageUrl,
-        quantity,
-      });
-      alert("Combo created successfully!");
-      // Reset form
-      setComboName("");
-      setComboDescription("");
-      setComboPrice("");
-      setComboImage(null);
-      setComboPreviewUrl("");
-      setSelectedItems([]);
-      setQuantity(0);
+      // Gọi API tạo combo
+      const response = await axios.post(
+        "http://localhost:3001/api/combos",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        alert("Tạo combo thành công!");
+        // Reset form
+        setComboName("");
+        setComboDescription("");
+        setComboPrice("");
+        setComboImage(null);
+        setComboPreviewUrl("");
+        setSelectedItems([]);
+        setQuantity(0);
+
+        // Cập nhật UI hoặc chuyển hướng nếu cần
+      } else {
+        alert(response.data.message || "Có lỗi xảy ra khi tạo combo");
+      }
     } catch (err) {
-      alert("Failed to create combo");
+      console.error("Lỗi khi tạo combo:", err);
+      alert(
+        err.response?.data?.message ||
+          "Lỗi hệ thống khi tạo combo. Vui lòng thử lại"
+      );
     }
   };
 
@@ -131,12 +144,20 @@ function AdminCombo() {
         </div>
         <div className="mb-3">
           <label className="form-label">Combo Image</label>
-          <input type="file" className="form-control" onChange={handleImageChange} />
+          <input
+            type="file"
+            className="form-control"
+            onChange={handleImageChange}
+          />
           {comboPreviewUrl && (
             <img
               src={comboPreviewUrl}
               alt="Combo Preview"
-              style={{ width: "120px", marginTop: "10px", border: "1px solid #ccc" }}
+              style={{
+                width: "120px",
+                marginTop: "10px",
+                border: "1px solid #ccc",
+              }}
             />
           )}
         </div>
@@ -154,7 +175,10 @@ function AdminCombo() {
                     onChange={handleItemChange}
                     id={`menu-item-${menu._id}`}
                   />
-                  <label className="form-check-label" htmlFor={`menu-item-${menu._id}`}>
+                  <label
+                    className="form-check-label"
+                    htmlFor={`menu-item-${menu._id}`}
+                  >
                     {menu.name} (Quantity: {menu.quantity})
                   </label>
                 </div>
