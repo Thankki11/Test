@@ -1,6 +1,7 @@
 import ReservationForm from "../components/ReservationForm";
 import ReservationBackground from "../assets/images/reservation-background.jpg";
 import ContactBox from "../components/Box/ContactBox";
+import ChatBot from "../components/ChatBot/ChatBot";
 
 function Reservation() {
   return (
@@ -28,10 +29,7 @@ function Reservation() {
       />
       <div className="row" style={{ position: "relative", zIndex: 2 }}>
         <div className="col-5 p-2 rounded" style={{ backgroundColor: "white" }}>
-          <h5 className="text-center mt-3" style={{ fontSize: "30px" }}>
-            Reservation Form
-          </h5>
-          <ReservationForm />
+          <ChatBot />
         </div>
         <div className="col-1"></div>
         <div className="col-6">
