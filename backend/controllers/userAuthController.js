@@ -184,13 +184,14 @@ exports.handleOAuthLogin = async (profile, provider) => {
         username: profile.displayName,
         email: profile.emails[0].value,
         password: hashedPassword, // Lưu mật khẩu random đã hash
-        avatar: profile.photos[0].value,
+        avatar: profile.photos?.[0]?.value, 
         role: "user",
         isOAuth: true,
         provider,
       });
       await user.save();
     }
+    
     // Không cần kiểm tra mật khẩu khi login bằng Google
     return user;
   } catch (err) {

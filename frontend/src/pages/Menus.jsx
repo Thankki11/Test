@@ -13,11 +13,37 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
+import { useLocation } from "react-router-dom";
+
 function Menus() {
   const [menus, setMenus] = useState([]);
   const [sortOption, setSortOption] = useState("default");
   const [value, setValue] = React.useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+
+  //Query String
+  const location = useLocation();
+
+  //Xử lý yêu cầu xem tab khi từ trang khác chuyển đến
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const tab = queryParams.get("tab");
+
+    if (tab) {
+      const categoryIndex =
+        tab === "burger"
+          ? 0
+          : tab === "pizza"
+          ? 1
+          : tab === "friedchicken"
+          ? 2
+          : tab === "drink"
+          ? 3
+          : 0;
+
+      setValue(categoryIndex);
+    }
+  }, [location.search]);
 
   //Chạy khi component được mount
   useEffect(() => {
@@ -43,11 +69,11 @@ function Menus() {
     // Chuyển tab dựa trên category tìm thấy
     if (foundCategory) {
       const categoryIndex =
-        foundCategory === "appetizer"
+        foundCategory === "burger"
           ? 0
-          : foundCategory === "mainCourse"
+          : foundCategory === "pizza"
           ? 1
-          : foundCategory === "dessert"
+          : foundCategory === "friedchicken"
           ? 2
           : foundCategory === "drink"
           ? 3
@@ -85,17 +111,19 @@ function Menus() {
     const filteredItems = menus.filter((item) => {
       const matchesCategory =
         category === 0
-          ? item.category === "appetizer"
+          ? item.category === "burger"
           : category === 1
-          ? item.category === "mainCourse"
+          ? item.category === "pizza"
           : category === 2
-          ? item.category === "dessert"
+          ? item.category === "friedchicken"
           : category === 3
           ? item.category === "drink"
           : false;
 
       // Lọc món ăn theo từ khóa tìm kiếm
-      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = item.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
       return matchesCategory && matchesSearch;
     });
@@ -113,7 +141,9 @@ function Menus() {
                   title={item.name}
                   description={[
                     `$ ${item.price}`,
-                    item.quantity > 0 ? `In Stock: ${item.quantity}` : "Out of Stock",
+                    item.quantity > 0
+                      ? `In Stock: ${item.quantity}`
+                      : "Out of Stock",
                   ]}
                   height="350px"
                   imageSrc={`http://localhost:3001${
@@ -148,12 +178,18 @@ function Menus() {
           <h2 style={{ fontSize: "45px", padding: "0px 65px" }}>
             Trendy And Popular Courses Offered
           </h2>
-           <input
+          <input
             type="text"
             placeholder="Tìm kiếm món ăn..."
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            style={{ width: 300, padding: 8, marginTop: 16, borderRadius: 6, border: '1px solid #ccc' }}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              width: 300,
+              padding: 8,
+              marginTop: 16,
+              borderRadius: 6,
+              border: "1px solid #ccc",
+            }}
           />
         </div>
 
@@ -174,17 +210,17 @@ function Menus() {
               aria-label="basic tabs example"
             >
               <Tab
-                label="Appetizer"
+                label="burgers"
                 {...a11yProps(0)}
                 style={{ fontSize: "16px" }}
               />
               <Tab
-                label="Main Courses"
+                label="Pizza"
                 {...a11yProps(1)}
                 style={{ fontSize: "16px" }}
               />
               <Tab
-                label="Dessert"
+                label="Fried Chicken"
                 {...a11yProps(2)}
                 style={{ fontSize: "16px" }}
               />

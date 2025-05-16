@@ -11,25 +11,34 @@ function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [captchaToken, setCaptchaToken] = useState(null);
+  const [error, setError] = useState(""); // New state for error messages
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Lấy token từ URL nếu có (dành cho Google/Facebook)
+    // Handle token from OAuth callback
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
+    const errorParam = params.get("error");
+
+    if (errorParam) {
+      setError("Google login failed. Please try again.");
+      return;
+    }
 
     if (token) {
-      // Lưu token vào localStorage
+      // Store token in localStorage
       localStorage.setItem("token", token);
 
-      // Lấy thông tin người dùng từ token
+      // Fetch user info
       fetchUserInfo(token);
 
-      // Xóa token khỏi URL
+      // Clear URL parameters
       window.history.replaceState({}, document.title, "/");
 
-      // Chuyển hướng đến trang chủ
-      navigate("/");
+      // Redirect to the previous page or home
+      const redirectUrl = localStorage.getItem("redirectUrl") || "/";
+      localStorage.removeItem("redirectUrl");
+      navigate(redirectUrl);
     }
   }, [navigate]);
 
@@ -38,12 +47,17 @@ function Login() {
       const response = await fetch("http://localhost:3001/api/auth/user/info", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (!response.ok) {
+        throw new Error("Failed to fetch user info");
+      }
       const user = await response.json();
-
-      // Lưu thông tin người dùng vào localStorage
       localStorage.setItem("user", JSON.stringify(user));
+
+      // Emit event to notify other components
+      window.dispatchEvent(new Event("userLoggedIn"));
     } catch (err) {
       console.error("Failed to fetch user info:", err);
+      setError("Failed to load user information. Please log in again.");
     }
   };
 
@@ -59,7 +73,7 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!captchaToken) {
-      alert("Please verify that you are not a robot.");
+      setError("Please verify that you are not a robot.");
       return;
     }
 
@@ -70,20 +84,17 @@ function Login() {
       );
       const { token } = response.data;
 
-      // Save token and user info to localStorage
+      // Store token and user info
       localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(response.data.user));
+      await fetchUserInfo(token);
 
-      // Emit an event to notify other components
-      window.dispatchEvent(new Event("userLoggedIn"));
-
-      // Redirect to the previous page or home page
+      // Redirect
       const redirectUrl = localStorage.getItem("redirectUrl") || "/";
-      localStorage.removeItem("redirectUrl"); // Clear the stored URL after redirecting
+      localStorage.removeItem("redirectUrl");
       navigate(redirectUrl);
     } catch (err) {
       console.error("Login failed:", err);
-      alert("Invalid email, password, or captcha.");
+      setError("Invalid email, password, or captcha.");
     }
   };
 
@@ -99,7 +110,6 @@ function Login() {
         margin: "0px 0px",
       }}
     >
-      {/* Lớp overlay đen mờ */}
       <div
         style={{
           backgroundColor: "rgba(0, 0, 0, 0.6)",
@@ -141,6 +151,12 @@ function Login() {
             >
               Login
             </h2>
+
+            {error && (
+              <div className="alert alert-danger" role="alert">
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleLogin}>
               <div className="mb-4">
@@ -185,9 +201,7 @@ function Login() {
                     required
                   />
                   <i
-                    className={`fa ${
-                      showPassword ? "fa-eye" : "fa-eye-slash"
-                    } position-absolute`}
+                    className={`fa ${showPassword ? "fa-eye" : "fa-eye-slash"} position-absolute`}
                     style={{
                       right: "15px",
                       cursor: "pointer",
@@ -205,16 +219,15 @@ function Login() {
                 />
               </div>
 
-              <button type="submit" className=" btn-lg w-100 fw-semibold">
+              <button type="submit" className="btn btn-primary btn-lg w-100 fw-semibold">
                 Login
               </button>
             </form>
 
             <button
-              className="btn btn-danger w-100 mb-3"
+              className="btn btn-danger w-100 mb-3 mt-3"
               onClick={() =>
-                (window.location.href =
-                  "http://localhost:3001/api/auth/user/google")
+                (window.location.href = "http://localhost:3001/api/auth/user/google")
               }
             >
               <i className="fab fa-google"></i> Login with Google
@@ -223,8 +236,7 @@ function Login() {
             <button
               className="btn btn-primary w-100"
               onClick={() =>
-                (window.location.href =
-                  "http://localhost:3001/api/auth/user/facebook")
+                (window.location.href = "http://localhost:3001/api/auth/user/facebook")
               }
             >
               <i className="fab fa-facebook"></i> Login with Facebook

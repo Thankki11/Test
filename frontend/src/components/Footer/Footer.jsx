@@ -2,7 +2,7 @@ import styles from "./Footer.module.css"; // import CSS module
 
 const Footer = () => {
   return (
-    <footer className="bg-dark text-light py-5">
+    <footer id ="footer" className="bg-dark text-light py-5">
       <div className="container-fluid">
         <div className="row g-4">
           {/* Company Info */}
