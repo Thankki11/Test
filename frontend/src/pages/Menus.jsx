@@ -32,6 +32,31 @@ function Menus() {
       });
   }, []);
 
+  useEffect(() => {
+    if (searchTerm.trim() === "") return;
+
+    // Tìm category của món ăn đầu tiên khớp với từ khóa tìm kiếm
+    const foundCategory = menus.find((item) =>
+      item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )?.category;
+
+    // Chuyển tab dựa trên category tìm thấy
+    if (foundCategory) {
+      const categoryIndex =
+        foundCategory === "appetizer"
+          ? 0
+          : foundCategory === "mainCourse"
+          ? 1
+          : foundCategory === "dessert"
+          ? 2
+          : foundCategory === "drink"
+          ? 3
+          : 0;
+
+      setValue(categoryIndex); // Chuyển tab
+    }
+  }, [searchTerm, menus]);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -81,22 +106,29 @@ function Menus() {
 
     return (
       <div className="row">
-        {sortedItems.map((item, index) => (
-          <div className="col-3 mb-4" key={index}>
-            <Link to={`/detail/${item._id}`}>
-              <OverlayCard
-                title={item.name}
-                description={["$ " + item.price]}
-                height="350px"
-                imageSrc={`http://localhost:3001${
-                  item.imageUrl.startsWith("/uploads")
-                    ? item.imageUrl
-                    : "/uploads/" + item.imageUrl
-                }`}
-              />
-            </Link>
-          </div>
-        ))}
+        {sortedItems.length > 0 ? (
+          sortedItems.map((item, index) => (
+            <div className="col-3 mb-4" key={index}>
+              <Link to={`/detail/${item._id}`}>
+                <OverlayCard
+                  title={item.name}
+                  description={[
+                    `$ ${item.price}`,
+                    item.quantity > 0 ? `In Stock: ${item.quantity}` : "Out of Stock",
+                  ]}
+                  height="350px"
+                  imageSrc={`http://localhost:3001${
+                    item.imageUrl.startsWith("/uploads")
+                      ? item.imageUrl
+                      : "/uploads/" + item.imageUrl
+                  }`}
+                />
+              </Link>
+            </div>
+          ))
+        ) : (
+          <div className="text-center mt-4">No items found</div>
+        )}
       </div>
     );
   };
@@ -117,7 +149,7 @@ function Menus() {
           <h2 style={{ fontSize: "45px", padding: "0px 65px" }}>
             Trendy And Popular Courses Offered
           </h2>
-          <input
+           <input
             type="text"
             placeholder="Tìm kiếm món ăn..."
             value={searchTerm}
@@ -201,148 +233,6 @@ function Menus() {
       </div>
     </div>
   );
-
-  // return (
-  //   <div>
-  //     <PageHeader
-  //       backgroundType={"image"}
-  //       backgroundSrc={img1}
-  //       h2Title={""}
-  //       title={"Menus"}
-  //       subTitle={"Welcome to our delicious corner"}
-  //       height="65vh"
-  //     />
-  //     <div className="section">
-  //       <div className="text-center mb-5">
-  //         <h6>Our Offered Menu</h6>
-  //         <h2 style={{ fontSize: "45px", padding: "0px 65px" }}>
-  //           Trendy And Popular Courses Offered
-  //         </h2>
-  //       </div>
-  //       <Box sx={{ width: "100%" }}>
-  //         <Box
-  //           sx={{ borderBottom: 1, borderColor: "divider" }}
-  //           className="d-flex justify-content-center align-items-center"
-  //         >
-  //           <Tabs
-  //             value={value}
-  //             onChange={handleChange}
-  //             aria-label="basic tabs example"
-  //           >
-  //             <Tab
-  //               label="Appertizer"
-  //               {...a11yProps(0)}
-  //               style={{ fontSize: "16px" }}
-  //             />
-  //             <Tab
-  //               label="Main Courses"
-  //               {...a11yProps(1)}
-  //               style={{ fontSize: "16px" }}
-  //             />
-  //             <Tab
-  //               label="Dessert"
-  //               {...a11yProps(2)}
-  //               style={{ fontSize: "16px" }}
-  //             />
-  //             <Tab
-  //               label="Drinks"
-  //               {...a11yProps(3)}
-  //               style={{ fontSize: "16px" }}
-  //             />
-  //           </Tabs>
-  //         </Box>
-  //         <CustomTabPanel value={value} index={0}>
-  //           <div className="row">
-  //             {menus
-  //               .filter((item) => item.category === "appetizer")
-  //               .map((item, index) => (
-  //                 <div className="col-3 mb-4" key={index}>
-  //                   <Link to={`/detail/${item._id}`}>
-  //                     <OverlayCard
-  //                       title={item.name}
-  //                       description={["$ " + item.price]}
-  //                       height="350px"
-  //                       imageSrc={`http://localhost:3001${
-  //                         item.imageUrl.startsWith("/uploads")
-  //                           ? item.imageUrl
-  //                           : "/uploads/" + item.imageUrl
-  //                       }`}
-  //                     />
-  //                   </Link>
-  //                 </div>
-  //               ))}
-  //           </div>
-  //         </CustomTabPanel>
-  //         <CustomTabPanel value={value} index={1}>
-  //           <div className="row">
-  //             {menus
-  //               .filter((item) => item.category === "mainCourse")
-  //               .map((item, index) => (
-  //                 <div className="col-3 mb-4" key={index}>
-  //                   <Link to={`/detail/${item._id}`}>
-  //                     <OverlayCard
-  //                       title={item.name}
-  //                       description={[item.description]}
-  //                       height="450px"
-  //                       imageSrc={`http://localhost:3001${
-  //                         item.imageUrl.startsWith("/uploads")
-  //                           ? item.imageUrl
-  //                           : "/uploads/" + item.imageUrl
-  //                       }`}
-  //                     />
-  //                   </Link>
-  //                 </div>
-  //               ))}
-  //           </div>
-  //         </CustomTabPanel>
-  //         <CustomTabPanel value={value} index={2}>
-  //           <div className="row">
-  //             {menus
-  //               .filter((item) => item.category === "dessert")
-  //               .map((item, index) => (
-  //                 <div className="col-3 mb-4" key={index}>
-  //                   <Link to={`/detail/${item._id}`}>
-  //                     <OverlayCard
-  //                       title={item.name}
-  //                       description={[item.description]}
-  //                       height="450px"
-  //                       imageSrc={`http://localhost:3001${
-  //                         item.imageUrl.startsWith("/uploads")
-  //                           ? item.imageUrl
-  //                           : "/uploads/" + item.imageUrl
-  //                       }`}
-  //                     />
-  //                   </Link>
-  //                 </div>
-  //               ))}
-  //           </div>
-  //         </CustomTabPanel>
-  //         <CustomTabPanel value={value} index={3}>
-  //           <div className="row">
-  //             {menus
-  //               .filter((item) => item.category === "drink")
-  //               .map((item, index) => (
-  //                 <div className="col-3 mb-4" key={index}>
-  //                   <Link to={`/detail/${item._id}`}>
-  //                     <OverlayCard
-  //                       title={item.name}
-  //                       description={[item.description]}
-  //                       height="450px"
-  //                       imageSrc={`http://localhost:3001${
-  //                         item.imageUrl.startsWith("/uploads")
-  //                           ? item.imageUrl
-  //                           : "/uploads/" + item.imageUrl
-  //                       }`}
-  //                     />
-  //                   </Link>
-  //                 </div>
-  //               ))}
-  //           </div>
-  //         </CustomTabPanel>
-  //       </Box>
-  //     </div>
-  //   </div>
-  // );
 }
 
 export default Menus;

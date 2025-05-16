@@ -20,10 +20,24 @@ function AdminMenus() {
     imageBuffer: null,
     fileName: "",
     previewUrl: "",
+    quantity: "200", // Added quantity field
   });
 
   useEffect(() => {
     fetchMenus();
+  }, []);
+
+  useEffect(() => {
+    const handleOrderConfirmed = () => {
+      // Gọi lại API lấy danh sách menu
+      fetchMenus();
+    };
+
+    window.addEventListener("orderConfirmed", handleOrderConfirmed);
+
+    return () => {
+      window.removeEventListener("orderConfirmed", handleOrderConfirmed);
+    };
   }, []);
 
   const fetchMenus = async () => {
@@ -92,11 +106,12 @@ function AdminMenus() {
   };
 
   const handleEdit = (menu) => {
-  setEditMenu({
-    ...menu,
-    previewUrl: `http://localhost:3001${menu.imageUrl}`,
-  });
-};
+    setEditMenu({
+      ...menu,
+      quantity: menu.quantity || 0, // Đặt giá trị mặc định cho quantity nếu chưa có
+      previewUrl: `http://localhost:3001${menu.imageUrl}`,
+    });
+  };
 
 
   const handleSave = async () => {
@@ -109,6 +124,7 @@ function AdminMenus() {
       fileName,
       imageBuffer,
       mimeType,
+      quantity, // Đảm bảo quantity được gửi
     } = editMenu;
 
     const payload = {
@@ -119,6 +135,7 @@ function AdminMenus() {
       imageBuffer,
       fileName,
       mimeType,
+      quantity: parseInt(quantity), // Chuyển quantity thành số nguyên
     };
 
     await axios.put(`http://localhost:3001/api/menus/${editMenu._id}`, payload);
@@ -197,37 +214,47 @@ const handleEditImageUpload = (e) => {
     });
 };
 
-  const handleCreateMenu = () => {
-    const { name, description, price, category, fileName, imageBuffer } =
-      newMenu;
+  const handleCreateMenu = async () => {
+  const { name, description, price, category, quantity, fileName, imageBuffer } = newMenu;
 
-    axios
-      .post("http://localhost:3001/api/menus", {
-        name,
-        description,
-        price,
-        category,
-        fileName,
-        imageBuffer,
-      })
-      .then((res) => {
-        alert("Menu created successfully");
-        setNewMenu({
-          name: "",
-          description: "",
-          imageUrl: "",
-          category: "",
-          price: "",
-          imageBuffer: null,
-          fileName: "",
-          previewUrl: "",
-        });
-        fetchMenus();
-      })
-      .catch((err) => {
-        console.error("Error creating menu:", err);
-      });
-  };
+  // Kiểm tra các trường bắt buộc
+  if (!name || !description || !price || !category || !quantity) {
+    alert("Please fill in all required fields.");
+    return;
+  }
+
+  try {
+    // Gửi yêu cầu tạo món ăn
+    const response = await axios.post("http://localhost:3001/api/menus", {
+      name,
+      description,
+      price: parseFloat(price), // Chuyển giá thành số thực
+      category,
+      quantity: parseInt(quantity), // Chuyển số lượng thành số nguyên
+      fileName,
+      imageBuffer,
+    });
+
+    alert("Menu created successfully");
+    setNewMenu({
+      name: "",
+      description: "",
+      imageUrl: "",
+      category: "",
+      price: "",
+      quantity: "", // Reset quantity
+      imageBuffer: null,
+      fileName: "",
+      previewUrl: "",
+    });
+    fetchMenus(); // Tải lại danh sách menu
+    const modal = Modal.getInstance(document.getElementById("addNewMenu"));
+    modal.hide(); // Đóng modal
+  } catch (err) {
+    console.error("Error creating menu:", err);
+    alert("Failed to create menu.");
+  }
+};
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -243,6 +270,59 @@ const handleEditImageUpload = (e) => {
     setSortOrder("asc");
   }
 };
+
+  // Hàm reset quantity
+  const handleResetQuantities = async () => {
+    if (window.confirm("Bạn có chắc muốn đặt lại số lượng tất cả món ăn về 200?")) {
+      try {
+        await axios.post("http://localhost:3001/api/menus/reset-quantities");
+        alert("Đã đặt lại số lượng tất cả món ăn về 200!");
+        fetchMenus();
+      } catch (err) {
+        alert("Có lỗi xảy ra khi reset quantity!");
+      }
+    }
+  };
+
+  const handleOrderStatusUpdate = async (orderId) => {
+    try {
+      // Sau khi xác nhận đơn hàng thành công:
+      await axios.put(`http://localhost:3001/api/orders/${orderId}/status`, { status: "delivering" });
+      // Gọi lại fetchMenus nếu bạn đang ở trang AdminMenus
+      if (typeof fetchMenus === "function") fetchMenus();
+    } catch (err) {
+      console.error("Error updating order status:", err);
+    }
+  };
+
+  // Giả sử bạn có danh sách orders đã xác nhận (status "completed" hoặc "delivering")
+  const updateMenuQuantitiesByOrders = (orders) => {
+    // Lọc các đơn đã xác nhận
+    const confirmedOrders = orders.filter(
+      (order) => order.status === "completed" || order.status === "delivering"
+    );
+
+    // Tạo bản sao menus mới
+    let updatedMenus = [...menus];
+
+    confirmedOrders.forEach((order) => {
+      order.items.forEach((item) => {
+        // Tìm menu tương ứng
+        const menuIndex = updatedMenus.findIndex(
+          (menu) => menu._id === item.menuItemId
+        );
+        if (menuIndex !== -1) {
+          // Giảm quantity đi số lượng đã bán
+          updatedMenus[menuIndex].quantity =
+            (updatedMenus[menuIndex].quantity || 0) - item.quantity;
+          if (updatedMenus[menuIndex].quantity < 0)
+            updatedMenus[menuIndex].quantity = 0;
+        }
+      });
+    });
+
+    setMenus(updatedMenus);
+  };
 
   return (
     <div className="container">
@@ -330,6 +410,16 @@ const handleEditImageUpload = (e) => {
                     className="form-control"
                   />
                 </div>
+                <div className="mb-3">
+                  <label>Quantity</label>
+                  <input
+                    type="number"
+                    name="quantity"
+                    value={newMenu.quantity}
+                    onChange={handleNewMenuChange}
+                    className="form-control"
+                  />
+                </div>
 
                 <div className=" d-flex justify-content-between  mt-5">
                   <button
@@ -394,6 +484,13 @@ const handleEditImageUpload = (e) => {
         >
           Add menu
         </button>
+        {/* Nút Reset Quantity */}
+        <button
+         
+          onClick={handleResetQuantities}
+        >
+          Reset Quantity
+        </button>
       </div>
 
       <div>
@@ -419,6 +516,7 @@ const handleEditImageUpload = (e) => {
             <th style={{ width: "6%", cursor: "pointer" }} onClick={() => handleSort("price")}>
               Price {sortField === "price" && (sortOrder === "asc" ? "▲" : "▼")}
             </th>
+            <th style={{ width: "6%" }}>Quantity</th>
             <th style={{ width: "11%", position: "sticky", right: 0, background: "#fff", zIndex: 1 }}>
               Actions
             </th>
@@ -431,6 +529,7 @@ const handleEditImageUpload = (e) => {
               <td>{menu.description}</td>
               <td>{menu.category}</td>
               <td>${menu.price ? Number(menu.price).toFixed(2) : "0.00"}</td>
+              <td>{menu.quantity}</td>
               <td style={{ position: "sticky", right: 0, background: "#fff" }}>
                 <button
                   className="btn-select selected me-2"
@@ -570,6 +669,16 @@ const handleEditImageUpload = (e) => {
                         type="number"
                         name="price"
                         value={editMenu.price}
+                        onChange={handleChange}
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Quantity</label>
+                      <input
+                        type="number"
+                        name="quantity"
+                        value={editMenu.quantity}
                         onChange={handleChange}
                         className="form-control"
                       />

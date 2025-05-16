@@ -48,22 +48,21 @@ exports.getMenuByCategory = async (req, res) => {
 
 // Cập nhật món ăn
 exports.updateMenu = async (req, res) => {
+  console.log("Payload received:", req.body);
   const { id } = req.params;
-  const { name, description, price, category, imageBuffer, fileName, mimeType } = req.body;
+  const { name, description, price, category, imageBuffer, fileName, mimeType, quantity } = req.body;
 
   try {
     const menu = await Menu.findById(id);
     if (!menu) return res.status(404).json({ message: "Menu not found" });
 
-    // Cập nhật thông tin cơ bản
     menu.name = name || menu.name;
     menu.description = description || menu.description;
     menu.price = price || menu.price;
     menu.category = category || menu.category;
+    menu.quantity = quantity !== undefined ? parseInt(quantity) : menu.quantity; // Cập nhật số lượng
 
-    // Nếu có ảnh mới thì lưu lại
     if (imageBuffer && fileName && mimeType) {
-      // Xóa ảnh cũ nếu có
       if (menu.imageUrl) {
         const oldPath = path.join(__dirname, `../${menu.imageUrl}`);
         if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
@@ -121,35 +120,28 @@ exports.deleteMenu = async (req, res) => {
 // Tạo một món ăn mới
 exports.createMenu = async (req, res) => {
   try {
-    const { name, description, price, category, imageBuffer, fileName, mimeType } = req.body;
+    const { name, description, price, category, imageBuffer, fileName, mimeType, quantity } = req.body;
 
-    
-    if (!name || !description || !price || !category || !imageBuffer || !fileName) {
+    if (!name || !description || !price || !category || !imageBuffer || !fileName || quantity === undefined) {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Lưu ảnh và lấy URL
     const imageUrl = saveImageToUploads(imageBuffer, fileName, mimeType, category);
-    
     if (!imageUrl) {
       return res.status(500).json({ message: "Error saving image" });
     }
 
-    
     const menu = new Menu({
       name,
       description,
       price: parseFloat(price),
       category,
-      imageUrl, 
+      imageUrl,
+      quantity: parseInt(quantity), // Lưu số lượng món ăn
     });
 
-   
     await menu.save();
-
-    
     res.status(201).json({ message: "Menu created successfully", menu });
-
   } catch (err) {
     console.error("Error creating menu:", err);
     res.status(500).json({ message: "Server error", error: err.message });
@@ -193,6 +185,41 @@ exports.addMenuReview = async (req, res) => {
     await menu.save();
     res.status(201).json({ message: "Đánh giá thành công!", reviews: menu.reviews });
   } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Reset all menu quantities to 200
+exports.resetAllQuantities = async (req, res) => {
+  try {
+    await Menu.updateMany({}, { $set: { quantity: 200 } });
+    res.json({ message: "All menu quantities have been reset to 200." });
+  } catch (err) {
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
+// Lấy các món ăn được đánh giá cao nhất
+exports.getTopRatedMenus = async (req, res) => {
+  try {
+    // Tìm các món ăn, tính trung bình rating và sắp xếp giảm dần theo rating
+    const menus = await Menu.aggregate([
+      {
+        $addFields: {
+          averageRating: { $avg: "$reviews.rating" }, // Tính trung bình rating
+        },
+      },
+      {
+        $sort: { averageRating: -1 }, // Sắp xếp giảm dần theo averageRating
+      },
+      {
+        $limit: 4, // Lấy 4 món ăn đầu tiên
+      },
+    ]);
+
+    res.json(menus);
+  } catch (err) {
+    console.error("Error fetching top-rated menus:", err);
     res.status(500).json({ message: "Server Error" });
   }
 };

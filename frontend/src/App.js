@@ -9,6 +9,7 @@ import "./assets/styles/global.css";
 // Components
 import Header from "./components/Header/Header";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import ChatBot from "./components/ChatBot/ChatBot";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         ))}
         <Route path="/payment-success" element={<PaymentSuccess />} />
       </Routes>
+      <ChatBot />
     </Router>
   );
 }

@@ -59,17 +59,25 @@ function Detail() {
   useEffect(() => {
     if (!menu) return;
     // Lấy đánh giá sản phẩm
-    axios.get(`http://localhost:3001/api/menus/${menu._id}/reviews`)
-      .then(res => setReviews(res.data))
+    axios
+      .get(`http://localhost:3001/api/menus/${menu._id}/reviews`)
+      .then((res) => setReviews(res.data))
       .catch(() => setReviews([]));
     // Kiểm tra user đã mua chưa
     const token = localStorage.getItem("token");
     if (token) {
-      axios.get("http://localhost:3001/api/orders/my-orders", { headers: { Authorization: `Bearer ${token}` } })
-        .then(res => {
+      axios
+        .get("http://localhost:3001/api/orders/my-orders", {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
           const orders = res.data || [];
-          const hasBought = orders.some(order =>
-            (order.items || []).some(item => (item.menuItemId === menu._id || item.menuItemId === menu._id?.toString()))
+          const hasBought = orders.some((order) =>
+            (order.items || []).some(
+              (item) =>
+                item.menuItemId === menu._id ||
+                item.menuItemId === menu._id?.toString()
+            )
           );
           setUserCanReview(hasBought);
         })
@@ -86,7 +94,6 @@ function Detail() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     setReviewMessage("");
@@ -104,13 +111,16 @@ function Detail() {
       setReviewMessage("Đánh giá thành công!");
       setReviewForm({ rating: 5, comment: "" });
       // Reload reviews
-      const res = await axios.get(`http://localhost:3001/api/menus/${menu._id}/reviews`);
+      const res = await axios.get(
+        `http://localhost:3001/api/menus/${menu._id}/reviews`
+      );
       setReviews(res.data);
     } catch (err) {
-      setReviewMessage(err.response?.data?.message || "Có lỗi khi gửi đánh giá.");
+      setReviewMessage(
+        err.response?.data?.message || "Có lỗi khi gửi đánh giá."
+      );
     }
   };
-
   return (
     <div>
       <PageHeader
@@ -138,17 +148,42 @@ function Detail() {
             <TitleWithSubtitle title={menu.name} subTitle={menu.category} />
             <h5 style={{ fontSize: "25px" }}>$ {menu.price}</h5>
             <p style={{ margin: "35px 0px" }}>{menu.description}</p>
+            {/* Hiển thị số lượng còn lại */}
+            <div style={{ marginBottom: 16, fontWeight: 500 }}>
+              {menu.quantity > 0 ? (
+                `Còn lại: ${menu.quantity} sản phẩm`
+              ) : (
+                <span style={{ color: "red" }}>Out of stock</span>
+              )}
+            </div>
             {/* button quantity, add to cart, buy now */}
             <div style={{ display: "flex", gap: "30px", margin: "40px 0px" }}>
-              <QuantitySelector quantity={quantity} setQuantity={setQuantity} />
+              <QuantitySelector
+                quantity={quantity}
+                setQuantity={setQuantity}
+                disabled={menu.quantity <= 0}
+              />
               <ButtonWhite
                 buttontext={"Add to cart"}
-                onClick={() => sendProductToCart(menu, quantity)}
+                onClick={() => {
+                  if (menu.quantity <= 0) {
+                    alert("Đã Hết Hàng");
+                  } else {
+                    sendProductToCart(menu, quantity);
+                  }
+                }}
               />
-              <Link to={"/check-out"}>
+              <Link to={menu.quantity > 0 ? "/check-out" : "#"}>
                 <ButtonWhite
                   buttontext={"Buy now"}
-                  onClick={() => sendProductToCart(menu, quantity, false)}
+                  onClick={(e) => {
+                    if (menu.quantity <= 0) {
+                      e.preventDefault();
+                      alert("Đã Hết Hàng");
+                    } else {
+                      sendProductToCart(menu, quantity, false);
+                    }
+                  }}
                 />
               </Link>
             </div>
@@ -159,9 +194,45 @@ function Detail() {
                   <TabList
                     onChange={handleChange}
                     aria-label="lab API tabs example"
-                  ></TabList>
+                  >
+                    <Tab
+                      label="Ingredient"
+                      value="1"
+                      style={{
+                        fontSize: "15px",
+                        fontFamily: "JosefinSans",
+                        fontWeight: "bold",
+                      }}
+                    />
+                    <Tab
+                      label="Detail"
+                      value="2"
+                      style={{
+                        fontSize: "15px",
+                        fontFamily: "JosefinSans",
+                        fontWeight: "bold",
+                      }}
+                    />
+                    <Tab
+                      label="Comments"
+                      value="3"
+                      style={{
+                        fontSize: "15px",
+                        fontFamily: "JosefinSans",
+                        fontWeight: "bold",
+                      }}
+                    />
+                  </TabList>
                 </Box>
-
+                <TabPanel
+                  value="1"
+                  style={{ fontSize: "18px", fontFamily: "JosefinSans" }}
+                >
+                  <strong>Ingredients: </strong>
+                  {menu.ingredients
+                    ? menu.ingredients.join(", ") + "."
+                    : "No ingredients available."}
+                </TabPanel>
                 <TabPanel
                   value="2"
                   style={{ fontSize: "18px", fontFamily: "JosefinSans" }}
@@ -179,7 +250,97 @@ function Detail() {
                   value="3"
                   style={{ fontSize: "18px", fontFamily: "JosefinSans" }}
                 >
-                  {menu.rates}
+                  {/* Đánh giá sản phẩm */}
+                  <div className="row">
+                    <div className="col-12">
+                      <h2 style={{ fontSize: "25px" }}> Đánh giá sản phẩm</h2>
+                      {reviews.length === 0 && <p>Chưa có đánh giá nào.</p>}
+                      {reviews.map((r, idx) => (
+                        <div
+                          key={idx}
+                          style={{
+                            borderBottom: "1px solid #eee",
+                            marginBottom: 8,
+                            paddingBottom: 8,
+                          }}
+                        >
+                          <b>{r.username || "Người dùng"}</b> -{" "}
+                          <span>
+                            {"★".repeat(r.rating)}
+                            {"☆".repeat(5 - r.rating)}
+                          </span>
+                          <div>{r.comment}</div>
+                          <div style={{ fontSize: 12, color: "#888" }}>
+                            {new Date(r.createdAt).toLocaleString()}
+                          </div>
+                        </div>
+                      ))}
+                      {userCanReview && (
+                        <form
+                          onSubmit={handleReviewSubmit}
+                          style={{ marginTop: 16 }}
+                        >
+                          <div>
+                            <label>Chọn số sao: </label>
+                            <select
+                              value={reviewForm.rating}
+                              onChange={(e) =>
+                                setReviewForm((f) => ({
+                                  ...f,
+                                  rating: Number(e.target.value),
+                                }))
+                              }
+                            >
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <option key={star} value={star}>
+                                  {star}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          <div style={{ marginTop: 8 }}>
+                            <textarea
+                              value={reviewForm.comment}
+                              onChange={(e) =>
+                                setReviewForm((f) => ({
+                                  ...f,
+                                  comment: e.target.value,
+                                }))
+                              }
+                              placeholder="Nhận xét của bạn..."
+                              rows={3}
+                              style={{
+                                width: "100%",
+                                borderRadius: 6,
+                                border: "1px solid #ccc",
+                                padding: 8,
+                              }}
+                            />
+                          </div>
+                          <button type="submit" style={{ marginTop: 8 }}>
+                            Gửi đánh giá
+                          </button>
+                          {reviewMessage && (
+                            <div
+                              style={{
+                                color: reviewMessage.includes("thành công")
+                                  ? "green"
+                                  : "red",
+                                marginTop: 8,
+                              }}
+                            >
+                              {reviewMessage}
+                            </div>
+                          )}
+                        </form>
+                      )}
+                      {!userCanReview && (
+                        <div style={{ color: "#888", marginTop: 8 }}>
+                          Chỉ khách đã mua sản phẩm này mới được đánh giá.
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </TabPanel>
               </TabContext>
             </Box>
@@ -214,42 +375,6 @@ function Detail() {
             </div>
           ))}
         </div>
-        {/* Đánh giá sản phẩm */}
-        <div className="row mt-5">
-          <div className="col-12">
-            <h3>Đánh giá sản phẩm</h3>
-            {reviews.length === 0 && <p>Chưa có đánh giá nào.</p>}
-            {reviews.map((r, idx) => (
-              <div key={idx} style={{ borderBottom: '1px solid #eee', marginBottom: 8, paddingBottom: 8 }}>
-                <b>{r.username || 'Người dùng'}</b> - <span>{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
-                <div>{r.comment}</div>
-                <div style={{ fontSize: 12, color: '#888' }}>{new Date(r.createdAt).toLocaleString()}</div>
-              </div>
-            ))}
-            {userCanReview && (
-              <form onSubmit={handleReviewSubmit} style={{ marginTop: 16 }}>
-                <div>
-                  <label>Chọn số sao: </label>
-                  <select value={reviewForm.rating} onChange={e => setReviewForm(f => ({ ...f, rating: Number(e.target.value) }))}>
-                    {[1,2,3,4,5].map(star => <option key={star} value={star}>{star}</option>)}
-                  </select>
-                </div>
-                <div style={{ marginTop: 8 }}>
-                  <textarea
-                    value={reviewForm.comment}
-                    onChange={e => setReviewForm(f => ({ ...f, comment: e.target.value }))}
-                    placeholder="Nhận xét của bạn..."
-                    rows={3}
-                    style={{ width: '100%', borderRadius: 6, border: '1px solid #ccc', padding: 8 }}
-                  />
-                </div>
-                <button type="submit" style={{ marginTop: 8 }}>Gửi đánh giá</button>
-                {reviewMessage && <div style={{ color: reviewMessage.includes('thành công') ? 'green' : 'red', marginTop: 8 }}>{reviewMessage}</div>}
-              </form>
-            )}
-            {!userCanReview && <div style={{ color: '#888', marginTop: 8 }}>Chỉ khách đã mua sản phẩm này mới được đánh giá.</div>}
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -263,7 +388,6 @@ const sendProductToCart = (menu, quantity, isNotify = true) => {
 
   // Lấy giỏ hàng hiện tại từ localStorage hoặc khởi tạo giỏ hàng mới nếu không tồn tại
   let cart = JSON.parse(localStorage.getItem("cart")) || { cartId, items: [] };
-  if (!Array.isArray(cart.items)) cart.items = [];
 
   // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
   const existingItemIndex = cart.items.findIndex(
@@ -286,6 +410,8 @@ const sendProductToCart = (menu, quantity, isNotify = true) => {
 
   // Lưu lại giỏ hàng vào localStorage
   localStorage.setItem("cart", JSON.stringify(cart));
+
+  // Gửi sự kiện custom để các component khác biết
   window.dispatchEvent(new Event("cartUpdated"));
 
   if (isNotify) {

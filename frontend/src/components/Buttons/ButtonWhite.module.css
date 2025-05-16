@@ -23,19 +23,20 @@
 
 .buttonWhite2 {
   color: white;
-  background-color: transparent;
-  border: 1px solid white;
+  background-color: #b2281f;
   transition: transform 0.3s ease;
+  border: 0px;
 }
 
 .buttonWhite2:hover {
   transform: scale(1.05);
-  background-color: transparent;
+   background-color: #b2281f;
+  border: 0px;
 }
 
 .buttonWhite:hover {
   background-color: #2a2a2a;
   color: white;
-  border-color: white;
+  
   transition: all 0.5s;
 }

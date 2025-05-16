@@ -1,4 +1,5 @@
 const Order = require("../models/orderModel"); // import model
+const Menu = require("../models/menuModel"); // Thêm dòng này ở đầu file
 
 // Controller để thêm một order
 const addOrder = async (req, res) => {
@@ -132,28 +133,32 @@ const deleteOrder = async (req, res) => {
 };
 // Cập nhật trạng thái đơn hàng (ví dụ: confirmed, delivering, etc.)
 const updateOrderStatus = async (req, res) => {
+  const { id } = req.params; // ID của đơn hàng
+  const { status } = req.body; // Trạng thái mới
+
   try {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    if (!status) {
-      return res.status(400).json({ message: "Status is required" });
-    }
-
-    const updatedOrder = await Order.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedOrder) {
+    // Tìm đơn hàng
+    const order = await Order.findById(id);
+    if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    res.status(200).json({
-      message: "Order status updated successfully",
-      order: updatedOrder,
-    });
+    // Cập nhật trạng thái đơn hàng
+    order.status = status;
+    await order.save();
+
+    // Nếu trạng thái là "delivering" hoặc "completed", giảm số lượng món ăn
+    if (status === "delivering") {
+      for (const item of order.items) {
+        const menu = await Menu.findById(item.menuItemId);
+        if (menu) {
+          menu.quantity = Math.max(menu.quantity - item.quantity, 0); // Đảm bảo không giảm dưới 0
+          await menu.save();
+        }
+      }
+    }
+
+    res.status(200).json({ message: "Order status updated successfully" });
   } catch (err) {
     console.error("Error updating order status:", err);
     res.status(500).json({ message: "Server error" });

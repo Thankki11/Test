@@ -1,11 +1,12 @@
 import AdminDashboard from "../pages/admin/AdminDashboard";
-import AdminChefs from "../pages/admin/AdminChefs";
 import AdminMenus from "../pages/admin/AdminMenus";
 import AdminLayout from "../layouts/AdminLayout";
-import AdminReservation from "../pages/admin/AdminReservation";
+
 import AdminOrder from "../pages/admin/AdminOrder";
 import AdminLogin from "../pages/admin/AdminLogin";
 import AdminUsers from "../pages/admin/AdminUsers";
+import AdminEmployees from "../pages/admin/AdminEmployees";
+import AdminVouchers from "../pages/admin/AdminVouchers.jsx";
 import { Navigate } from "react-router-dom";
 
 const adminRoutes = [
@@ -24,16 +25,6 @@ const adminRoutes = [
     ),
   },
   {
-    path: "/admin/chefs",
-    element: (
-      <AdminRouteWrapper>
-        <AdminLayout>
-          <AdminChefs />
-        </AdminLayout>
-      </AdminRouteWrapper>
-    ),
-  },
-  {
     path: "/admin/menus",
     element: (
       <AdminRouteWrapper>
@@ -43,16 +34,7 @@ const adminRoutes = [
       </AdminRouteWrapper>
     ),
   },
-  {
-    path: "/admin/reservations",
-    element: (
-      <AdminRouteWrapper>
-        <AdminLayout>
-          <AdminReservation />
-        </AdminLayout>
-      </AdminRouteWrapper>
-    ),
-  },
+  
   {
     path: "/admin/orders",
     element: (
@@ -64,11 +46,31 @@ const adminRoutes = [
     ),
   },
   {
-    path: "admin/users",
+    path: "/admin/users",
     element: (
       <AdminRouteWrapper>
         <AdminLayout>
-          <AdminUsers/>
+          <AdminUsers />
+        </AdminLayout>
+      </AdminRouteWrapper>
+    ),
+  },
+  {
+    path: "/admin/employees",
+    element: (
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminEmployees />
+        </AdminLayout>
+      </AdminRouteWrapper>
+    ),
+  },
+  {
+    path: "/admin/vouchers",
+    element: (
+      <AdminRouteWrapper>
+        <AdminLayout>
+          <AdminVouchers />
         </AdminLayout>
       </AdminRouteWrapper>
     ),

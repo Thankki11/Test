@@ -60,7 +60,8 @@ function Header() {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || {
         items: [],
       };
-      setItems(Array.isArray(savedCart.items) ? savedCart.items : []);
+      setItems(savedCart.items);
+      console.log(">>> check items:", Array.isArray(items))
     };
 
     loadCart();
@@ -135,7 +136,7 @@ function Header() {
         {/* Body */}
         <div className="offcanvas-body flex-grow-1 overflow-auto">
           <div style={{ minHeight: "100%" }}>
-            {items.map((item) => (
+          {Array.isArray(items) && items.map((item) => (
               <CartItem
                 key={item._id}
                 item={item}
@@ -243,9 +244,6 @@ function Header() {
                 <li>
                   <Link to="/">Home</Link>
                 </li>
-                <li>
-                  <Link to="/chefs">Chefs</Link>
-                </li>
               </ul>
             </div>
 
@@ -267,43 +265,12 @@ function Header() {
                   <li>
                     <Link to="/menus">Menus</Link>
                   </li>
-                  {/* <li>
-                    <div className="dropdown">
-                      <div
-                        className={
-                          styles.dropdownText + " dropdown-toggle text-dark"
-                        }
-                        data-bs-toggle="dropdown"
-                        role="button"
-                        style={{ cursor: "pointer" }}
-                      >
-                        Join with us
-                      </div>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <a className="dropdown-item" href="/register-class">
-                            Register a cooking class
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="/recuitment">
-                            Recruitment
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </li> */}
-                  <li>
-                    <Link to="/reservation">Book table</Link>
-                  </li>
+                 
+                 
                 </ul>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {isLoggedIn && (
-                  <Link to="/admin/login" style={{ textDecoration: 'none', marginRight: '10px' }}>
-                    <span style={{ fontWeight: 'bold', color: '#b8860b', fontSize: '18px', cursor: 'pointer' }}>Tới trang quản trị</span>
-                  </Link>
-                )}
+              <div>
+              
                 {isLoggedIn ? (
                   <div
                     className="dropdown"

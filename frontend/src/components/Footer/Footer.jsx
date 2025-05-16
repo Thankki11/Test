@@ -25,21 +25,16 @@ const Footer = () => {
                   Home
                 </a>
               </li>
-              {/* <li className="mb-2">
-                <a href="/chefs" className={styles.footerLink}>
-                  Discover chefs
-                </a>
-              </li> */}
               <li className="mb-2">
                 <a href="/menus" className={styles.footerLink}>
                   Discover menus
                 </a>
               </li>
-              {/* <li className="mb-2">
+              <li className="mb-2">
                 <a href="/reservation" className={styles.footerLink}>
                   Book table
                 </a>
-              </li> */}
+              </li>
             </ul>
           </div>
 
@@ -57,11 +52,11 @@ const Footer = () => {
                   Register
                 </a>
               </li>
-              {/* <li className="mb-2">
+              <li className="mb-2">
                 <a href="/check-out" className={styles.footerLink}>
                   Check out
                 </a>
-              </li> */}
+              </li>
             </ul>
           </div>
 

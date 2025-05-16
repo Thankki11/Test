@@ -10,7 +10,7 @@ import axios from "axios";
 
 function CheckOut() {
   const navigate = useNavigate();
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([]); // Mỗi sản phẩm sẽ có trường `discount`
   const [selectedItems, setSelectedItems] = useState([]);
   const [formData, setFormData] = useState({
     customerName: "",
@@ -18,22 +18,26 @@ function CheckOut() {
     emailAddress: "",
     address: "",
   });
+  const [voucherCode, setVoucherCode] = useState(""); // State để lưu mã voucher
+  const [discount, setDiscount] = useState(0); // State để lưu giá trị giảm giá
+  const [showVoucherInput, setShowVoucherInput] = useState(false); // State để hiển thị ô nhập voucher
 
   useEffect(() => {
-    const isLoggedIn = !!localStorage.getItem("token"); // Kiểm tra token trong localStorage
+    const isLoggedIn = !!localStorage.getItem("token");
     if (!isLoggedIn) {
-      localStorage.setItem("redirectUrl", "/check-out"); // Lưu URL hiện tại
-      navigate("/login"); // Chuyển hướng đến trang login nếu chưa đăng nhập
+      localStorage.setItem("redirectUrl", "/check-out");
+      navigate("/login");
     }
   }, [navigate]);
 
-  //các giá trị trong bảng, giá trị hàng hóa
   const selectedData = items
-    .filter((item) => selectedItems.includes(item._id))
-    .map((item) => ({
-      ...item,
-      total: item.price * item.quantity,
-    }));
+  .filter((item) => selectedItems.includes(item._id))
+  .map((item) => ({
+    ...item,
+    total: item.discount
+      ? item.price * item.quantity * (1 - item.discount / 100)
+      : item.price * item.quantity, // Áp dụng giảm giá nếu có
+  }));
 
   const columns = [
     { header: "Name", accessor: "name" },
@@ -50,9 +54,9 @@ function CheckOut() {
     },
   ];
 
-  const totalAmount = items
-    .filter((item) => selectedItems.includes(item._id))
-    .reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalAmount = selectedData.reduce((sum, item) => sum + item.total, 0);
+
+  const discountedTotal = totalAmount - (totalAmount * discount) / 100; // Tổng tiền sau giảm giá
 
   const fields = [
     {
@@ -108,6 +112,44 @@ function CheckOut() {
     },
   ];
 
+  const handleApplyVoucher = async (itemId) => {
+    try {
+      if (!voucherCode.trim()) {
+        // Nếu mã voucher để trống
+        const updatedItems = items.map((item) =>
+          item._id === itemId ? { ...item, discount: null } : item
+        );
+        setItems(updatedItems);
+        alert("Voucher code cannot be empty.");
+        return;
+      }
+
+      const response = await axios.post(
+        "http://localhost:3001/api/vouchers/validate",
+        { code: voucherCode }
+      );
+      const { discount } = response.data;
+
+      // Cập nhật giảm giá cho sản phẩm được chọn
+      const updatedItems = items.map((item) =>
+        item._id === itemId ? { ...item, discount } : item
+      );
+      setItems(updatedItems);
+
+      alert(`Voucher applied successfully! Discount: ${discount}% for item ${itemId}`);
+    } catch (err) {
+      console.error("Error validating voucher:", err);
+
+      // Nếu mã voucher không hợp lệ
+      const updatedItems = items.map((item) =>
+        item._id === itemId ? { ...item, discount: null } : item
+      );
+      setItems(updatedItems);
+
+      alert("Invalid voucher code. Please try again.");
+    }
+  };
+
   const handleSubmit = async (data) => {
     console.log("Form data:", data);
 
@@ -131,7 +173,7 @@ function CheckOut() {
             quantity: item.quantity,
             price: item.price,
           })),
-        totalPrice: totalAmount,
+        totalPrice: discountedTotal, // Sử dụng tổng tiền sau giảm giá
         createdAt: new Date().toISOString(),
       };
       const token = localStorage.getItem("token");
@@ -148,7 +190,7 @@ function CheckOut() {
         const response = await axios.post(
           "http://localhost:3001/api/payment/create_payment_url",
           {
-            amount: totalAmount,
+            amount: discountedTotal, // Sử dụng tổng tiền sau giảm giá
             bankCode: "VNPAY",
             paymentMethod: "vnpay",
             language: "vn",
@@ -233,7 +275,7 @@ function CheckOut() {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || {
         items: [],
       };
-      setItems(Array.isArray(savedCart.items) ? savedCart.items : []);
+      setItems(savedCart.items);
     };
 
     fetchUserInfo();
@@ -358,18 +400,50 @@ function CheckOut() {
                             onDecrease={decreaseQuantity}
                             onDelete={deleteItem}
                             extraElement={
-                              <button
-                                onClick={() => handleSelect(item._id)}
-                                className={`btn-select ${
-                                  selectedItems.includes(item._id)
-                                    ? "selected"
-                                    : ""
-                                }`}
-                              >
-                                {selectedItems.includes(item._id)
-                                  ? "Selected"
-                                  : "Unselect"}
-                              </button>
+                              <>
+                                <button
+                                  onClick={() => handleSelect(item._id)}
+                                  className={`btn-select ${
+                                    selectedItems.includes(item._id)
+                                      ? "selected"
+                                      : ""
+                                  }`}
+                                >
+                                  {selectedItems.includes(item._id)
+                                    ? "Selected"
+                                    : "Unselect"}
+                                </button>
+                                {showVoucherInput === item._id ? (
+                                  <div style={{ marginTop: "10px" }}>
+                                    <input
+                                      type="text"
+                                      placeholder="Enter voucher code"
+                                      value={voucherCode}
+                                      onChange={(e) =>
+                                        setVoucherCode(e.target.value)
+                                      }
+                                      className="form-control mb-2"
+                                    />
+                                    <button
+                                      onClick={() =>
+                                        handleApplyVoucher(item._id)
+                                      }
+                                      className="btn btn-primary"
+                                    >
+                                      Apply Voucher
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() =>
+                                      setShowVoucherInput(item._id)
+                                    }
+                                    className="btn btn-secondary mt-2"
+                                  >
+                                    Add Voucher
+                                  </button>
+                                )}
+                              </>
                             }
                           />
                         </div>
@@ -391,7 +465,12 @@ function CheckOut() {
                       </li>
                       <li>
                         <h2 style={{ fontSize: "18px", marginTop: "20px" }}>
-                          Total: ${totalAmount.toFixed(2)}
+                          Total: ${discountedTotal.toFixed(2)}{" "}
+                          {/* {discount > 0 && (
+                            <span style={{ color: "green" }}>
+                              (Discount applied: {discount}%)
+                            </span>
+                          )} */}
                         </h2>
                       </li>
                     </ul>
