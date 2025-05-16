@@ -30,13 +30,12 @@
 
 .buttonWhite2:hover {
   transform: scale(1.05);
-   background-color: #b2281f;
+  background-color: #b2281f;
   border: 0px;
 }
 
 .buttonWhite:hover {
   background-color: #2a2a2a;
   color: white;
-  
   transition: all 0.5s;
 }

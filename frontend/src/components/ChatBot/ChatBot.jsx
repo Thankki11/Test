@@ -126,12 +126,14 @@ function ChatBot() {
     // Xem hóa đơn
     if (lower.includes("hóa đơn") || lower.includes("đơn hàng")) {
       if (orders.length > 0) {
-        const lastOrder = orders[0];
+        const maxOrder = orders.reduce((prev, curr) =>
+          curr.totalPrice > prev.totalPrice ? curr : prev
+        );
         setMessages((msgs) => [
           ...msgs,
           {
             from: "bot",
-            text: `Đơn gần nhất: Tổng tiền $${lastOrder.totalPrice}, trạng thái: ${lastOrder.status}`,
+            text: `Hóa đơn nhiều tiền nhất: $${maxOrder.totalPrice}, trạng thái: ${maxOrder.status}`,
           },
         ]);
       } else {
@@ -143,44 +145,83 @@ function ChatBot() {
       return;
     }
 
-    // Xem giỏ hàng
-    if (lower.includes("giỏ hàng")) {
-      if (cart && cart.length > 0) {
+    // Hóa đơn ít tiền nhất
+    if (lower.includes("hóa đơn ít tiền nhất")) {
+      if (orders.length > 0) {
+        const minOrder = orders.reduce((prev, curr) =>
+          curr.totalPrice < prev.totalPrice ? curr : prev
+        );
         setMessages((msgs) => [
           ...msgs,
           {
             from: "bot",
-            text: (
-              <span>
-                Giỏ hàng của bạn:
-                <ul style={{ paddingLeft: 18 }}>
-                  {cart.map((i) => (
-                    <li key={i._id}>
-                      {i.name || i.title} x {i.quantity}
-                      {/* Nếu muốn có link chi tiết món ăn, bỏ comment dòng dưới */}
-                      {/* <a href={`/detail/${i._id}`} target="_blank" rel="noopener noreferrer" style={{ marginLeft: 8 }}>{i.name || i.title}</a> */}
-                    </li>
-                  ))}
-                </ul>
-              </span>
-            ),
+            text: `Hóa đơn ít tiền nhất: $${minOrder.totalPrice}, trạng thái: ${minOrder.status}`,
           },
         ]);
       } else {
         setMessages((msgs) => [
           ...msgs,
-          { from: "bot", text: "Giỏ hàng của bạn đang trống." },
+          { from: "bot", text: "Bạn chưa có hóa đơn nào." },
         ]);
       }
       return;
     }
 
-    // Trả lời các câu hỏi cơ bản
-    for (let q of defaultQuestions) {
-      if (lower.includes(q.question)) {
-        setMessages((msgs) => [...msgs, { from: "bot", text: q.answer }]);
-        return;
+    // Hóa đơn đang vận chuyển
+    if (lower.includes("đang vận chuyển")) {
+      const deliveringOrders = orders.filter(
+        (order) => order.status === "delivering"
+      );
+      if (deliveringOrders.length > 0) {
+        setMessages((msgs) => [
+          ...msgs,
+          {
+            from: "bot",
+            text: `Bạn có ${deliveringOrders.length} hóa đơn đang vận chuyển.`,
+          },
+        ]);
+      } else {
+        setMessages((msgs) => [
+          ...msgs,
+          { from: "bot", text: "Bạn không có hóa đơn nào đang vận chuyển." },
+        ]);
       }
+      return;
+    }
+
+    // Hóa đơn đang xác nhận
+    if (lower.includes("đang xác nhận")) {
+      const pendingOrders = orders.filter(
+        (order) => order.status === "pending"
+      );
+      if (pendingOrders.length > 0) {
+        setMessages((msgs) => [
+          ...msgs,
+          {
+            from: "bot",
+            text: `Bạn có ${pendingOrders.length} hóa đơn đang xác nhận.`,
+          },
+        ]);
+      } else {
+        setMessages((msgs) => [
+          ...msgs,
+          { from: "bot", text: "Bạn không có hóa đơn nào đang xác nhận." },
+        ]);
+      }
+      return;
+    }
+
+    // Tổng số tiền đã mua
+    if (lower.includes("tổng số tiền đã mua")) {
+      const totalSpent = orders.reduce(
+        (sum, order) => sum + order.totalPrice,
+        0
+      );
+      setMessages((msgs) => [
+        ...msgs,
+        { from: "bot", text: `Tổng số tiền bạn đã mua: $${totalSpent}` },
+      ]);
+      return;
     }
 
     // Mặc định

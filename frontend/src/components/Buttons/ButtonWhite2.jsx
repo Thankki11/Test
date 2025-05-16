@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import styles from "./ButtonWhite.module.css";
 
-function ButtonWhite2({ buttontext, link, onClick, className = "", fontSize }){
+function ButtonWhite2({ buttontext, link, onClick, className = "", fontSize }) {
   return (
     <Link to={link}>
       <button

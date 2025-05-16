@@ -10,7 +10,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 // media
-import logo from "../assets/images/logo-white.jpg";
+import logo from "../assets/images/logo-white.png";
 import video from "../assets/videos/introduction.mp4";
 import food1 from "../assets/images/homefood1.jpg";
 import food2 from "../assets/images/homefood2.jpg";

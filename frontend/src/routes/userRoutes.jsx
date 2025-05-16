@@ -129,7 +129,15 @@ const routes = [
         <MyOrders />
       </UserLayout>
     ),
-  }
+  },
+  {
+    path: "/combos",
+    element: (
+      <UserLayout>
+        <Combo />
+      </UserLayout>
+    ),
+  },
 ];
 
 function UserRoutes() {

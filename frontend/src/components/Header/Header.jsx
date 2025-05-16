@@ -267,35 +267,6 @@ function Header() {
                   <li>
                     <Link to="/combos">Combos</Link>
                   </li>
-                  {/* <li>
-                    <div className="dropdown">
-                      <div
-                        className={
-                          styles.dropdownText + " dropdown-toggle text-dark"
-                        }
-                        data-bs-toggle="dropdown"
-                        role="button"
-                        style={{ cursor: "pointer" }}
-                      >
-                        Join with us
-                      </div>
-                      <ul className="dropdown-menu">
-                        <li>
-                          <a className="dropdown-item" href="/register-class">
-                            Register a cooking class
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="/recuitment">
-                            Recruitment
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </li> */}
-                  <li>
-                    <a href= "#footer">About Us</a>
-                  </li>
                 </ul>
               </div>
               <div>
@@ -383,4 +354,4 @@ function Header() {
   );
 }
 
-export default Header;  
+export default Header;
