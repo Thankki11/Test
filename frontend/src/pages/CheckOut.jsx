@@ -617,6 +617,27 @@ function CheckOut() {
                         Vouchers
                       </button>
                     </div>
+                    <div className="ms-3 mt-3">
+                      {appliedVoucher ? (
+                        <div>
+                          <p>
+                            <strong>Voucher Code:</strong> {appliedVoucher.code}
+                          </p>
+                          <p>
+                            <strong>Discount Type:</strong>{" "}
+                            {appliedVoucher.type === "PERCENT"
+                              ? "Percentage"
+                              : "Fixed Amount"}
+                          </p>
+                          <p>
+                            <strong>Discount Value:</strong>{" "}
+                            {appliedVoucher.value}
+                          </p>
+                        </div>
+                      ) : (
+                        <p>No voucher applied</p>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="card mt-3">
