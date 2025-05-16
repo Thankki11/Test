@@ -9,7 +9,13 @@ function cn(...classes) {
 
 // Card Components
 const Card = ({ className, ...props }) => (
-  <div className={cn("rounded-lg border bg-white text-gray-900 shadow-sm", className)} {...props} />
+  <div
+    className={cn(
+      "rounded-lg border bg-white text-gray-900 shadow-sm",
+      className
+    )}
+    {...props}
+  />
 );
 
 const CardHeader = ({ className, ...props }) => (
@@ -17,7 +23,13 @@ const CardHeader = ({ className, ...props }) => (
 );
 
 const CardTitle = ({ className, ...props }) => (
-  <h3 className={cn("text-2xl font-semibold leading-none tracking-tight", className)} {...props} />
+  <h3
+    className={cn(
+      "text-2xl font-semibold leading-none tracking-tight",
+      className
+    )}
+    {...props}
+  />
 );
 
 const CardDescription = ({ className, ...props }) => (
@@ -30,13 +42,35 @@ const CardContent = ({ className, ...props }) => (
 
 // Icons
 const ActivityIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-500">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="w-4 h-4 text-gray-500"
+  >
     <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
   </svg>
 );
 
 const ShoppingBagIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-500">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="w-4 h-4 text-gray-500"
+  >
     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
     <line x1="3" y1="6" x2="21" y2="6"></line>
     <path d="M16 10a4 4 0 0 1-8 0"></path>
@@ -44,7 +78,18 @@ const ShoppingBagIcon = () => (
 );
 
 const UsersIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-gray-500">
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className="w-4 h-4 text-gray-500"
+  >
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
     <circle cx="9" cy="7" r="4"></circle>
     <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -54,7 +99,13 @@ const UsersIcon = () => (
 
 // Chart Legend Components
 const ChartLegend = ({ className, children, ...props }) => (
-  <div className={cn("chart-legend flex items-center justify-center flex-wrap gap-4", className)} {...props}>
+  <div
+    className={cn(
+      "chart-legend flex items-center justify-center flex-wrap gap-4",
+      className
+    )}
+    {...props}
+  >
     {children}
   </div>
 );
@@ -172,76 +223,99 @@ function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="row">
           {/* Menu Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Total Menus</CardTitle>
-              <ActivityIcon />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{menuCount}</div>
-              <p className="text-xs text-gray-500">Available menu items in the system</p>
-            </CardContent>
-          </Card>
+          <div className="col-sm-6 mt-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">
+                  Total Menus
+                </CardTitle>
+                <ActivityIcon />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{menuCount}</div>
+                <p className="text-xs text-gray-500">
+                  Available menu items in the system
+                </p>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Orders Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
-              <ShoppingBagIcon />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{orderCount}</div>
-              <p className="text-xs text-gray-500">Orders placed by customers</p>
-            </CardContent>
-          </Card>
+          <div className="col-sm-6 mt-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">
+                  Total Orders
+                </CardTitle>
+                <ShoppingBagIcon />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{orderCount}</div>
+                <p className="text-xs text-gray-500">
+                  Orders placed by customers
+                </p>
+              </CardContent>
+            </Card>
+          </div>
 
           {/* Users Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <UsersIcon />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{userCount}</div>
-              <p className="text-xs text-gray-500">Registered users on the platform</p>
-            </CardContent>
-          </Card>
-        </div>
+          <div className="col-sm-6 mt-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                <CardTitle className="text-sm font-medium">
+                  Total Users
+                </CardTitle>
+                <UsersIcon />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{userCount}</div>
+                <p className="text-xs text-gray-500">
+                  Registered users on the platform
+                </p>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Chart Card */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card className="col-span-2">
-            <CardHeader>
-              <CardTitle>Menu Categories</CardTitle>
-              <CardDescription>Distribution of menu items by category</CardDescription>
-            </CardHeader>
-            <CardContent className="pl-2">
-              {isLoading ? (
-                <p>Loading data...</p>
-              ) : menuCategoryData.length > 0 ? (
-                <div className="h-80">
-                  <div className="flex h-full items-center justify-center">
-                    <MenuCategoryChart data={menuCategoryData} colors={COLORS} />
-                  </div>
-                  
-                  {/* Chart Legend */}
-                  <ChartLegend className="flex-wrap gap-2 justify-center mt-4">
-                    {menuCategoryData.map((entry, index) => (
-                      <ChartLegendItem
-                        key={entry.name}
-                        color={COLORS[index % COLORS.length]}
-                        name={entry.name}
+          {/* {Menus category} */}
+          <div className="col-sm-6 mt-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>Menu Categories</CardTitle>
+                <CardDescription>
+                  Distribution of menu items by category
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pl-2">
+                {isLoading ? (
+                  <p>Loading data...</p>
+                ) : menuCategoryData.length > 0 ? (
+                  <div className="h-80">
+                    <div className="flex h-full items-center justify-center">
+                      <MenuCategoryChart
+                        data={menuCategoryData}
+                        colors={COLORS}
                       />
-                    ))}
-                  </ChartLegend>
-                </div>
-              ) : (
-                <p>No data available.</p>
-              )}
-            </CardContent>
-          </Card>
+                    </div>
+
+                    {/* Chart Legend */}
+                    <ChartLegend className="flex-wrap gap-2 justify-center mt-4">
+                      {menuCategoryData.map((entry, index) => (
+                        <ChartLegendItem
+                          key={entry.name}
+                          color={COLORS[index % COLORS.length]}
+                          name={entry.name}
+                        />
+                      ))}
+                    </ChartLegend>
+                  </div>
+                ) : (
+                  <p>No data available.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </div>

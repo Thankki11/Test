@@ -16,7 +16,6 @@ import MyOrders from "../pages/user/MyOrders";
 import Combo from "../pages/Combo";
 // Layout
 import UserLayout from "../layouts/UserLayout";
-import Reservation from "../pages/Reservation";
 
 const routes = [
   {
@@ -80,14 +79,6 @@ const routes = [
     element: (
       <UserLayout>
         <Login />
-      </UserLayout>
-    ),
-  },
-  {
-    path: "/reservation",
-    element: (
-      <UserLayout>
-        <Reservation />
       </UserLayout>
     ),
   },

@@ -34,7 +34,13 @@ function AdminEmployees() {
     try {
       await axios.post("http://localhost:3001/api/employees", newEmployee);
       alert("Employee added successfully");
-      setNewEmployee({ name: "", email: "", phone: "", position: "", salary: "" });
+      setNewEmployee({
+        name: "",
+        email: "",
+        phone: "",
+        position: "",
+        salary: "",
+      });
       fetchEmployees();
     } catch (err) {
       if (err.response && err.response.status === 400) {
@@ -110,7 +116,9 @@ function AdminEmployees() {
         <button
           className=""
           onClick={() =>
-            new bootstrap.Modal(document.getElementById("addEmployeeModal")).show()
+            new bootstrap.Modal(
+              document.getElementById("addEmployeeModal")
+            ).show()
           }
         >
           Add Employee
@@ -130,11 +138,11 @@ function AdminEmployees() {
             <thead>
               <tr>
                 <th style={{ width: "20%" }}>Name</th>
-                <th style={{ width: "25%" }}>Email</th>
-                <th style={{ width: "15%" }}>Phone</th>
-                <th style={{ width: "20%" }}>Position</th>
+                <th style={{ width: "15%" }}>Email</th>
+                <th style={{ width: "10%" }}>Phone</th>
+                <th style={{ width: "15%" }}>Position</th>
                 <th style={{ width: "10%" }}>Salary</th>
-                <th style={{ width: "10%" }}>Actions</th>
+                <th style={{ width: "20%" }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -147,23 +155,25 @@ function AdminEmployees() {
                     <td>{employee.position}</td>
                     <td>${employee.salary}</td>
                     <td>
-                      <button
-                        className="btn-select selected me-2"
-                        onClick={() => {
-                          handleEdit(employee);
-                          new bootstrap.Modal(
-                            document.getElementById("editEmployeeModal")
-                          ).show();
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="btn-select"
-                        onClick={() => handleDelete(employee._id)}
-                      >
-                        Delete
-                      </button>
+                      <div className="d-flex gap-2">
+                        <button
+                          className="btn-select selected me-2"
+                          onClick={() => {
+                            handleEdit(employee);
+                            new bootstrap.Modal(
+                              document.getElementById("editEmployeeModal")
+                            ).show();
+                          }}
+                        >
+                          <i class="fa fa-edit"></i>
+                        </button>
+                        <button
+                          className="btn-select"
+                          onClick={() => handleDelete(employee._id)}
+                        >
+                          <i class="fa fa-trash"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -311,7 +321,10 @@ function AdminEmployees() {
                       className="form-control"
                       value={editEmployee.name}
                       onChange={(e) =>
-                        setEditEmployee({ ...editEmployee, name: e.target.value })
+                        setEditEmployee({
+                          ...editEmployee,
+                          name: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -322,7 +335,10 @@ function AdminEmployees() {
                       className="form-control"
                       value={editEmployee.email}
                       onChange={(e) =>
-                        setEditEmployee({ ...editEmployee, email: e.target.value })
+                        setEditEmployee({
+                          ...editEmployee,
+                          email: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -333,7 +349,10 @@ function AdminEmployees() {
                       className="form-control"
                       value={editEmployee.phone}
                       onChange={(e) =>
-                        setEditEmployee({ ...editEmployee, phone: e.target.value })
+                        setEditEmployee({
+                          ...editEmployee,
+                          phone: e.target.value,
+                        })
                       }
                     />
                   </div>
