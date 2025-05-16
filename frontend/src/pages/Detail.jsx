@@ -22,7 +22,6 @@ function Detail() {
   const [value, setValue] = useState("1");
   const { id } = useParams(); // Lấy id từ URL
   const [quantity, setQuantity] = useState(1); // State để lưu số lượng món ăn
-
   const [reviews, setReviews] = useState([]);
   const [userCanReview, setUserCanReview] = useState(false);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });

@@ -464,7 +464,7 @@ function AdminMenus() {
           value={searchKeyword}
           onChange={(e) => {
             setSearchKeyword(e.target.value);
-            setCurrentPage(1); //  reset về page 1 khi tìm kiếm
+            setCurrentPage(1); // ✅ reset về page 1 khi tìm kiếm
           }}
         />
         <select

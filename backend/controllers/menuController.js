@@ -202,6 +202,8 @@ exports.resetAllQuantities = async (req, res) => {
 // Lấy các món ăn được đánh giá cao nhất
 exports.getTopRatedMenus = async (req, res) => {
   try {
+    console.log('Getting top-rated menus...');
+
     // Tìm các món ăn, tính trung bình rating và sắp xếp giảm dần theo rating
     const menus = await Menu.aggregate([
       {

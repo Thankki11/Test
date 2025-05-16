@@ -31,10 +31,16 @@ exports.register = async (req, res) => {
 
     // Validate password: at least 8 characters, at least one uppercase letter
     if (password.length < 8) {
-      return res.status(400).json({ message: "Password must be at least 8 characters long" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 8 characters long" });
     }
     if (!/[A-Z]/.test(password)) {
-      return res.status(400).json({ message: "Password must contain at least one uppercase letter" });
+      return res
+        .status(400)
+        .json({
+          message: "Password must contain at least one uppercase letter",
+        });
     }
 
     // Check if passwords match
@@ -46,7 +52,8 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Set default avatar
-    const defaultAvatar = "http://localhost:3001/uploads/users/default-avatar.png";
+    const defaultAvatar =
+      "http://localhost:3001/uploads/users/default-avatar.png";
 
     // Create new user
     const newUser = new User({

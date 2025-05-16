@@ -3,8 +3,10 @@ import axios from "axios";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 // Components
+import PageHeader from "../components/PageHeader/PageHeader";
 import OverlayCard from "../components/OverlayCard/OverlayCard";
 import TitleWithSubtitle from "../components/TitleWithSubtitle/TitleWithSubtitle";
+import ImageBox from "../components/Box/ImageBox";
 import ButtonWhite from "../components/Buttons/ButtonWhite";
 import ButtonWhite2 from "../components/Buttons/ButtonWhite2";
 import CardHome from "../components/CardHome";

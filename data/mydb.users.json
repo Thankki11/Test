@@ -1,0 +1,90 @@
+[{
+  "_id": {
+    "$oid": "68270a017ada2d2255fb4d0f"
+  },
+  "username": "admin",
+  "email": "admin@gmail.com",
+  "phone": "0123456789",
+  "password": "$2b$10$FrmtEos5llRBtIRPdISw6u6H5xVjNa7y4pRJi2vTaWV8JTcv0SV3y",
+  "avatar": "http://localhost:3001/uploads/users/default-avatar.png",
+  "role": "admin",
+  "isOAuth": false,
+  "provider": null,
+  "address": "",
+  "createdAt": {
+    "$date": "2025-05-16T09:48:49.008Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68270cec7ada2d2255fb4d57"
+  },
+  "username": "hieu",
+  "email": "hieubui@gmail.com",
+  "phone": "0987654321",
+  "password": "$2b$10$5cY9QXMrxvI0larx6UHjf.U01UdOQyVpQXtDPQBNpCTjJHwY/DrV2",
+  "avatar": "http://localhost:3001/uploads/users/default-avatar.png",
+  "role": "user",
+  "isOAuth": false,
+  "provider": null,
+  "address": "",
+  "createdAt": {
+    "$date": "2025-05-16T10:01:16.014Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68270d0f7ada2d2255fb4d5b"
+  },
+  "username": "hien",
+  "email": "hiennguyen@gmail.com",
+  "phone": "0986868686",
+  "password": "$2b$10$jSrK32pG1sCy2/G4jHlB1uCnlVPxdi5zj99UjOKGb0rFHxGawFIkK",
+  "avatar": "http://localhost:3001/uploads/users/default-avatar.png",
+  "role": "user",
+  "isOAuth": false,
+  "provider": null,
+  "address": "",
+  "createdAt": {
+    "$date": "2025-05-16T10:01:51.543Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68270d227ada2d2255fb4d5f"
+  },
+  "username": "canh",
+  "email": "canhdo@gmail.com",
+  "phone": "0999999999",
+  "password": "$2b$10$WG5Ubw1SCPp11vUveCpz5eybxETTYiDLyLEupNzHop/Qh2fLNcOba",
+  "avatar": "http://localhost:3001/uploads/users/default-avatar.png",
+  "role": "user",
+  "isOAuth": false,
+  "provider": null,
+  "address": "",
+  "createdAt": {
+    "$date": "2025-05-16T10:02:10.909Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68270d427ada2d2255fb4d63"
+  },
+  "username": "thanh",
+  "email": "thanhnguyen@gmail.com",
+  "phone": "0909090909",
+  "password": "$2b$10$zTYIxP43JiaBAMeBInVGduU7mQtQgx/J2PH.Co6Uk8SFov3fOQGmW",
+  "avatar": "http://localhost:3001/uploads/users/default-avatar.png",
+  "role": "user",
+  "isOAuth": false,
+  "provider": null,
+  "address": "",
+  "createdAt": {
+    "$date": "2025-05-16T10:02:42.703Z"
+  },
+  "__v": 0
+}]

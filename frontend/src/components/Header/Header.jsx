@@ -61,6 +61,7 @@ function Header() {
         items: [],
       };
       setItems(savedCart.items);
+      console.log(">>> check items:", Array.isArray(items))
     };
 
     loadCart();
@@ -135,7 +136,7 @@ function Header() {
         {/* Body */}
         <div className="offcanvas-body flex-grow-1 overflow-auto">
           <div style={{ minHeight: "100%" }}>
-            {items.map((item) => (
+          {Array.isArray(items) && items.map((item) => (
               <CartItem
                 key={item._id}
                 item={item}

@@ -107,7 +107,7 @@ function Menus() {
   };
 
   const renderTabContent = (category) => {
-    // Lọc món ăn theo category
+    //filter các item theo thể loại và searchTerm
     const filteredItems = menus.filter((item) => {
       const matchesCategory =
         category === 0
@@ -128,7 +128,7 @@ function Menus() {
       return matchesCategory && matchesSearch;
     });
 
-    // Sắp xếp món ăn
+    //sắp xếp các item đã filter theo loại sort đã chọn
     const sortedItems = sortMenus(filteredItems);
 
     return (
@@ -225,7 +225,7 @@ function Menus() {
                 style={{ fontSize: "16px" }}
               />
               <Tab
-                label="Drinks"
+                label="Đồ uống"
                 {...a11yProps(3)}
                 style={{ fontSize: "16px" }}
               />
