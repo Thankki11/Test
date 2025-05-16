@@ -67,7 +67,9 @@ function AdminCombo() {
       const uploadRes = await axios.post("http://localhost:3001/api/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      imageUrl = uploadRes.data.fileName;
+      // Nếu backend trả về fileName, bạn cần tự ghép đường dẫn:
+      imageUrl = `/uploads/combos/${uploadRes.data.fileName}`;
+      // Nếu backend đã trả về imageUrl đầy đủ, chỉ cần: imageUrl = uploadRes.data.imageUrl;
     } catch (err) {
       alert("Failed to upload combo image");
       return;

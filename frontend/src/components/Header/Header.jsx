@@ -267,8 +267,12 @@ function Header() {
                   <li>
                     <Link to="/combos">Combos</Link>
                   </li>
+                  <li>
+                    <a href ="#footer">About Us</a>
+                  </li>
                 </ul>
               </div>
+              
               <div>
                 {isLoggedIn ? (
                   <div

@@ -113,6 +113,15 @@ function AdminLayout({ children }) {
                 Manage Vouchers
               </Link>
             </li>
+            <li style={{ marginBottom: "10px" }}>
+              <Link
+                to="/admin/combos"
+                style={{ color: "#fff", textDecoration: "none" }}
+              >
+                <i className="fas fa-layer-group" style={{ marginRight: "10px" }}></i>
+                Manage Combos
+              </Link>
+            </li>
           </ul>
 
           <div style={{ fontSize: "15px", marginBottom: "10px", opacity: 0.7 }}>

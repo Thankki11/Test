@@ -1,15 +1,15 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 // Components
 import OverlayCard from "../components/OverlayCard/OverlayCard";
 import TitleWithSubtitle from "../components/TitleWithSubtitle/TitleWithSubtitle";
 import ButtonWhite from "../components/Buttons/ButtonWhite";
-import ContactBox from "../components/Box/ContactBox";
-import ReservationForm from "../components/ReservationForm";
 import ButtonWhite2 from "../components/Buttons/ButtonWhite2";
+import CardHome from "../components/CardHome";
 
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-
-// media
+// Media
 import logo from "../assets/images/logo-white.png";
 import video from "../assets/videos/introduction.mp4";
 import food1 from "../assets/images/homefood1.jpg";
@@ -22,28 +22,41 @@ import combo3 from "../assets/images/combo3.jpg";
 import combomore from "../assets/images/combomore.jpg";
 import imgBeginnerClass from "../assets/images/beginner-class.jpg";
 import imgAdvanceClass from "../assets/images/advance-class.jpg";
-import ReservationBackground from "../assets/images/reservation-background.jpg";
-import CardHome from "../components/CardHome";
 
 function Home() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [topRatedMenus, setTopRatedMenus] = useState("");
 
   useEffect(() => {
+    // Fetch top-rated menus
+    const fetchTopRatedMenus = async () => {
+        axios
+        .get("http://localhost:3001/api/menus/top-rated")
+        .then((response) => {
+          setTopRatedMenus(response.data);
+      }) .catch ((err) => {
+        console.error("Error fetching top-rated menus:", err);
+      })
+    };
+
+    fetchTopRatedMenus();
+
+    // Handle payment status
     const queryParams = new URLSearchParams(window.location.search);
     const paymentStatus = queryParams.get("paymentStatus");
 
     if (paymentStatus === "success") {
       alert("Thanh toán thành công! Đơn hàng của bạn đã được cập nhật.");
-      localStorage.removeItem("cart"); // Xóa giỏ hàng trong localStorage
+      localStorage.removeItem("cart");
       window.dispatchEvent(new Event("cartUpdated"));
-      navigate("/"); // Cập nhật trạng thái giỏ hàng
+      navigate("/");
     } else if (paymentStatus === "failed") {
       alert("Thanh toán thất bại. Vui lòng thử lại.");
     } else if (paymentStatus === "checksum_failed") {
       alert("Lỗi xác thực chữ ký. Vui lòng liên hệ hỗ trợ.");
     }
-    window.scrollTo(0, 0); // Cuộn lên đầu khi trang được mount
+    window.scrollTo(0, 0);
   }, [location, navigate]);
 
   return (
@@ -57,7 +70,6 @@ function Home() {
           overflow: "hidden",
         }}
       >
-        {/* Video background */}
         <video
           autoPlay
           loop
@@ -72,8 +84,6 @@ function Home() {
           <source src={video} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
-
-        {/* Lớp mờ */}
         <div
           style={{
             position: "absolute",
@@ -84,8 +94,6 @@ function Home() {
             backgroundColor: "rgba(0, 0, 0, 0.5)",
           }}
         />
-
-        {/* Nội dung */}
         <div
           style={{
             position: "relative",
@@ -101,14 +109,10 @@ function Home() {
           <div className="container">
             <div className="row">
               <div className="col-8">
-                <img
-                  src={logo}
-                  style={{ width: "auto", height: "100px" }}
-                ></img>
+                <img src={logo} style={{ width: "auto", height: "100px" }} />
                 <h6>CFK Fast food</h6>
                 <h1 style={{ fontSize: "80px" }}>Best fast food in galaxy</h1>
-                <p style={{ color: "white" }}>You can find your food here !</p>
-
+                <p style={{ color: "white" }}>You can find your food here!</p>
                 <ButtonWhite2
                   buttontext={"Discover our menu"}
                   fontSize={"50px"}
@@ -121,12 +125,12 @@ function Home() {
           </div>
         </div>
       </div>
-      {/* Page Header End  */}
+      {/* Page Header End */}
 
-      {/* ***** Our Menus Start ***** */}
+      {/* Our Menus Start */}
       <div className="section" style={{ backgroundColor: "#fffafa" }}>
         <div className="row">
-          <div className="col-sm-9 ">
+          <div className="col-sm-9">
             <TitleWithSubtitle
               subTitle={"The culinary minds behind every unforgettable dish"}
               title={"DISCOVER OUR DELICIOUS FOODS"}
@@ -141,9 +145,7 @@ function Home() {
             <Link to="/menus?tab=burger">
               <OverlayCard
                 title={"Burgers"}
-                description={[
-                  "Juicy, mouthwatering burgers with unique flavors.",
-                ]}
+                description={["Juicy, mouthwatering burgers with unique flavors."]}
                 imageSrc={food1}
                 height={"350px"}
               />
@@ -163,9 +165,7 @@ function Home() {
             <Link to="/menus?tab=fried-chicken">
               <OverlayCard
                 title={"Fried Chickens"}
-                description={[
-                  "Crispy fried chicken with bold, savory seasoning.",
-                ]}
+                description={["Crispy fried chicken with bold, savory seasoning."]}
                 imageSrc={food3}
                 height={"350px"}
               />
@@ -183,80 +183,55 @@ function Home() {
           </div>
         </div>
       </div>
-      {/* ***** Our Menus End ***** */}
+      {/* Our Menus End */}
 
-      {/* ***** Our Best Seller Start ***** */}
+      {/* Our Best Rated Start */}
       <div className="section" style={{ backgroundColor: "#b2281f" }}>
         <div className="row">
           <div className="col-sm-2"></div>
-          <div className="col-sm-8 ">
+          <div className="col-sm-8">
             <h6 className="text-center text-white">
-              The culinary minds behind every unforgettable dish
+              Our highest-rated dishes loved by our customers
             </h6>
-            <h2 className="text-center text-white">Our best seller</h2>
+            <h2 className="text-center text-white">Our Best Rated</h2>
           </div>
           <div className="col-sm-2"></div>
-          <div className="col-sm-6 mt-3">
-            <CardHome
-              title={"Burgers"}
-              img={food1}
-              description={
-                " Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae eligendi eos deserunt sit pariatur, fugit laborum, voluptas fugiat perferendis ut modi, labore cum! Numquam quaerat, eligendi autem quos omnis libero?"
-              }
-              price={"$20"}
-            ></CardHome>
-          </div>
-          <div className="col-sm-6 mt-3">
-            <CardHome
-              title={"Burgers"}
-              img={food1}
-              description={
-                " Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae eligendi eos deserunt sit pariatur, fugit laborum, voluptas fugiat perferendis ut modi, labore cum! Numquam quaerat, eligendi autem quos omnis libero?"
-              }
-              price={"$20"}
-            ></CardHome>
-          </div>
-          <div className="col-sm-6 mt-3">
-            <CardHome
-              title={"Burgers"}
-              img={food1}
-              description={
-                " Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae eligendi eos deserunt sit pariatur, fugit laborum, voluptas fugiat perferendis ut modi, labore cum! Numquam quaerat, eligendi autem quos omnis libero?"
-              }
-              price={"$20"}
-            ></CardHome>
-          </div>
-          <div className="col-sm-6 mt-3">
-            <CardHome
-              title={"Burgers"}
-              img={food1}
-              description={
-                " Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae eligendi eos deserunt sit pariatur, fugit laborum, voluptas fugiat perferendis ut modi, labore cum! Numquam quaerat, eligendi autem quos omnis libero?"
-              }
-              price={"$20"}
-            ></CardHome>
-          </div>
+          {topRatedMenus.length > 0 ? (
+            topRatedMenus.map((menu) => (
+              <div className="col-sm-6 mt-3" key={menu._id}>
+                <CardHome
+                  title={menu.name}
+                  img={`http://localhost:3001${menu.imageUrl}`}
+                  description={menu.description}
+                  price={`$${Number(menu.price).toFixed(2)}`}
+                />
+              </div>
+            ))
+          ) : (
+            <div className="col-12 text-center text-white">
+              <p>No top-rated menus available at the moment.</p>
+            </div>
+          )}
         </div>
       </div>
-      {/* ***** Our Best Seller End ***** */}
+      {/* Our Best Rated End */}
 
-      {/* ***** Promotion Start ***** */}
+      {/* Promotion Start */}
       <div className="section">
         <div className="row">
           <div className="col-sm-7">
             <p>
-              Indulge in our carefully crafted combos, offering the perfect mix
-              of your favorite dishes at an unbeatable price. Whether you're
-              craving a burger and fries, a pizza with refreshing drinks, or a
-              hearty fried chicken platter, we've got the ideal combo to satisfy
-              your hunger. Enjoy great value without compromising on taste!
+              Indulge in our carefully crafted combos, offering the perfect mix of
+              your favorite dishes at an unbeatable price. Whether you're craving
+              a burger and fries, a pizza with refreshing drinks, or a hearty
+              fried chicken platter, we've got the ideal combo to satisfy your
+              hunger. Enjoy great value without compromising on taste!
             </p>
           </div>
           <div className="col-sm-5 text-end">
             <h6>Amazing Combo Offers Just for You</h6>
             <h2>Combos</h2>
           </div>
-
           <div className="col-sm-5">
             <div>
               <Link to="register-class">
@@ -291,7 +266,7 @@ function Home() {
               />
             </Link>
           </div>
-          <div className="col-sm 2">
+          <div className="col-sm-2">
             <Link to="/combos">
               <OverlayCard
                 imageSrc={combomore}
@@ -303,9 +278,9 @@ function Home() {
           </div>
         </div>
       </div>
-      {/* ***** Promotion End ***** */}
+      {/* Promotion End */}
 
-      {/* ***** Join us Start ***** */}
+      {/* Join us Start */}
       <div className="section">
         <div className="row">
           <div className="col-sm-5">
@@ -348,8 +323,9 @@ function Home() {
           </div>
         </div>
       </div>
-      {/* ***** Join us End ***** */}
+      {/* Join us End */}
     </div>
   );
 }
+
 export default Home;

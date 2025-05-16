@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const defaultQuestions = [
   { question: "giờ mở cửa", answer: "Nhà hàng mở cửa từ 8h đến 22h mỗi ngày." },
@@ -16,6 +17,9 @@ const defaultQuestions = [
 ];
 
 function ChatBot() {
+  const location = useLocation();
+
+  // Luôn gọi các hook ở đầu component
   const [messages, setMessages] = useState([
     { from: "bot", text: "Xin chào! Tôi có thể giúp gì cho bạn?" },
   ]);
@@ -23,7 +27,7 @@ function ChatBot() {
   const [menus, setMenus] = useState([]);
   const [orders, setOrders] = useState([]);
   const [cart, setCart] = useState([]);
-  const [open, setOpen] = useState(false); // trạng thái mở/đóng chat
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     axios
@@ -47,6 +51,11 @@ function ChatBot() {
       .then((res) => setCart(res.data.items || []))
       .catch(() => setCart([]));
   }, []);
+
+  // Ẩn chatbot nếu đang ở trang admin
+  if (location.pathname.startsWith("/admin")) {
+    return null;
+  }
 
   const handleSend = () => {
     if (!input.trim()) return;

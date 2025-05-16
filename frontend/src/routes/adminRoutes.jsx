@@ -7,7 +7,7 @@ import AdminLogin from "../pages/admin/AdminLogin";
 import AdminUsers from "../pages/admin/AdminUsers";
 import AdminEmployees from "../pages/admin/AdminEmployees";
 import AdminVouchers from "../pages/admin/AdminVouchers.jsx";
-import AdminCombo from "../pages/admin/AdminCombo.jsx";
+import AdminCombo from "../pages/admin/AdminCombo";
 import { Navigate } from "react-router-dom";
 
 const adminRoutes = [

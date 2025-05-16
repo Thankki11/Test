@@ -9,11 +9,9 @@ const Footer = () => {
           <div className="col-6 col-md-6">
             <h5 className="mb-4">About Us</h5>
             <p className="mb-4" style={{ paddingRight: "150px" }}>
-              We are dedicated to delivering innovative, reliable, and scalable
-              digital solutions that empower businesses to grow, adapt, and
-              thrive in an ever-evolving digital landscape. Our mission is to
-              support your success by combining cutting-edge technology with
-              deep industry insight and a commitment to excellence.
+              From CFK FastFood With Passion, we are a devoted team of food enthusiasts 
+              committed to delivering top-notch fast food experiences, using fresh ingredients and 
+              creative recipes to craft delicious, high-quality meals that delight your taste buds and create unforgettable moments.
             </p>
           </div>
 
@@ -26,19 +24,15 @@ const Footer = () => {
                   Home
                 </a>
               </li>
-              <li className="mb-2">
-                <a href="/chefs" className={styles.footerLink}>
-                  Discover chefs
-                </a>
-              </li>
+              
               <li className="mb-2">
                 <a href="/menus" className={styles.footerLink}>
                   Discover menus
                 </a>
               </li>
               <li className="mb-2">
-                <a href="/reservation" className={styles.footerLink}>
-                  Book table
+                <a href="/combos  " className={styles.footerLink}>
+                  ComBo
                 </a>
               </li>
             </ul>
@@ -72,12 +66,12 @@ const Footer = () => {
             <ul className="list-unstyled">
               <li className="mb-3">
                 <i className="fas fa-map-marker-alt me-2"></i>
-                123 Business Street, New York, NY 10001
+                Tran Phu , Ha Dong , Ha Noi , Viet Nam 
               </li>
               <li className="mb-3">
                 <i className="fas fa-phone me-2"></i>
                 <a href="tel:+1234567890" className={styles.footerLink}>
-                  +1 (234) 567-890
+                  0976412697
                 </a>
               </li>
               <li className="mb-3">
@@ -86,7 +80,7 @@ const Footer = () => {
                   href="mailto:contact@example.com"
                   className={styles.footerLink}
                 >
-                  namv2704@gmail.com
+                  CFKfastfood@gmail.com
                 </a>
               </li>
             </ul>
@@ -99,7 +93,7 @@ const Footer = () => {
             <hr className="mb-4" />
             <div className="text-center">
               <p className="mb-0">
-                &copy; 2025 A3Building. All rights reserved.
+                &copy; 2025 CFK FastFood. All rights reserved.
               </p>
             </div>
           </div>
