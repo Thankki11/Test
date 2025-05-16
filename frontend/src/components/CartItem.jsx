@@ -1,6 +1,13 @@
 import React from "react";
 
-const CartItem = ({ item, onIncrease, onDecrease, onDelete, extraElement }) => {
+const CartItem = ({
+  item,
+  onIncrease,
+  onDecrease,
+  onDelete,
+  extraElement,
+  height,
+}) => {
   return (
     <div className="card mb-3">
       <div className="card-body">
@@ -8,7 +15,12 @@ const CartItem = ({ item, onIncrease, onDecrease, onDelete, extraElement }) => {
           <img
             src={`http://localhost:3001${item.imageUrl}`}
             alt={item.name}
-            style={{ width: "100%", border: "1px solid #ccc" }}
+            style={{
+              width: "100%",
+              border: "1px solid #ccc",
+              height: height || "250px",
+              objectFit: "cover",
+            }}
           />
         </div>
         <h5
