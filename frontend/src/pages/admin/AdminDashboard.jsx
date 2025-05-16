@@ -1,325 +1,271 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Card, Row, Col, Statistic, Spin, Table, Input, Button } from "antd";
+import { Line } from "react-chartjs-2";
 import axios from "axios";
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import moment from "moment";
 
-// Utility function for class names
-function cn(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-// Card Components
-const Card = ({ className, ...props }) => (
-  <div
-    className={cn(
-      "rounded-lg border bg-white text-gray-900 shadow-sm",
-      className
-    )}
-    {...props}
-  />
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
 );
 
-const CardHeader = ({ className, ...props }) => (
-  <div className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
-);
+const AdminDashboard = () => {
+  const [range, setRange] = useState([moment().startOf("month"), moment()]);
+  const [startDate, setStartDate] = useState(
+    moment().startOf("month").format("YYYY-MM-DD")
+  );
+  const [endDate, setEndDate] = useState(moment().format("YYYY-MM-DD"));
 
-const CardTitle = ({ className, ...props }) => (
-  <h3
-    className={cn(
-      "text-2xl font-semibold leading-none tracking-tight",
-      className
-    )}
-    {...props}
-  />
-);
+  const [metrics, setMetrics] = useState({
+    orders: 0,
+    revenue: 0,
+    registrations: 0,
+    buyers: 0,
+  });
+  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
+  const [topProducts, setTopProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-const CardDescription = ({ className, ...props }) => (
-  <p className={cn("text-sm text-gray-500", className)} {...props} />
-);
-
-const CardContent = ({ className, ...props }) => (
-  <div className={cn("p-6 pt-0", className)} {...props} />
-);
-
-// Icons
-const ActivityIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-4 h-4 text-gray-500"
-  >
-    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-  </svg>
-);
-
-const ShoppingBagIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-4 h-4 text-gray-500"
-  >
-    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-    <line x1="3" y1="6" x2="21" y2="6"></line>
-    <path d="M16 10a4 4 0 0 1-8 0"></path>
-  </svg>
-);
-
-const UsersIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className="w-4 h-4 text-gray-500"
-  >
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-    <circle cx="9" cy="7" r="4"></circle>
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-  </svg>
-);
-
-// Chart Legend Components
-const ChartLegend = ({ className, children, ...props }) => (
-  <div
-    className={cn(
-      "chart-legend flex items-center justify-center flex-wrap gap-4",
-      className
-    )}
-    {...props}
-  >
-    {children}
-  </div>
-);
-
-// Chart Legend Item Component
-const ChartLegendItem = ({ color, name }) => (
-  <div className="flex items-center gap-2">
-    <div className="h-3 w-3 rounded-sm" style={{ backgroundColor: color }} />
-    <span className="text-sm font-medium">{name}</span>
-  </div>
-);
-
-// Menu Category Chart Component
-const MenuCategoryChart = ({ data, colors }) => (
-  <ResponsiveContainer width="100%" height={300}>
-    <PieChart>
-      <Pie
-        data={data}
-        cx="50%"
-        cy="50%"
-        labelLine={true}
-        outerRadius={120}
-        fill="#8884d8"
-        dataKey="value"
-        nameKey="name"
-        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-      >
-        {data.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-        ))}
-      </Pie>
-      <Tooltip
-        formatter={(value, name) => [`${value} items`, name]}
-        contentStyle={{
-          backgroundColor: "rgba(255, 255, 255, 0.9)",
-          borderRadius: "6px",
-          border: "1px solid #e2e8f0",
-          padding: "8px",
-        }}
-      />
-    </PieChart>
-  </ResponsiveContainer>
-);
-
-function AdminDashboard() {
-  const [menuCount, setMenuCount] = useState(0);
-  const [orderCount, setOrderCount] = useState(0);
-  const [userCount, setUserCount] = useState(0);
-  const [menuCategoryData, setMenuCategoryData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
+  const [allOrders, setAllOrders] = useState([]);
+  const [allSeries, setAllSeries] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
+  const [buyers, setBuyers] = useState(0);
 
   useEffect(() => {
-    fetchStatistics();
+    fetchAll();
   }, []);
 
-  const fetchStatistics = async () => {
+  useEffect(() => {
+    if (
+      allOrders.length === 0 ||
+      !range[0] ||
+      !range[1] ||
+      !moment.isMoment(range[0]) ||
+      !moment.isMoment(range[1])
+    )
+      return;
+
+    filterDataByRange();
+  }, [range, allOrders, allSeries, allProducts, registrations, buyers]);
+
+  const fetchAll = async () => {
+    setLoading(true);
+
     try {
-      setIsLoading(true);
       const token = localStorage.getItem("adminToken");
-
-      // Fetch menu count
-      const menuResponse = await axios.get("http://localhost:3001/api/menus", {
+      const config = {
         headers: { Authorization: `Bearer ${token}` },
-      });
-      setMenuCount(menuResponse.data.length);
+      };
 
-      // Fetch order count
-      const orderResponse = await axios.get(
+      const { data: ordersData } = await axios.get(
         "http://localhost:3001/api/orders/getOrders",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        config
       );
-      setOrderCount(orderResponse.data.length);
-
-      // Fetch user count
-      const userResponse = await axios.get(
+      setAllOrders(ordersData);
+      const { data: register } = await axios.get(
         "http://localhost:3001/api/admin/users",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        config
       );
-      setUserCount(userResponse.data.length);
-
-      // Fetch menu category data
-      const categoryData = menuResponse.data.reduce((acc, menu) => {
-        const category = menu.category;
-        if (acc[category]) {
-          acc[category]++;
-        } else {
-          acc[category] = 1;
-        }
-        return acc;
-      }, {});
-
-      const categoryArray = Object.keys(categoryData).map((category) => ({
-        name: category,
-        value: categoryData[category],
-      }));
-      setMenuCategoryData(categoryArray);
-    } catch (err) {
-      console.error("Error fetching statistics:", err);
+      setRegistrations(register);
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu:", error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
+  const filterDataByRange = () => {
+    const filteredOrders = allOrders.filter((order) => {
+      const orderDate = moment(order.date);
+      return orderDate.isBetween(range[0], range[1], "day", "[]");
+    });
+    const filteredRegister = registrations.filter((re) => {
+      const orderDate = moment(re.date);
+      return orderDate.isBetween(range[0], range[1], "day", "[]");
+    });
+
+    const totalOrders = filteredOrders.length;
+    const totalRevenue = filteredOrders.reduce(
+      (sum, order) => sum + order.totalPrice,
+      0
+    );
+    const uniqueBuyers = new Set(filteredOrders.map((order) => order.userId));
+    const totalBuyer = uniqueBuyers.size;
+    const totalRegistration = filteredRegister.length;
+
+    setMetrics({
+      orders: totalOrders,
+      revenue: totalRevenue,
+      registrations: totalRegistration,
+      buyers: totalBuyer,
+    });
+
+    const filteredSeries = allSeries.filter((item) => {
+      const date = moment(item.date);
+      return date.isBetween(range[0], range[1], "day", "[]");
+    });
+
+    setChartData({
+      labels: filteredSeries.map((item) =>
+        moment(item.date).format("YYYY-MM-DD")
+      ),
+      datasets: [
+        {
+          label: "Revenue",
+          data: filteredSeries.map(
+            (item) => item.amount || item.totalPrice || 0
+          ),
+          borderColor: "#1890ff",
+          backgroundColor: "rgba(24,144,255,0.2)",
+        },
+      ],
+    });
+
+    const filteredProducts = allOrders.filter((order) => {
+      const orderDate = moment(order.date);
+      return orderDate.isBetween(range[0], range[1], "day", "[]");
+    });
+
+    const productSalesMap = {};
+    filteredProducts.forEach((order) => {
+      order.items.forEach((item) => {
+        if (productSalesMap[item.name]) {
+          productSalesMap[item.name] += item.quantity;
+        } else {
+          productSalesMap[item.name] = item.quantity;
+        }
+      });
+    });
+
+    const topProducts = Object.entries(productSalesMap).map(([name, sold]) => ({
+      name,
+      sold,
+    }));
+
+    topProducts.sort((a, b) => b.sold - a.sold);
+
+    setTopProducts(topProducts);
+  };
+
+  const columns = [
+    {
+      title: "Product Name",
+      dataIndex: "name",
+      key: "name",
+    },
+    {
+      title: "Units Sold",
+      dataIndex: "sold",
+      key: "sold",
+      sorter: (a, b) => a.sold - b.sold,
+      defaultSortOrder: "descend",
+    },
+  ];
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-        </div>
+    <Spin spinning={loading}>
+      <Card title="Statistics Report">
+        <Row gutter={16}>
+          <Col span={6}>
+            <Statistic title="Total Orders" value={metrics.orders} />
+          </Col>
+          <Col span={6}>
+            <Statistic
+              title="Revenue ($)"
+              value={metrics.revenue}
+              precision={2}
+              formatter={(value) =>
+                Number.isInteger(value) ? value.toString() : value.toFixed(2)
+              }
+            />
+          </Col>
+          <Col span={6}>
+            <Statistic
+              title="New Registrations"
+              value={metrics.registrations}
+            />
+          </Col>
+          <Col span={6}>
+            <Statistic title="Purchasing Accounts" value={metrics.buyers} />
+          </Col>
+        </Row>
 
-        {/* Stats Cards */}
-        <div className="row">
-          {/* Menu Card */}
-          <div className="col-sm-6 mt-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">
-                  Total Menus
-                </CardTitle>
-                <ActivityIcon />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{menuCount}</div>
-                <p className="text-xs text-gray-500">
-                  Available menu items in the system
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+        <Row style={{ marginTop: 24 }} gutter={8}>
+          <Col>
+            <Input
+              placeholder="Từ ngày (YYYY-MM-DD)"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+            />
+          </Col>
+          <Col>
+            <Input
+              placeholder="Đến ngày (YYYY-MM-DD)"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+            />
+          </Col>
+          <Col>
+            <Button
+              type="primary"
+              onClick={() => {
+                const start = moment(startDate, "YYYY-MM-DD", true);
+                const end = moment(endDate, "YYYY-MM-DD", true);
+                if (start.isValid() && end.isValid()) {
+                  setRange([start, end]);
+                } else {
+                  alert("Vui lòng nhập đúng định dạng YYYY-MM-DD");
+                }
+              }}
+            >
+              Filter
+            </Button>
+          </Col>
+        </Row>
 
-          {/* Orders Card */}
-          <div className="col-sm-6 mt-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">
-                  Total Orders
-                </CardTitle>
-                <ShoppingBagIcon />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{orderCount}</div>
-                <p className="text-xs text-gray-500">
-                  Orders placed by customers
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+        <Card style={{ marginTop: 24 }} title="Revenue Over Time">
+          <Line
+            data={chartData}
+            options={{
+              scales: {
+                x: { title: { display: true, text: "Date" } },
+                y: { title: { display: true, text: "Revenue ($)" } },
+              },
+              responsive: true,
+              maintainAspectRatio: false,
+            }}
+            height={300}
+          />
+        </Card>
 
-          {/* Users Card */}
-          <div className="col-sm-6 mt-3">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                <CardTitle className="text-sm font-medium">
-                  Total Users
-                </CardTitle>
-                <UsersIcon />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{userCount}</div>
-                <p className="text-xs text-gray-500">
-                  Registered users on the platform
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* {Menus category} */}
-          <div className="col-sm-6 mt-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Menu Categories</CardTitle>
-                <CardDescription>
-                  Distribution of menu items by category
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pl-2">
-                {isLoading ? (
-                  <p>Loading data...</p>
-                ) : menuCategoryData.length > 0 ? (
-                  <div className="h-80">
-                    <div className="flex h-full items-center justify-center">
-                      <MenuCategoryChart
-                        data={menuCategoryData}
-                        colors={COLORS}
-                      />
-                    </div>
-
-                    {/* Chart Legend */}
-                    <ChartLegend className="flex-wrap gap-2 justify-center mt-4">
-                      {menuCategoryData.map((entry, index) => (
-                        <ChartLegendItem
-                          key={entry.name}
-                          color={COLORS[index % COLORS.length]}
-                          name={entry.name}
-                        />
-                      ))}
-                    </ChartLegend>
-                  </div>
-                ) : (
-                  <p>No data available.</p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
+        <Card style={{ marginTop: 24 }} title="Top Best Selling Products">
+          <Table
+            columns={columns}
+            dataSource={topProducts}
+            rowKey={(record) => record.id || record.name}
+            pagination={{ pageSize: 5 }}
+          />
+        </Card>
+      </Card>
+    </Spin>
   );
-}
+};
 
 export default AdminDashboard;
