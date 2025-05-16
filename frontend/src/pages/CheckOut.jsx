@@ -213,7 +213,7 @@ function CheckOut() {
     const isApplicable = isVoucherApplicable(foundVoucher);
 
     if (!isApplicable) {
-      alert("Voucher is not applicable. Please check the conditions.");
+      alert("Voucher is not eligible. Please check the conditions.");
       return;
     }
 
@@ -465,7 +465,7 @@ function CheckOut() {
                               className={`btn-voucher ${
                                 isSelected ? "" : "selected"
                               }`}
-                              disabled={!canApply}
+                              disabled={!canApply || !voucher.isActive} // Disable button if voucher is not active
                             >
                               {isSelected ? "Selected" : "Select"}
                             </button>
@@ -474,7 +474,9 @@ function CheckOut() {
                               className="text-center"
                               style={{ color: "red", fontWeight: "bold" }}
                             >
-                              Not applicable
+                              {voucher.isActive
+                                ? "Not eligible"
+                                : "Voucher is inactive"}
                             </span>
                           )}
                         </td>
