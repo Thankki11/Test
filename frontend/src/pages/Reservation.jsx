@@ -2,7 +2,7 @@ import ReservationForm from "../components/ReservationForm";
 import ReservationBackground from "../assets/images/reservation-background.jpg";
 import ContactBox from "../components/Box/ContactBox";
 import ChatBot from "../components/ChatBot/ChatBot";
-import logo from "../assets/images/logo.png";
+import logo from "../assets/images/logo-white.png";
 
 function Reservation() {
   return (
