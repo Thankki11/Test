@@ -61,7 +61,7 @@ function AdminCombo() {
       !comboImage ||
       selectedItems.length === 0
     ) {
-      alert("Vui lòng điền đầy đủ thông tin và chọn ít nhất một món");
+      alert("Please fill in all fields and select at least one item.");
       return;
     }
 
@@ -89,7 +89,7 @@ function AdminCombo() {
       );
 
       if (response.data.success) {
-        alert("Tạo combo thành công!");
+        alert("Create combo successfully!");
         // Reset form
         setComboName("");
         setComboDescription("");

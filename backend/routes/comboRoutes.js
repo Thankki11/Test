@@ -19,5 +19,9 @@ const upload = multer({
 
 router.post("/", upload.single("image"), comboController.createCombo);
 router.get("/", comboController.getCombos);
+router.get("/:id", comboController.getComboByID);
+
+// Route lấy đánh giá sản phẩm
+router.get("/:id/reviews", comboController.getComboReviews);
 
 module.exports = router;

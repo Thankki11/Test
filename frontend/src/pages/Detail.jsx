@@ -479,7 +479,11 @@ const sendProductToCart = (menu, quantity, isNotify = true) => {
   const cartId = "67fb8e201f70bf74520565e7"; // Giỏ hàng mặc định hoặc lấy từ localStorage
 
   // Lấy giỏ hàng hiện tại từ localStorage hoặc khởi tạo giỏ hàng mới nếu không tồn tại
-  let cart = JSON.parse(localStorage.getItem("cart")) || { cartId, items: [] };
+  let cart = JSON.parse(localStorage.getItem("cart")) || {
+    cartId,
+    items: [],
+    combos: [],
+  };
 
   // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
   const existingItemIndex = cart.items.findIndex(

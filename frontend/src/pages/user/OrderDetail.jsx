@@ -24,15 +24,32 @@ function OrderDetail() {
         const fetchedOrder = response.data;
         setOrder(fetchedOrder);
 
-        // Lấy chi tiết từng menu item
         const itemDetailsPromises = fetchedOrder.items.map(async (item) => {
-          const res = await axios.get(
-            `http://localhost:3001/api/menus/${item.menuItemId}`
-          );
-          return {
-            ...item,
-            menuItem: res.data, // thêm thông tin chi tiết món ăn vào từng item
-          };
+          try {
+            // Thử lấy menu trước
+            try {
+              const itemRes = await axios.get(
+                `http://localhost:3001/api/menus/${item.menuItemId}`
+              );
+              return { ...item, menuItem: itemRes.data };
+            } catch (menuError) {
+              // Nếu không phải menu, thử lấy combo
+              try {
+                const comboRes = await axios.get(
+                  `http://localhost:3001/api/combos/${item.menuItemId}`
+                );
+                return { ...item, comboDetails: comboRes.data };
+              } catch (comboError) {
+                console.error(
+                  `Item ${item.menuItemId} not found as menu or combo`
+                );
+                return item;
+              }
+            }
+          } catch (error) {
+            console.error(`Error fetching item ${item.menuItemId}:`, error);
+            return item;
+          }
         });
 
         const detailedItems = await Promise.all(itemDetailsPromises);
@@ -158,24 +175,30 @@ function OrderDetail() {
                   <div className="card h-100">
                     <img
                       src={
-                        item.menuItem.imageUrl
+                        // Kiểm tra xem item.menuItem và item.menuItem.imageUrl có tồn tại không
+                        item.menuItem && item.menuItem.imageUrl
                           ? `http://localhost:3001${
                               item.menuItem.imageUrl.startsWith("/uploads")
                                 ? item.menuItem.imageUrl
                                 : "/uploads/" + item.menuItem.imageUrl
                             }`
-                          : "https://via.placeholder.com/300x300?text=No+Image"
+                          : "https://via.placeholder.com/300x300?text=No+Image" // Ảnh mặc định nếu không có imageUrl
                       }
                       className="card-img-top"
-                      alt={item.menuItem.name}
+                      alt={item.menuItem ? item.menuItem.name : "Menu Item"} // Kiểm tra item.menuItem trước khi sử dụng
                       style={{ height: "200px", objectFit: "cover" }}
                     />
 
                     <div className="card-body">
                       <h5 className="card-title" style={{ fontSize: "30px" }}>
-                        {item.menuItem.name}
+                        {item.menuItem ? item.menuItem.name : "Menu Item"}{" "}
+                        {/* Kiểm tra menuItem trước khi truy cập */}
                       </h5>
-                      <p className="card-text">{item.menuItem.description}</p>
+                      <p className="card-text">
+                        {item.menuItem
+                          ? item.menuItem.description
+                          : "No description available"}
+                      </p>
                       <p className="card-text">
                         <strong>Quantity:</strong> {item.quantity}
                       </p>

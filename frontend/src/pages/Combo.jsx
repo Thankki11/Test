@@ -4,6 +4,7 @@ import img1 from "../assets/images/menus/menu-slider-1.jpg";
 
 import OverlayCard from "../components/OverlayCard/OverlayCard";
 import PageHeader from "../components/PageHeader/PageHeader";
+import { Link } from "react-router-dom";
 
 function Combo() {
   const [combos, setCombos] = useState([]);
@@ -34,21 +35,18 @@ function Combo() {
             </div>
             {combos.map((combo) => (
               <div className="col-6 mt-3" key={combo._id}>
-                <OverlayCard
-                  imageSrc={`http://localhost:3001${
-                    combo.imageUrl.startsWith("/uploads")
-                      ? combo.imageUrl
-                      : "/uploads/" + combo.imageUrl
-                  }`}
-                  height={"245px"}
-                  title={combo.name}
-                  description={[
-                    combo.description,
-                    ...combo.items.map(
-                      (item) => `${item.name} x${item.quantity}`
-                    ),
-                  ]}
-                />
+                <Link to={`/combo-detail/${combo._id}`}>
+                  <OverlayCard
+                    imageSrc={`http://localhost:3001${
+                      combo.imageUrl.startsWith("/uploads")
+                        ? combo.imageUrl
+                        : "/uploads/" + combo.imageUrl
+                    }`}
+                    height={"245px"}
+                    title={combo.name}
+                    description={[combo.description]}
+                  />
+                </Link>
               </div>
             ))}
           </div>

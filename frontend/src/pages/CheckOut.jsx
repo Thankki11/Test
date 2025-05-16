@@ -12,6 +12,7 @@ import { Modal } from "bootstrap";
 function CheckOut() {
   const navigate = useNavigate();
   const [items, setItems] = useState([]); // Mỗi sản phẩm sẽ có trường `discount`
+  const [combos, setCombos] = useState([]); // Danh sách combo
   const [vouchers, setVouchers] = useState([]); // Danh sách voucher
   const [availableVouchers, setAvailableVouchers] = useState([]); // Danh sách voucher có sẵn
   const [appliedVoucher, setAppliedVoucher] = useState(null); // Voucher đã áp dụng
@@ -47,17 +48,22 @@ function CheckOut() {
     fetchVouchers();
   }, []);
 
-  const selectedData = items
-    .filter((item) => selectedItems.includes(item._id))
-    .map((item) => ({
-      ...item,
-      // Tính subtotal cho từng item (chỉ áp dụng discount của item nếu có)
+  const selectedData = [
+    ...items,
+    ...combos, // Kết hợp cả items và combos
+  ]
+    .filter((itemOrCombo) => selectedItems.includes(itemOrCombo._id)) // Lọc các item/combo được chọn
+    .map((itemOrCombo) => ({
+      ...itemOrCombo,
+      // Tính subtotal cho từng item/combo (tính giảm giá nếu có)
       discounted: appliedVoucher
         ? appliedVoucher.type === "PERCENT"
-          ? item.price * item.quantity * (appliedVoucher.value / 100) // Giảm giá theo phần trăm cho từng item
-          : 0 // Giảm giá cố định cho từng item, đảm bảo không âm
-        : item.price * item.quantity, // Nếu không có voucher, giữ nguyên giá
-      total: item.price * item.quantity,
+          ? itemOrCombo.price *
+            itemOrCombo.quantity *
+            (appliedVoucher.value / 100) // Giảm giá phần trăm cho cả item và combo
+          : 0 // Giảm giá cố định cho item/combo (ở đây giả sử là 0)
+        : itemOrCombo.price * itemOrCombo.quantity, // Nếu không có voucher, giữ nguyên giá
+      total: itemOrCombo.price * itemOrCombo.quantity, // Tổng tiền cho từng item hoặc combo
     }));
 
   //Kiểm tra voucher có hợp lệ hay không
@@ -238,22 +244,28 @@ function CheckOut() {
     if (!confirm) return;
 
     try {
+      // Kết hợp items và combos vào cùng một mảng
+      const allItems = [
+        ...items.filter((item) => selectedItems.includes(item._id)),
+        ...combos.filter((combo) => selectedItems.includes(combo._id)),
+      ];
+
       const order = {
         ...data,
-        items: items
-          .filter((item) => selectedItems.includes(item._id))
-          .map((item) => ({
-            menuItemId: item._id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price,
-          })),
+        items: allItems.map((itemOrCombo) => ({
+          menuItemId: itemOrCombo._id,
+          name: itemOrCombo.name,
+          quantity: itemOrCombo.quantity,
+          price: itemOrCombo.price,
+        })),
         totalPrice: discountedTotal.toFixed(2), // Sử dụng tổng tiền sau giảm giá
         createdAt: new Date().toISOString(),
       };
+
       const token = localStorage.getItem("token");
 
       if (data.paymentMethod === "vnpay") {
+        // Gửi đơn hàng tới API
         const orderRes = await axios.post(
           "http://localhost:3001/api/orders/add-order",
           order,
@@ -261,7 +273,8 @@ function CheckOut() {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
-        // Gọi API create_payment_url để lấy URL thanh toán
+
+        // Gọi API tạo URL thanh toán
         const response = await axios.post(
           "http://localhost:3001/api/payment/create_payment_url",
           {
@@ -310,13 +323,16 @@ function CheckOut() {
     }
   };
 
-  const handleSelect = (itemId) => {
+  const handleSelect = (id, type) => {
     setSelectedItems((prevSelected) => {
-      const newSelected = prevSelected.includes(itemId)
-        ? prevSelected.filter((id) => id !== itemId)
-        : [...prevSelected, itemId];
+      const newSelected = prevSelected.includes(id)
+        ? prevSelected.filter((selectedId) => selectedId !== id)
+        : [...prevSelected, id];
 
-      console.log("Danh sách món đã chọn:", newSelected);
+      console.log(
+        `Danh sách ${type === "combo" ? "combo" : "món ăn"} đã chọn:`,
+        newSelected
+      );
       return newSelected;
     });
   };
@@ -349,8 +365,10 @@ function CheckOut() {
     const loadCart = () => {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || {
         items: [],
+        combos: [],
       };
-      setItems(savedCart.items);
+      setItems(savedCart.items); // Lưu danh sách items
+      setCombos(savedCart.combos); // Lưu danh sách combos
     };
 
     fetchUserInfo();
@@ -362,40 +380,103 @@ function CheckOut() {
     };
   }, []);
 
-  const updateCart = (updatedItems) => {
-    setItems(updatedItems);
+  const updateCart = (updatedItems, updatedCombos) => {
+    setItems(updatedItems); // Cập nhật lại danh sách items
+    setCombos(updatedCombos); // Cập nhật lại danh sách combos
+
     const updatedCart = {
       cartId: "67fb8e201f70bf74520565e7",
-      items: updatedItems,
+      items: updatedItems, // Cập nhật items
+      combos: updatedCombos, // Cập nhật combos
     };
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem("cart", JSON.stringify(updatedCart)); // Lưu vào localStorage
+    window.dispatchEvent(new Event("cartUpdated")); // Gửi sự kiện để thông báo giỏ hàng đã cập nhật
   };
 
-  const increaseQuantity = (id) => {
-    const updatedItems = items.map((item) =>
-      item._id === id ? { ...item, quantity: item.quantity + 1 } : item
-    );
-    updateCart(updatedItems);
+  const increaseQuantity = (id, type) => {
+    // Cập nhật item trong giỏ hàng
+    let updatedItems = [...items];
+    let updatedCombos = [...combos];
+
+    if (type === "item") {
+      updatedItems = updatedItems.map((item) =>
+        item._id === id
+          ? {
+              ...item,
+              quantity: item.quantity + 1,
+            }
+          : item
+      );
+    } else if (type === "combo") {
+      updatedCombos = updatedCombos.map((combo) =>
+        combo._id === id
+          ? {
+              ...combo,
+              quantity: combo.quantity + 1,
+            }
+          : combo
+      );
+    }
+
+    // Cập nhật lại giỏ hàng với cả items và combos
+    updateCart(updatedItems, updatedCombos);
+
+    // Thông báo cập nhật giỏ hàng
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  const decreaseQuantity = (id) => {
-    const updatedItems = items.map((item) =>
-      item._id === id && item.quantity > 1
-        ? { ...item, quantity: item.quantity - 1 }
-        : item
-    );
-    updateCart(updatedItems);
+  const decreaseQuantity = (id, type) => {
+    let updatedItems = [...items];
+    let updatedCombos = [...combos];
+
+    if (type === "item") {
+      updatedItems = updatedItems.map((item) =>
+        item._id === id && item.quantity > 1
+          ? { ...item, quantity: item.quantity - 1 }
+          : item
+      );
+    } else if (type === "combo") {
+      updatedCombos = updatedCombos.map((combo) =>
+        combo._id === id && combo.quantity > 1
+          ? { ...combo, quantity: combo.quantity - 1 }
+          : combo
+      );
+    }
+
+    // Cập nhật lại giỏ hàng với cả items và combos
+    updateCart(updatedItems, updatedCombos);
+
+    // Thông báo cập nhật giỏ hàng
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  const deleteItem = (id) => {
+  const deleteItem = (id, type) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this item?"
     );
     if (confirmDelete) {
-      const updatedItems = items.filter((item) => item._id !== id);
+      const updatedItems = [...items, ...combos].filter(
+        (itemOrCombo) => itemOrCombo._id !== id
+      );
+
       updateCart(updatedItems);
+    }
+  };
+
+  const deleteCombo = (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this combo?"
+    );
+
+    if (confirmDelete) {
+      // Lọc combo bị xóa khỏi giỏ hàng
+      const updatedCombos = combos.filter((combo) => combo._id !== id);
+
+      // Cập nhật lại giỏ hàng với cả items và combos
+      updateCart(items, updatedCombos);
+
+      // Thông báo cập nhật giỏ hàng
+      window.dispatchEvent(new Event("cartUpdated"));
     }
   };
 
@@ -513,7 +594,7 @@ function CheckOut() {
                   1. Select your stuffs to checkout
                 </h2>
 
-                {items.length === 0 ? (
+                {items.length === 0 && combos.length === 0 ? (
                   <div>
                     <p
                       className="text-center mt-4 p-3 rounded"
@@ -525,8 +606,8 @@ function CheckOut() {
                         fontSize: "1.1rem",
                       }}
                     >
-                      Your cart is currently empty. Please add some items to
-                      proceed with checkout.
+                      Your cart is currently empty. Please add some items or
+                      combos to proceed with checkout.
                     </p>
                     <div
                       className="d-flex justify-content-center"
@@ -541,45 +622,118 @@ function CheckOut() {
                     </div>
                   </div>
                 ) : (
-                  <div
-                    style={{
-                      maxHeight: "75vh",
-                      overflowY: "auto",
-                      border: "1px solid #ccc",
-                      paddingRight: "10px",
-                    }}
-                  >
-                    {items.map((item) => (
+                  <div>
+                    {/* Hiển thị danh sách items và combos */}
+                    {(items.length > 0 || combos.length > 0) && (
                       <div
-                        key={item._id}
-                        className="form-check d-flex align-items-start mb-3"
+                        style={{
+                          maxHeight: "75vh",
+                          overflowY: "auto",
+                          border: "1px solid #ccc",
+                          paddingRight: "10px",
+                        }}
                       >
-                        <div className="ms-3 w-100">
-                          <CartItem
-                            item={item}
-                            onIncrease={increaseQuantity}
-                            onDecrease={decreaseQuantity}
-                            onDelete={deleteItem}
-                            extraElement={
-                              <>
-                                <button
-                                  onClick={() => handleSelect(item._id)}
-                                  className={`btn-select ${
-                                    selectedItems.includes(item._id)
-                                      ? "selected"
-                                      : ""
-                                  }`}
-                                >
-                                  {selectedItems.includes(item._id)
-                                    ? "Selected"
-                                    : "Unselect"}
-                                </button>
-                              </>
-                            }
-                          />
-                        </div>
+                        {/* Hiển thị danh sách items */}
+                        {items.length > 0 && (
+                          <div
+                            style={{
+                              maxHeight: "75vh",
+                              overflowY: "auto",
+                              border: "1px solid #ccc",
+                              paddingRight: "10px",
+                            }}
+                          >
+                            {items.map((item) => (
+                              <div
+                                key={item._id}
+                                className="form-check d-flex align-items-start mb-3"
+                              >
+                                <div className="ms-3 w-100">
+                                  <CartItem
+                                    item={item}
+                                    onIncrease={() =>
+                                      increaseQuantity(item._id, "item")
+                                    }
+                                    onDecrease={() =>
+                                      decreaseQuantity(item._id, "item")
+                                    }
+                                    onDelete={() =>
+                                      deleteItem(item._id, "item")
+                                    }
+                                    extraElement={
+                                      <button
+                                        onClick={() =>
+                                          handleSelect(item._id, "item")
+                                        }
+                                        className={`btn-select ${
+                                          selectedItems.includes(item._id)
+                                            ? "selected"
+                                            : ""
+                                        }`}
+                                      >
+                                        {selectedItems.includes(item._id)
+                                          ? "Selected"
+                                          : "Unselect"}
+                                      </button>
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Hiển thị danh sách combos */}
+                        {combos.length > 0 && (
+                          <div
+                            style={{
+                              maxHeight: "75vh",
+                              overflowY: "auto",
+                              border: "1px solid #ccc",
+                              paddingRight: "10px",
+                            }}
+                          >
+                            {combos.map((combo) => (
+                              <div
+                                key={combo._id}
+                                className="form-check d-flex align-items-start mb-3"
+                              >
+                                <div className="ms-3 w-100">
+                                  <CartItem
+                                    item={combo}
+                                    onIncrease={() =>
+                                      increaseQuantity(combo._id, "combo")
+                                    }
+                                    onDecrease={() =>
+                                      decreaseQuantity(combo._id, "combo")
+                                    }
+                                    onDelete={() =>
+                                      deleteCombo(combo._id, "combo")
+                                    }
+                                    extraElement={
+                                      <button
+                                        onClick={() =>
+                                          handleSelect(combo._id, "combo")
+                                        }
+                                        className={`btn-select ${
+                                          selectedItems.includes(combo._id)
+                                            ? "selected"
+                                            : ""
+                                        }`}
+                                      >
+                                        {selectedItems.includes(combo._id)
+                                          ? "Selected"
+                                          : "Unselect"}
+                                      </button>
+                                    }
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                    ))}
+                    )}
                   </div>
                 )}
               </div>

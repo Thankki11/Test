@@ -90,3 +90,35 @@ exports.getCombos = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+exports.getComboByID = async (req, res) => {
+  try {
+    const comboId = req.params.id; // Lấy ID từ URL params
+    const combo = await Combo.findById(comboId); // Tìm combo theo ID trong cơ sở dữ liệu
+
+    if (!combo) {
+      return res.status(404).json({ message: "Combo not found" }); // Nếu không tìm thấy combo
+    }
+
+    res.status(200).json(combo); // Trả về dữ liệu combo tìm được
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" }); // Xử lý lỗi server
+  }
+};
+
+exports.getComboReviews = async (req, res) => {
+  try {
+    const comboId = req.params.id; // Lấy ID từ URL params
+    const combo = await Combo.findById(comboId); // Tìm combo theo ID trong cơ sở dữ liệu
+
+    if (!combo) {
+      return res.status(404).json({ message: "Combo not found" }); // Nếu không tìm thấy combo
+    }
+
+    res.status(200).json(combo.reviews || []); // Trả về danh sách đánh giá của combo
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" }); // Xử lý lỗi server
+  }
+};
