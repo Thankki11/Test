@@ -35,7 +35,7 @@ function Menus() {
           ? 0
           : tab === "pizza"
           ? 1
-          : tab === "friedchicken"
+          : tab === "fried-chicken"
           ? 2
           : tab === "drink"
           ? 3
@@ -73,7 +73,7 @@ function Menus() {
           ? 0
           : foundCategory === "pizza"
           ? 1
-          : foundCategory === "friedchicken"
+          : foundCategory === "fried-chicken"
           ? 2
           : foundCategory === "drink"
           ? 3
@@ -115,7 +115,7 @@ function Menus() {
           : category === 1
           ? item.category === "pizza"
           : category === 2
-          ? item.category === "friedchicken"
+          ? item.category === "fried-chicken"
           : category === 3
           ? item.category === "drink"
           : false;
@@ -220,7 +220,7 @@ function Menus() {
                 style={{ fontSize: "16px" }}
               />
               <Tab
-                label="Fried Chicken"
+                label="Fried-Chicken"
                 {...a11yProps(2)}
                 style={{ fontSize: "16px" }}
               />

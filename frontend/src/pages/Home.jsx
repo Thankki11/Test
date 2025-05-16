@@ -160,7 +160,7 @@ function Home() {
             </Link>
           </div>
           <div className="col-sm-3">
-            <Link to="/menus?tab=friedchicken">
+            <Link to="/menus?tab=fried-chicken">
               <OverlayCard
                 title={"Fried Chickens"}
                 description={[

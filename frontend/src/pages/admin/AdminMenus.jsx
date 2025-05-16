@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal } from "bootstrap";
 
-const categories = ["drink", "mainCourse", "dessert", "appetizer"];
-
+// const categories = ["drink", "mainCourse", "dessert", "appetizer"];
+const categories = ["burger", "pizza", "fried-chicken", "drink"];
 function AdminMenus() {
   const [menus, setMenus] = useState([]);
   const [editMenu, setEditMenu] = useState(null);
@@ -188,7 +188,7 @@ function AdminMenus() {
 
     const formData = new FormData();
     formData.append("image", file);
-    formData.append("category", editMenu.category || "mainCourse"); // fallback
+    formData.append("category", editMenu.category || "burger"); // fallback
 
     axios
       .post("http://localhost:3001/api/upload", formData, {
