@@ -90,7 +90,10 @@ const AdminDashboard = () => {
   const filterDataByRange = () => {
     const filteredOrders = allOrders.filter((order) => {
       const orderDate = moment(order.date);
-      return orderDate.isBetween(range[0], range[1], "day", "[]");
+      return (
+        orderDate.isBetween(range[0], range[1], "day", "[]") &&
+        order.status === "completed"
+      );
     });
 
     const filteredRegister = registrations.filter((re) => {
@@ -223,22 +226,25 @@ const AdminDashboard = () => {
 
         <Row style={{ marginTop: 24 }} gutter={8}>
           <Col>
-            <Input
-              placeholder="Từ ngày (YYYY-MM-DD)"
+            <input
+              type="date"
+              name="start_date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
+              className="form-control"
             />
           </Col>
           <Col>
-            <Input
-              placeholder="Đến ngày (YYYY-MM-DD)"
+            <input
+              type="date"
+              name="end_date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
+              className="form-control"
             />
           </Col>
           <Col>
-            <Button
-              type="primary"
+            <button
               onClick={() => {
                 const start = moment(startDate, "YYYY-MM-DD", true);
                 const end = moment(endDate, "YYYY-MM-DD", true);
@@ -250,7 +256,7 @@ const AdminDashboard = () => {
               }}
             >
               Filter
-            </Button>
+            </button>
           </Col>
         </Row>
 
