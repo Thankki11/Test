@@ -22,19 +22,39 @@ function ComboDetail() {
   const [quantity, setQuantity] = useState(1);
   const [combo, setCombo] = useState(null);
   const [comboItems, setComboItems] = useState([]);
+  const [menus, setMenus] = useState([]);
 
   useEffect(() => {
     setQuantity(1);
   }, [id]);
 
   useEffect(() => {
+    // 1. Fetch chi tiết combo trước
     axios
       .get(`http://localhost:3001/api/combos/${id}`)
-      .then((response) => {
-        setCombo(response.data);
+      .then((comboResponse) => {
+        // Set data combo vào state
+        setCombo(comboResponse.data);
+
+        // 2. Sau khi có combo, fetch tất cả menu items trong combo.items
+        const menuPromises = comboResponse.data.items.map((menuId) =>
+          axios.get(`http://localhost:3001/api/menus/${menuId}`)
+        );
+
+        // Dùng Promise.all để gọi song song tất cả menu items
+        Promise.all(menuPromises)
+          .then((menuResponses) => {
+            // Lấy data từ từng response menu
+            const menus = menuResponses.map((res) => res.data);
+            // Set vào state menus
+            setMenus(menus);
+          })
+          .catch((error) => {
+            console.error("Error fetching menus:", error);
+          });
       })
       .catch((error) => {
-        console.error("Error fetching combo detail:", error);
+        console.error("Error fetching combo:", error);
       });
   }, [id]);
 
@@ -78,17 +98,6 @@ function ComboDetail() {
                 />
                 <h5 style={{ fontSize: "25px" }}>$ {combo.price}</h5>
                 <p style={{ margin: "35px 0px" }}>{combo.description}</p>
-
-                <div style={{ margin: "20px 0" }}>
-                  <h4>Items in this combo:</h4>
-                  <ul>
-                    {comboItems.map((item) => (
-                      <li key={item._id}>
-                        {item.name} - ${item.price}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
 
                 <div
                   style={{ display: "flex", gap: "30px", margin: "40px 0px" }}
@@ -172,6 +181,11 @@ function ComboDetail() {
                           <span style={{ color: "red" }}>Out of stock</span>
                         )}
                       </div>
+                      <div style={{ margin: "20px 0" }}>
+                        <h4 style={{ fontSize: "20px" }}>
+                          Items in this combo:
+                        </h4>
+                      </div>
                     </TabPanel>
                     <TabPanel
                       value="2"
@@ -179,9 +193,9 @@ function ComboDetail() {
                     >
                       <strong>Items in this combo: </strong>
                       <ul>
-                        {comboItems.map((item) => (
-                          <li key={item._id}>
-                            {item.name} - ${item.price}
+                        {menus.map((menu) => (
+                          <li key={menu._id}>
+                            {menu.name} - ${menu.price}
                           </li>
                         ))}
                       </ul>
@@ -191,14 +205,6 @@ function ComboDetail() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="section">
-        <div className="row">
-          <div className="col-8">
-            <h2>Related Combos</h2>
-          </div>
-          <div className="col-4"></div>
         </div>
       </div>
     </div>
