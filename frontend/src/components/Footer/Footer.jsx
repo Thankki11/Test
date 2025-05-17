@@ -2,16 +2,18 @@ import styles from "./Footer.module.css"; // import CSS module
 
 const Footer = () => {
   return (
-    <footer id ="footer" className="bg-dark text-light py-5">
+    <footer id="footer" className="bg-dark text-light py-5">
       <div className="container-fluid">
         <div className="row g-4">
           {/* Company Info */}
           <div className="col-6 col-md-6">
             <h5 className="mb-4">About Us</h5>
             <p className="mb-4" style={{ paddingRight: "150px" }}>
-              From CFK FastFood With Passion, we are a devoted team of food enthusiasts 
-              committed to delivering top-notch fast food experiences, using fresh ingredients and 
-              creative recipes to craft delicious, high-quality meals that delight your taste buds and create unforgettable moments.
+              From CFK FastFood With Passion, we are a devoted team of food
+              enthusiasts committed to delivering top-notch fast food
+              experiences, using fresh ingredients and creative recipes to craft
+              delicious, high-quality meals that delight your taste buds and
+              create unforgettable moments.
             </p>
           </div>
 
@@ -24,7 +26,7 @@ const Footer = () => {
                   Home
                 </a>
               </li>
-              
+
               <li className="mb-2">
                 <a href="/menus" className={styles.footerLink}>
                   Discover menus
@@ -32,7 +34,12 @@ const Footer = () => {
               </li>
               <li className="mb-2">
                 <a href="/combos  " className={styles.footerLink}>
-                  ComBo
+                  Discover combos
+                </a>
+              </li>
+              <li className="mb-2">
+                <a href="/about-us " className={styles.footerLink}>
+                  About us
                 </a>
               </li>
             </ul>
@@ -66,7 +73,7 @@ const Footer = () => {
             <ul className="list-unstyled">
               <li className="mb-3">
                 <i className="fas fa-map-marker-alt me-2"></i>
-                Tran Phu , Ha Dong , Ha Noi , Viet Nam 
+                Tran Phu , Ha Dong , Ha Noi , Viet Nam
               </li>
               <li className="mb-3">
                 <i className="fas fa-phone me-2"></i>

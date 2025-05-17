@@ -338,51 +338,6 @@ function Home() {
         </div>
       </div>
       {/* Promotion End */}
-
-      {/* Join us Start */}
-      <div className="section">
-        <div className="row">
-          <div className="col-sm-5">
-            <TitleWithSubtitle
-              title="JOIN US"
-              subTitle="Discover New Opportunities"
-            />
-          </div>
-          <div className="col-sm-7">
-            <p>
-              Whether you're looking to launch your career in the kitchen or
-              simply sharpen your skills, we welcome you to be part of our
-              vibrant culinary world. Explore two exciting ways to get involved
-              below.
-            </p>
-          </div>
-          <div className="col-sm-6">
-            <Link to="register-class">
-              <OverlayCard
-                imageSrc={imgBeginnerClass}
-                height={"400px"}
-                title="Be our Student"
-                description={[
-                  "Learn from talented chefs, explore new cuisines, and master the art of cooking.",
-                ]}
-              />
-            </Link>
-          </div>
-          <div className="col-sm-6">
-            <Link to="/recuitment">
-              <OverlayCard
-                imageSrc={imgAdvanceClass}
-                height={"400px"}
-                title="Be our Chef"
-                description={[
-                  "Share your culinary passion, earn income, and inspire food lovers around the world.",
-                ]}
-              />
-            </Link>
-          </div>
-        </div>
-      </div>
-      {/* Join us End */}
     </div>
   );
 }
