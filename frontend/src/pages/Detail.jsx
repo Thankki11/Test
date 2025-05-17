@@ -496,6 +496,7 @@ const sendProductToCart = (menu, quantity, isNotify = true) => {
       quantity: quantity,
       price: menu.price,
       imageUrl: menu.imageUrl,
+      category: menu.category,
     });
   }
 
