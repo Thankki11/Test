@@ -1,8 +1,8 @@
 import ButtonWhite2 from "./Buttons/ButtonWhite2";
 function CardHome({ title, description, price, img, actionOnClick }) {
   return (
-    <div class="card">
-      <div class="card-body">
+    <div className="card">
+      <div className="card-body">
         <div className="row">
           <div className="col-4">
             <img
