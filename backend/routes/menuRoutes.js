@@ -14,14 +14,15 @@ const {
 } = require("../controllers/menuController");
 
 const authenticateToken = require("../middleware/authMiddleware");
+
+// Lấy top 4 món ăn có rating cao nhất
+router.get("/top-rated", getTopRatedMenus);
+
 // Route lấy tất cả menu
 router.get("/", getMenus);
 
 // Route lấy món ăn theo id
 router.get("/:id", getMenuById);
-
-// Lấy top 4 món ăn có rating cao nhất
-router.get("/top-rated", getTopRatedMenus);
 
 //Route lấy 4 món ăn theo category
 router.get("/category/:category", getMenuByCategory);

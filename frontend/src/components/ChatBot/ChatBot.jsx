@@ -42,10 +42,10 @@ function ChatBot() {
     }
 
     const cartId = localStorage.getItem("cartId") || "67fb8e201f70bf74520565e7";
-    axios
-      .get(`http://localhost:3001/api/cart?id=${cartId}`)
-      .then((res) => setCart(res.data.items || []))
-      .catch(() => setCart([]));
+    // axios
+    //   .get(`http://localhost:3001/api/cart?id=${cartId}`)
+    //   .then((res) => setCart(res.data.items || []))
+    //   .catch(() => setCart([]));
   }, []);
 
   // Ẩn chatbot nếu đang ở trang admin
@@ -275,8 +275,7 @@ function ChatBot() {
       ...msgs,
       {
         from: "bot",
-        text:
-          "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể hỏi về món ăn, hóa đơn, giỏ hàng hoặc các thông tin cơ bản.",
+        text: "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể hỏi về món ăn, hóa đơn, giỏ hàng hoặc các thông tin cơ bản.",
       },
     ]);
   };

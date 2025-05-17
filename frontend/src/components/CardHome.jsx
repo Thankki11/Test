@@ -1,5 +1,5 @@
 import ButtonWhite2 from "./Buttons/ButtonWhite2";
-function CardHome({ title, description, price, img }) {
+function CardHome({ title, description, price, img, actionOnClick }) {
   return (
     <div class="card">
       <div class="card-body">
@@ -41,7 +41,10 @@ function CardHome({ title, description, price, img }) {
             </div>
             <div className="d-flex justify-content-between align-items-center">
               <h2 style={{ fontSize: "25px" }}>{price}</h2>
-              <ButtonWhite2 buttontext={"Add to cart"}></ButtonWhite2>
+              <ButtonWhite2
+                buttontext={"Add to cart"}
+                onClick={actionOnClick}
+              ></ButtonWhite2>
             </div>
           </div>
         </div>

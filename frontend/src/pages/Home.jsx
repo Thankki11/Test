@@ -62,6 +62,57 @@ function Home() {
     window.scrollTo(0, 0);
   }, [location, navigate]);
 
+  const handleAddToCart = (menu) => {
+    if (menu.quantity <= 0) {
+      alert("Đã Hết Hàng");
+    } else {
+      sendProductToCart(menu, 1);
+    }
+  };
+
+  //Lưu món ăn kèm số lượng vào LocalStorage
+  const sendProductToCart = (menu, quantity, isNotify = true) => {
+    const cartId = "67fb8e201f70bf74520565e7"; // Giỏ hàng mặc định hoặc lấy từ localStorage
+
+    // Lấy giỏ hàng hiện tại từ localStorage hoặc khởi tạo giỏ hàng mới nếu không tồn tại
+    let cart = JSON.parse(localStorage.getItem("cart")) || {
+      cartId,
+      items: [],
+      combos: [],
+    };
+
+    // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+    const existingItemIndex = cart.items.findIndex(
+      (item) => item._id === menu._id
+    );
+
+    if (existingItemIndex !== -1) {
+      // Nếu sản phẩm đã có trong giỏ hàng, cập nhật số lượng
+      cart.items[existingItemIndex].quantity += quantity;
+    } else {
+      // Nếu không có sản phẩm, thêm mới vào giỏ hàng
+      cart.items.push({
+        _id: menu._id,
+        name: menu.name,
+        quantity: quantity,
+        price: menu.price,
+        imageUrl: menu.imageUrl,
+        category: menu.category,
+      });
+    }
+
+    // Lưu lại giỏ hàng vào localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    // Gửi sự kiện custom để các component khác biết
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    if (isNotify) {
+      // Thông báo cho người dùng
+      alert(`${menu.name} (${quantity}) added to Cart!`);
+    }
+  };
+
   return (
     <div>
       {/* Page Header Start */}
@@ -211,6 +262,7 @@ function Home() {
                   img={`http://localhost:3001${menu.imageUrl}`}
                   description={menu.description}
                   price={`$${Number(menu.price).toFixed(2)}`}
+                  actionOnClick={() => handleAddToCart(menu)}
                 />
               </div>
             ))
