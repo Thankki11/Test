@@ -122,6 +122,8 @@ const AdminDashboard = () => {
     const categoryTotals = categories.map((category) => {
       let total = 0;
 
+      console.log(filteredOrders);
+
       filteredOrders.forEach((order) => {
         order.items.forEach((item) => {
           if (item.category === category) {
@@ -147,7 +149,7 @@ const AdminDashboard = () => {
       labels: categoryTotals.map((item) => item.category),
       datasets: [
         {
-          label: "Tổng doanh thu",
+          label: "Revenue ($)",
           data: categoryTotals.map((item) => item.total),
           backgroundColor: categoryTotals.map((item) =>
             getColorForCategory(item.category, 0.2)

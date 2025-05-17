@@ -257,6 +257,7 @@ function CheckOut() {
           name: itemOrCombo.name,
           quantity: itemOrCombo.quantity,
           price: itemOrCombo.price,
+          category: itemOrCombo.category,
           type: itemOrCombo.type === "combo" ? itemOrCombo.type : "items",
         })),
         totalPrice: discountedTotal.toFixed(2), // Sử dụng tổng tiền sau giảm giá
