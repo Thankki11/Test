@@ -2,7 +2,7 @@
   "_id": {
     "$oid": "68270def7ada2d2255fb4d6b"
   },
-  "name": "Giảm 10% tổng hóa đơn",
+  "name": "Get 10% off your total bill",
   "voucherCode": "DISCOUNT10",
   "discount_type": "PERCENT",
   "discount_value": 10,
@@ -14,7 +14,7 @@
     "$date": "2025-05-31T00:00:00.000Z"
   },
   "applied_products": [],
-  "description": "Giảm giá 10% cho toàn bộ đơn hàng giá trị trên 50$",
+  "description": "Get 10% off all orders over $50",
   "isActive": true,
   "createdAt": {
     "$date": "2025-05-16T10:05:35.905Z"
@@ -25,11 +25,11 @@
   "_id": {
     "$oid": "68270e337ada2d2255fb4d6f"
   },
-  "name": "Giảm 30k đơn từ 150k",
+  "name": "Get $1 off orders from $5",
   "voucherCode": "SAVE30",
   "discount_type": "FIXED",
-  "discount_value": 30,
-  "min_order_value": 150,
+  "discount_value": 1,
+  "min_order_value": 5,
   "start_date": {
     "$date": "2025-05-10T00:00:00.000Z"
   },
@@ -37,7 +37,7 @@
     "$date": "2025-06-10T00:00:00.000Z"
   },
   "applied_products": [],
-  "description": "Giảm ngay 30.000đ cho đơn hàng từ 150.000đ.",
+  "description": "Instant $1 off for orders from $5",
   "isActive": true,
   "createdAt": {
     "$date": "2025-05-16T10:06:43.299Z"
@@ -48,11 +48,11 @@
   "_id": {
     "$oid": "68270ec77ada2d2255fb4d78"
   },
-  "name": "Giảm 50% tổng hóa đơn",
+  "name": "Get 15% off your total bill above $80",
   "voucherCode": "DISCOUNT50",
   "discount_type": "PERCENT",
-  "discount_value": 50,
-  "min_order_value": 200,
+  "discount_value": 15,
+  "min_order_value": 80,
   "start_date": {
     "$date": "2025-05-15T00:00:00.000Z"
   },
@@ -60,7 +60,7 @@
     "$date": "2025-05-20T00:00:00.000Z"
   },
   "applied_products": [],
-  "description": "Giảm ngay 50% cho giá trị tổng đơn hàng từ 200.000đ.",
+  "description": "Enjoy 15% off on orders from $80",
   "isActive": true,
   "createdAt": {
     "$date": "2025-05-16T10:09:11.114Z"
@@ -71,11 +71,11 @@
   "_id": {
     "$oid": "68270ef57ada2d2255fb4d7c"
   },
-  "name": "Giảm ngay 10.000đ cho đơn hàng từ 100.000đ.",
+  "name": "Get $10 off orders from $40",
   "voucherCode": "SAVE10",
   "discount_type": "FIXED",
   "discount_value": 10,
-  "min_order_value": 100,
+  "min_order_value": 40,
   "start_date": {
     "$date": "2025-05-10T00:00:00.000Z"
   },
@@ -83,7 +83,7 @@
     "$date": "2025-06-10T00:00:00.000Z"
   },
   "applied_products": [],
-  "description": "Giảm ngay 10.000đ cho đơn hàng từ 100.000đ.",
+  "description": "Get $10 off orders from $40",
   "isActive": true,
   "createdAt": {
     "$date": "2025-05-16T10:09:57.577Z"
@@ -94,11 +94,11 @@
   "_id": {
     "$oid": "68270f677ada2d2255fb4d80"
   },
-  "name": "Giảm ngay 20k",
+  "name": "Discount $20 with bill over $20",
   "voucherCode": "HELLO",
   "discount_type": "FIXED",
   "discount_value": 20,
-  "min_order_value": 1,
+  "min_order_value": 20,
   "start_date": {
     "$date": "2025-05-01T00:00:00.000Z"
   },
@@ -106,7 +106,7 @@
     "$date": "2025-05-31T00:00:00.000Z"
   },
   "applied_products": [],
-  "description": "Giảm ngay 20000 cho đơn hàng từ 0đ",
+  "description": "Discount $20 with bill over $20",
   "isActive": true,
   "createdAt": {
     "$date": "2025-05-16T10:11:51.618Z"

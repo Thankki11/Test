@@ -1,0 +1,97 @@
+[{
+  "_id": {
+    "$oid": "68287feeb5ab96bc41abd97e"
+  },
+  "name": "Combo 1",
+  "description": "A delightful combination of 1 Bu — ideal for a quick and satisfying meal.",
+  "imageUrl": "/uploads/combos/combo-1a68f939-0a26-4406-825a-c9c89451585f.jpg",
+  "price": 120,
+  "items": [
+    {
+      "$oid": "682710e07ada2d2255fb4d85"
+    },
+    {
+      "$oid": "68271a207ada2d2255fb4dd1"
+    }
+  ],
+  "quantity": 193,
+  "createdAt": {
+    "$date": "2025-05-17T12:24:14.845Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68288031b5ab96bc41abd985"
+  },
+  "name": "Combo 2",
+  "description": "Combo 2 is the perfect pick for a hearty and delicious meal. Featuring our signature Bu paired with selected sides, this combo offers a comforting and satisfying experience whether you're dining in or on the go.",
+  "imageUrl": "/uploads/combos/combo-d80f4254-0729-4733-a839-c4c46ea7ce89.jpg",
+  "price": 150,
+  "items": [
+    {
+      "$oid": "68271a207ada2d2255fb4dd1"
+    },
+    {
+      "$oid": "68271a6f7ada2d2255fb4dd4"
+    },
+    {
+      "$oid": "682718667ada2d2255fb4dbf"
+    }
+  ],
+  "quantity": 200,
+  "createdAt": {
+    "$date": "2025-05-17T12:25:21.983Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68288054b5ab96bc41abd98d"
+  },
+  "name": "Combo 3",
+  "description": "Savor the rich flavors of our Combo 3, starring a freshly made Bu served with perfectly matched sides. Whether you're looking for a quick lunch or a cozy dinner, this combo delivers taste, quality, and satisfaction in every bite.",
+  "imageUrl": "/uploads/combos/combo-32b2454c-c655-416f-bef3-5a5d54649ea0.jpg",
+  "price": 200,
+  "items": [
+    {
+      "$oid": "682712627ada2d2255fb4d98"
+    },
+    {
+      "$oid": "682718667ada2d2255fb4dbf"
+    },
+    {
+      "$oid": "682718a47ada2d2255fb4dc2"
+    }
+  ],
+  "quantity": 200,
+  "createdAt": {
+    "$date": "2025-05-17T12:25:56.102Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68288077b5ab96bc41abd995"
+  },
+  "name": "Combo 4",
+  "description": "Looking for a delicious, no-fuss meal? Combo 4 brings together our signature Bu with a combination of classic sides to create the ultimate comfort combo. Ideal for food lovers who want a little bit of everything in one perfect meal.",
+  "imageUrl": "/uploads/combos/combo-f2b7e4c0-fca4-4633-a088-aaa306b1fc76.jpg",
+  "price": 349,
+  "items": [
+    {
+      "$oid": "682712247ada2d2255fb4d91"
+    },
+    {
+      "$oid": "682712627ada2d2255fb4d98"
+    },
+    {
+      "$oid": "682712a37ada2d2255fb4d9b"
+    }
+  ],
+  "quantity": 200,
+  "createdAt": {
+    "$date": "2025-05-17T12:26:31.506Z"
+  },
+  "__v": 0
+}]

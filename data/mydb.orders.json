@@ -1,0 +1,71 @@
+[{
+  "_id": {
+    "$oid": "68287c7fb8ef8d8c6b4935e1"
+  },
+  "customerName": "user12",
+  "phoneNumber": "0938271562",
+  "emailAddress": "user12@gmail.com",
+  "address": "1aaa",
+  "paymentMethod": "cod",
+  "note": "",
+  "agreeTerms": true,
+  "items": [
+    {
+      "menuItemId": {
+        "$oid": "68287c65b8ef8d8c6b49357a"
+      },
+      "name": "demo",
+      "quantity": 1,
+      "price": 12,
+      "type": "items",
+      "_id": {
+        "$oid": "68287c7fb8ef8d8c6b4935e2"
+      }
+    }
+  ],
+  "totalPrice": 12,
+  "date": {
+    "$date": "2025-05-17T12:09:35.821Z"
+  },
+  "userId": {
+    "$oid": "682865fbcd84f2d7ede2350f"
+  },
+  "status": "completed",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "68287decb5ab96bc41abd81b"
+  },
+  "customerName": "user12",
+  "phoneNumber": "0938271562",
+  "emailAddress": "user12@gmail.com",
+  "address": "1aaa",
+  "paymentMethod": "cod",
+  "note": "",
+  "agreeTerms": true,
+  "items": [
+    {
+      "menuItemId": {
+        "$oid": "682711197ada2d2255fb4d88"
+      },
+      "name": "Cheese Burger",
+      "quantity": 1,
+      "price": 60,
+      "category": "burger",
+      "type": "items",
+      "_id": {
+        "$oid": "68287decb5ab96bc41abd81c"
+      }
+    }
+  ],
+  "totalPrice": 60,
+  "date": {
+    "$date": "2025-05-17T12:15:40.738Z"
+  },
+  "userId": {
+    "$oid": "682865fbcd84f2d7ede2350f"
+  },
+  "status": "completed",
+  "__v": 0
+}]
