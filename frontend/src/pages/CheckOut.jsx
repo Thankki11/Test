@@ -247,6 +247,7 @@ function CheckOut() {
             name: item.name,
             quantity: item.quantity,
             price: item.price,
+            category: item.category,
           })),
         totalPrice: discountedTotal.toFixed(2), // Sử dụng tổng tiền sau giảm giá
         createdAt: new Date().toISOString(),
