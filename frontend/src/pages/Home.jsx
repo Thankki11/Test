@@ -33,13 +33,14 @@ function Home() {
   useEffect(() => {
     // Fetch top-rated menus
     const fetchTopRatedMenus = async () => {
-        axios
+      axios
         .get("http://localhost:3001/api/menus/top-rated")
         .then((response) => {
           setTopRatedMenus(response.data);
-      }) .catch ((err) => {
-        console.error("Error fetching top-rated menus:", err);
-      })
+        })
+        .catch((err) => {
+          console.error("Error fetching top-rated menus:", err);
+        });
     };
 
     fetchTopRatedMenus();
@@ -147,7 +148,9 @@ function Home() {
             <Link to="/menus?tab=burger">
               <OverlayCard
                 title={"Burgers"}
-                description={["Juicy, mouthwatering burgers with unique flavors."]}
+                description={[
+                  "Juicy, mouthwatering burgers with unique flavors.",
+                ]}
                 imageSrc={food1}
                 height={"350px"}
               />
@@ -167,7 +170,9 @@ function Home() {
             <Link to="/menus?tab=fried-chicken">
               <OverlayCard
                 title={"Fried Chickens"}
-                description={["Crispy fried chicken with bold, savory seasoning."]}
+                description={[
+                  "Crispy fried chicken with bold, savory seasoning.",
+                ]}
                 imageSrc={food3}
                 height={"350px"}
               />
@@ -223,11 +228,11 @@ function Home() {
         <div className="row">
           <div className="col-sm-7">
             <p>
-              Indulge in our carefully crafted combos, offering the perfect mix of
-              your favorite dishes at an unbeatable price. Whether you're craving
-              a burger and fries, a pizza with refreshing drinks, or a hearty
-              fried chicken platter, we've got the ideal combo to satisfy your
-              hunger. Enjoy great value without compromising on taste!
+              Indulge in our carefully crafted combos, offering the perfect mix
+              of your favorite dishes at an unbeatable price. Whether you're
+              craving a burger and fries, a pizza with refreshing drinks, or a
+              hearty fried chicken platter, we've got the ideal combo to satisfy
+              your hunger. Enjoy great value without compromising on taste!
             </p>
           </div>
           <div className="col-sm-5 text-end">
@@ -236,7 +241,7 @@ function Home() {
           </div>
           <div className="col-sm-5">
             <div>
-              <Link to="register-class">
+              <Link to="/combo-detail/68287feeb5ab96bc41abd97e">
                 <OverlayCard
                   imageSrc={combo1}
                   height={"245px"}
@@ -246,7 +251,7 @@ function Home() {
               </Link>
             </div>
             <div style={{ marginTop: "10px" }}>
-              <Link to="register-class">
+              <Link to="/combo-detail/68288031b5ab96bc41abd985">
                 <OverlayCard
                   imageSrc={combo2}
                   height={"245px"}
@@ -259,7 +264,7 @@ function Home() {
             </div>
           </div>
           <div className="col-sm-5">
-            <Link to="/recuitment">
+            <Link to="/combo-detail/68288054b5ab96bc41abd98d">
               <OverlayCard
                 imageSrc={combo3}
                 height={"500px"}
