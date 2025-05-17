@@ -282,10 +282,10 @@ function AdminMenus() {
     if (window.confirm("You want to reset all menu quantities to 200?")) {
       try {
         await axios.post("http://localhost:3001/api/menus/reset-quantities");
-        alert("Đã đặt lại số lượng tất cả món ăn về 200!");
+        alert("Reset all quantity to 200!");
         fetchMenus();
       } catch (err) {
-        alert("Có lỗi xảy ra khi reset quantity!");
+        alert("ERROR reset quantity!");
       }
     }
   };

@@ -33,7 +33,7 @@ function Register() {
 
     const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
     if (!phoneRegex.test(formData.phone)) {
-      alert("Phone numbe2 must be exactly 10 digits.");
+      alert("Phone number must be exactly 10 digits.");
       return;
     }
 
@@ -174,7 +174,7 @@ function Register() {
                   onChange={handleChange}
                   className="form-control form-control-lg"
                   id="phone"
-                  placeholder="Enter your phone numbe2"
+                  placeholder="Enter your phone number"
                   required
                 />
               </div>

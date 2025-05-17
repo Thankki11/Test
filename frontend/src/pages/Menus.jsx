@@ -180,7 +180,7 @@ function Menus() {
           </h2>
           <input
             type="text"
-            placeholder="Tìm kiếm món ăn..."
+            placeholder="Find by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
@@ -225,7 +225,7 @@ function Menus() {
                 style={{ fontSize: "16px" }}
               />
               <Tab
-                label="Đồ uống"
+                label="Drinks"
                 {...a11yProps(3)}
                 style={{ fontSize: "16px" }}
               />

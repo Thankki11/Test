@@ -256,11 +256,6 @@ function Detail() {
                           ? menu.tags.join(", ") + "."
                           : "No tags available."}
                       </p>
-                      <p style={{ fontSize: "18px" }}>
-                        <span style={{ fontWeight: "bold" }}>Rate:</span> 3 sao
-                        (Chưa code finalnakldnskldnadjkas kldnadjkasnasdjsakd
-                        ánkasjnkdas)
-                      </p>
                     </TabPanel>
                     <TabPanel
                       value="2"
