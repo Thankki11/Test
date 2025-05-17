@@ -9,7 +9,7 @@ import "./assets/styles/global.css";
 // Components
 
 import PaymentSuccess from "./pages/PaymentSuccess";
-import ChatBot from "./components/ChatBot/ChatBot";
+// import ChatBot from "./components/ChatBot/ChatBot";
 
 function App() {
   return (
@@ -20,7 +20,7 @@ function App() {
         ))}
         <Route path="/payment-success" element={<PaymentSuccess />} />
       </Routes>
-      <ChatBot />
+      {/* <ChatBot /> */}
     </Router>
   );
 }

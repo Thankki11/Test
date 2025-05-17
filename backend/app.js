@@ -61,6 +61,9 @@ app.use("/api", uploadRoutes);
 // Upload: Cho phép truy cập vào thư mục uploads
 app.use("/uploads", express.static("uploads"));
 
+// Thêm
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Thêm route employees
 app.use("/api/employees", employeeRoutes);
 

@@ -28,6 +28,7 @@ router.get(
     // Chuyển hướng về frontend với token
     res.redirect(`http://localhost:3000?token=${token}`);
   }
+  
 );
 
 // Facebook OAuth
