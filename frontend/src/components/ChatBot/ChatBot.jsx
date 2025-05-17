@@ -4,11 +4,7 @@ import { useLocation } from "react-router-dom";
 
 const defaultQuestions = [
   { question: "giờ mở cửa", answer: "Nhà hàng mở cửa từ 8h đến 22h mỗi ngày." },
-  {
-    question: "đặt bàn",
-    answer:
-      "Bạn có thể đặt bàn qua mục Đặt bàn trên menu hoặc nhắn 'đặt bàn' cho tôi!",
-  },
+  { question: "địa chỉ", answer: "Tran Phu , Ha dong , Ha Noi" },
   {
     question: "giỏ hàng",
     answer:
@@ -132,6 +128,35 @@ function ChatBot() {
       }
     }
 
+    // Xem giỏ hàng
+    if (lower.includes("giỏ hàng")) {
+      // Lấy giỏ hàng từ localStorage
+      const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+
+      if (cartItems.length > 0) {
+        let cartSummary = "Giỏ hàng của bạn:\n";
+        cartItems.forEach((item, index) => {
+          cartSummary += `${index + 1}. ${item.name} - Số lượng: ${
+            item.quantity
+          }\n`;
+        });
+
+        setMessages((msgs) => [
+          ...msgs,
+          {
+            from: "bot",
+            text: cartSummary,
+          },
+        ]);
+      } else {
+        setMessages((msgs) => [
+          ...msgs,
+          { from: "bot", text: "Giỏ hàng của bạn đang trống." },
+        ]);
+      }
+      return;
+    }
+
     // Xem hóa đơn
     if (lower.includes("hóa đơn") || lower.includes("đơn hàng")) {
       if (orders.length > 0) {
@@ -233,12 +258,25 @@ function ChatBot() {
       return;
     }
 
+    // Các câu hỏi mặc định
+    const matchedQuestion = defaultQuestions.find((q) =>
+      lower.includes(q.question.toLowerCase())
+    );
+    if (matchedQuestion) {
+      setMessages((msgs) => [
+        ...msgs,
+        { from: "bot", text: matchedQuestion.answer },
+      ]);
+      return;
+    }
+
     // Mặc định
     setMessages((msgs) => [
       ...msgs,
       {
         from: "bot",
-        text: "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể hỏi về món ăn, hóa đơn, giỏ hàng hoặc các thông tin cơ bản.",
+        text:
+          "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể hỏi về món ăn, hóa đơn, giỏ hàng hoặc các thông tin cơ bản.",
       },
     ]);
   };
