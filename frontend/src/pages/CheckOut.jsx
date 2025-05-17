@@ -257,6 +257,7 @@ function CheckOut() {
           name: itemOrCombo.name,
           quantity: itemOrCombo.quantity,
           price: itemOrCombo.price,
+          type: itemOrCombo.type === "combo" ? itemOrCombo.type : "items",
         })),
         totalPrice: discountedTotal.toFixed(2), // Sử dụng tổng tiền sau giảm giá
         createdAt: new Date().toISOString(),
@@ -291,7 +292,7 @@ function CheckOut() {
 
         if (response.data.paymentUrl) {
           // Xoá giỏ hàng
-          localStorage.removeItem("cart");
+          deleteCartItems();
           window.dispatchEvent(new Event("cartUpdated"));
 
           // Điều hướng đến VNPay
@@ -304,13 +305,7 @@ function CheckOut() {
         });
 
         // Xóa các sản phẩm đã đặt khỏi giỏ hàng
-        const cart = JSON.parse(localStorage.getItem("cart")) || {};
-        if (cart.items) {
-          cart.items = cart.items.filter(
-            (item) => !selectedItems.includes(item._id)
-          );
-          localStorage.setItem("cart", JSON.stringify(cart));
-        }
+        deleteCartItems();
 
         window.dispatchEvent(new Event("cartUpdated"));
 
@@ -321,6 +316,27 @@ function CheckOut() {
       console.error("Lỗi khi gửi đặt hàng:", error);
       alert("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
     }
+  };
+
+  const deleteCartItems = () => {
+    // Xóa các sản phẩm và combo đã đặt khỏi giỏ hàng
+    const cart = JSON.parse(localStorage.getItem("cart")) || {};
+    if (cart.items) {
+      // Xóa các item đã chọn
+      cart.items = cart.items.filter(
+        (item) => !selectedItems.includes(item._id)
+      );
+    }
+
+    if (cart.combos) {
+      // Xóa các combo đã chọn
+      cart.combos = cart.combos.filter(
+        (combo) => !selectedItems.includes(combo._id)
+      );
+    }
+
+    // Cập nhật lại giỏ hàng vào localStorage
+    localStorage.setItem("cart", JSON.stringify(cart));
   };
 
   const handleSelect = (id, type) => {

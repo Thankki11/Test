@@ -122,3 +122,29 @@ exports.getComboReviews = async (req, res) => {
     res.status(500).json({ message: "Server error" }); // Xử lý lỗi server
   }
 };
+
+exports.deleteCombo = async (req, res) => {
+  const { id } = req.params; // Lấy ID combo từ params
+
+  try {
+    // Tìm combo theo ID
+    const combo = await Combo.findById(id);
+
+    // Kiểm tra nếu combo không tồn tại
+    if (!combo) {
+      return res.status(404).json({ message: "Combo không tồn tại" });
+    }
+
+    // Tiến hành xóa combo
+    await Combo.findByIdAndDelete(id);
+
+    // Phản hồi thành công
+    res.status(200).json({ message: "Combo đã được xóa thành công" });
+  } catch (err) {
+    console.error(err);
+    // Phản hồi lỗi nếu có lỗi trong quá trình xóa
+    res.status(500).json({ message: "Lỗi khi xóa combo", error: err.message });
+  }
+};
+
+exports.updateCombo = async (req, res) => {};

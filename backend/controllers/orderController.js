@@ -18,7 +18,7 @@ const addOrder = async (req, res) => {
     } = req.body;
 
     const userId = req.user.id;
-    
+
     const newOrder = new Order({
       customerName,
       phoneNumber,
@@ -39,7 +39,7 @@ const addOrder = async (req, res) => {
     res.status(201).json({
       message: "Đặt hàng thành công!",
       order: newOrder,
-      _id: newOrder._id
+      _id: newOrder._id,
     });
   } catch (error) {
     console.error("Lỗi khi thêm order:", error);
@@ -53,7 +53,9 @@ const getOrders = async (req, res) => {
     res.json(orders);
   } catch (err) {
     console.error("Lỗi khi lấy danh sách đơn hàng:", err);
-    res.status(500).json({ message: "Lỗi server, không thể lấy danh sách đơn hàng." });
+    res
+      .status(500)
+      .json({ message: "Lỗi server, không thể lấy danh sách đơn hàng." });
   }
 };
 
@@ -165,4 +167,12 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-module.exports = { addOrder, getOrders, getUserOrders, getOrderById, updateOrder, deleteOrder, updateOrderStatus, };
+module.exports = {
+  addOrder,
+  getOrders,
+  getUserOrders,
+  getOrderById,
+  updateOrder,
+  deleteOrder,
+  updateOrderStatus,
+};

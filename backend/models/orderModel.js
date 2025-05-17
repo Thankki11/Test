@@ -14,11 +14,12 @@ const orderSchema = new mongoose.Schema({
       name: { type: String, required: true },
       quantity: { type: Number, required: true },
       price: { type: Number, required: true },
+      type: { type: String, required: true },
     },
   ],
   totalPrice: { type: Number, required: true },
   date: { type: Date, default: Date.now },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, 
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   status: {
     type: String,
     enum: ["pending", "delivering", "completed", "cancelled"],
