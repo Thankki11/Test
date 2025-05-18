@@ -3,16 +3,19 @@ import axios from "axios";
 import { useLocation } from "react-router-dom";
 
 const defaultQuestions = [
-  { question: "giờ mở cửa", answer: "Nhà hàng mở cửa từ 8h đến 22h mỗi ngày." },
-  { question: "địa chỉ", answer: "Tran Phu , Ha dong , Ha Noi" },
+  {
+    question: "opening hours",
+    answer: "We are open from 8 AM to 10 PM daily.",
+  },
+  { question: "address", answer: "Tran Phu, Ha Dong, Ha Noi" },
 ];
 
 function ChatBot() {
   const location = useLocation();
 
-  // Luôn gọi các hook ở đầu component
+  // Always call hooks at the top of the component
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Xin chào! Tôi có thể giúp gì cho bạn?" },
+    { from: "bot", text: "Hello! How can I help you?" },
   ]);
   const [input, setInput] = useState("");
   const [menus, setMenus] = useState([]);
@@ -43,7 +46,7 @@ function ChatBot() {
     //   .catch(() => setCart([]));
   }, []);
 
-  // Ẩn chatbot nếu đang ở trang admin
+  // Hide chatbot if on admin pages
   if (location.pathname.startsWith("/admin")) {
     return null;
   }
@@ -59,15 +62,15 @@ function ChatBot() {
   const handleBotReply = (msg) => {
     const lower = msg.toLowerCase();
 
-    // Tìm món ăn
-    if (lower.includes("tìm") || lower.includes("món")) {
-      const keyword = lower.replace("tìm", "").replace("món", "").trim();
+    // Find menu item
+    if (lower.includes("find") || lower.includes("item")) {
+      const keyword = lower.replace("find", "").replace("item", "").trim();
       if (keyword && menus.length > 0) {
         const found = menus.filter((m) =>
           m.name.toLowerCase().includes(keyword)
         );
         if (found.length > 0) {
-          // Nếu chỉ tìm thấy 1 món
+          // If only one item is found
           if (found.length === 1) {
             setMessages((msgs) => [
               ...msgs,
@@ -75,7 +78,7 @@ function ChatBot() {
                 from: "bot",
                 text: (
                   <>
-                    Tôi tìm thấy:{" "}
+                    I found:{" "}
                     <a
                       href={`/detail/${found[0]._id}`}
                       target="_blank"
@@ -88,14 +91,14 @@ function ChatBot() {
               },
             ]);
           } else {
-            // Nhiều món, hiện từng món với link
+            // Multiple items, show each with a link
             setMessages((msgs) => [
               ...msgs,
               {
                 from: "bot",
                 text: (
                   <span>
-                    Tôi tìm thấy:
+                    I found:
                     <br />
                     {found.map((item) => (
                       <div key={item._id}>
@@ -116,22 +119,22 @@ function ChatBot() {
         } else {
           setMessages((msgs) => [
             ...msgs,
-            { from: "bot", text: "Không tìm thấy món nào phù hợp." },
+            { from: "bot", text: "No matching items found." },
           ]);
         }
         return;
       }
     }
 
-    // Xem giỏ hàng
-    // if (lower.includes("giỏ hàng")) {
-    //   // Lấy giỏ hàng từ localStorage
+    // View cart
+    // if (lower.includes("cart")) {
+    //   // Get cart from localStorage
     //   const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
 
     //   if (cartItems.length > 0) {
-    //     let cartSummary = "Giỏ hàng của bạn:\n";
+    //     let cartSummary = "Your cart:\n";
     //     cartItems.forEach((item, index) => {
-    //       cartSummary += `${index + 1}. ${item.name} - Số lượng: ${
+    //       cartSummary += `${index + 1}. ${item.name} - Quantity: ${
     //         item.quantity
     //       }\n`;
     //     });
@@ -146,16 +149,16 @@ function ChatBot() {
     //   } else {
     //     setMessages((msgs) => [
     //       ...msgs,
-    //       { from: "bot", text: "Giỏ hàng của bạn đang trống." },
+    //       { from: "bot", text: "Your cart is empty." },
     //     ]);
     //   }
     //   return;
     // }
 
-    // Xem hóa đơn
+    // Most expensive order
     if (
-      lower.includes("nhiều") &&
-      (lower.includes("hóa đơn ") || lower.includes("đơn hàng"))
+      lower.includes("most") &&
+      (lower.includes("order") || lower.includes("bill"))
     ) {
       if (orders.length > 0) {
         const maxOrder = orders.reduce((prev, curr) =>
@@ -165,22 +168,22 @@ function ChatBot() {
           ...msgs,
           {
             from: "bot",
-            text: `Hóa đơn nhiều tiền nhất: $${maxOrder.totalPrice}, trạng thái: ${maxOrder.status}`,
+            text: `Most expensive order: $${maxOrder.totalPrice}, status: ${maxOrder.status}`,
           },
         ]);
       } else {
         setMessages((msgs) => [
           ...msgs,
-          { from: "bot", text: "Bạn chưa có hóa đơn nào." },
+          { from: "bot", text: "You have no orders." },
         ]);
       }
       return;
     }
 
-    // Hóa đơn ít tiền nhất
+    // Least expensive order
     if (
-      lower.includes("ít") &&
-      (lower.includes("hóa đơn ") || lower.includes("đơn hàng"))
+      lower.includes("least") &&
+      (lower.includes("order") || lower.includes("bill"))
     ) {
       if (orders.length > 0) {
         const minOrder = orders.reduce((prev, curr) =>
@@ -190,20 +193,20 @@ function ChatBot() {
           ...msgs,
           {
             from: "bot",
-            text: `Hóa đơn ít tiền nhất: $${minOrder.totalPrice}, trạng thái: ${minOrder.status}`,
+            text: `Least expensive order: $${minOrder.totalPrice}, status: ${minOrder.status}`,
           },
         ]);
       } else {
         setMessages((msgs) => [
           ...msgs,
-          { from: "bot", text: "Bạn chưa có hóa đơn nào." },
+          { from: "bot", text: "You have no orders." },
         ]);
       }
       return;
     }
 
-    // Hóa đơn đang vận chuyển
-    if (lower.includes("đang vận chuyển")) {
+    // Orders being delivered
+    if (lower.includes("delivering")) {
       const deliveringOrders = orders.filter(
         (order) => order.status === "delivering"
       );
@@ -212,20 +215,20 @@ function ChatBot() {
           ...msgs,
           {
             from: "bot",
-            text: `Bạn có ${deliveringOrders.length} hóa đơn đang vận chuyển.`,
+            text: `You have ${deliveringOrders.length} orders being delivered.`,
           },
         ]);
       } else {
         setMessages((msgs) => [
           ...msgs,
-          { from: "bot", text: "Bạn không có hóa đơn nào đang vận chuyển." },
+          { from: "bot", text: "You have no orders being delivered." },
         ]);
       }
       return;
     }
 
-    // Hóa đơn đang xác nhận
-    if (lower.includes("đang xác nhận")) {
+    // Orders being confirmed
+    if (lower.includes("confirming")) {
       const pendingOrders = orders.filter(
         (order) => order.status === "pending"
       );
@@ -234,22 +237,22 @@ function ChatBot() {
           ...msgs,
           {
             from: "bot",
-            text: `Bạn có ${pendingOrders.length} hóa đơn đang xác nhận.`,
+            text: `You have ${pendingOrders.length} orders being confirmed.`,
           },
         ]);
       } else {
         setMessages((msgs) => [
           ...msgs,
-          { from: "bot", text: "Bạn không có hóa đơn nào đang xác nhận." },
+          { from: "bot", text: "You have no orders being confirmed." },
         ]);
       }
       return;
     }
 
-    // Tổng số tiền đã mua
+    // Total spent
     if (
-      lower.includes("tổng") &&
-      (lower.includes("đơn hàng") || lower.includes("hóa đơn"))
+      lower.includes("total") &&
+      (lower.includes("order") || lower.includes("bill"))
     ) {
       const totalSpent = orders.reduce(
         (sum, order) => sum + order.totalPrice,
@@ -257,12 +260,12 @@ function ChatBot() {
       );
       setMessages((msgs) => [
         ...msgs,
-        { from: "bot", text: `Tổng số tiền bạn đã mua: $${totalSpent}` },
+        { from: "bot", text: `You have spent a total of: $${totalSpent}` },
       ]);
       return;
     }
 
-    // Các câu hỏi mặc định
+    // Default questions
     const matchedQuestion = defaultQuestions.find((q) =>
       lower.includes(q.question.toLowerCase())
     );
@@ -274,17 +277,17 @@ function ChatBot() {
       return;
     }
 
-    // Mặc định
+    // Default
     setMessages((msgs) => [
       ...msgs,
       {
         from: "bot",
-        text: "Xin lỗi, tôi chưa hiểu ý bạn. Tôi Chỉ có thể trả lời về món ăn, hóa đơn hoặc các thông tin cơ bản.",
+        text: "Sorry, I don't understand. I can only answer questions about menu items, orders, or basic information.",
       },
     ]);
   };
 
-  // Bong bóng chat
+  // Chat bubble
   if (!open) {
     return (
       <button
@@ -309,14 +312,14 @@ function ChatBot() {
           padding: "0px 0px",
           margin: "0px 0px",
         }}
-        title="Chatbot hỗ trợ"
+        title="Support Chatbot"
       >
         <i className="fas fa-comment-dots text-center ms-2"></i>
       </button>
     );
   }
 
-  // Khung chat
+  // Chat frame
   return (
     <div
       style={{
@@ -358,7 +361,7 @@ function ChatBot() {
             margin: "8px 8px",
             padding: "0px 0px",
           }}
-          title="Thu nhỏ"
+          title="Minimize"
         >
           <i class="fas fa-times"></i>
         </button>

@@ -92,14 +92,24 @@ function Reservation() {
             <div className="col-6">
               <ContactBox
                 title={"Email"}
-                emails={["namv2704@gmail.com", "company2@gmail.com"]}
+                emails={[
+                  "B22DCCN300@gmail.com",
+                  "B22DCCN794@gmail.com",
+                  "B22DCCN288@gmail.com",
+                  "B22DCCN086@gmail.com",
+                ]}
                 logo="fa fa-envelope"
               />
             </div>
             <div className="col-6">
               <ContactBox
                 title={"Phone Numbers"}
-                phoneNumbers={["0358109827", "0372817283"]}
+                phoneNumbers={[
+                  "0358109827",
+                  "0372817283",
+                  "0372618291",
+                  "0372618292",
+                ]}
                 logo="fa fa-phone"
               />
             </div>
