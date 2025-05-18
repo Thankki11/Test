@@ -210,7 +210,7 @@ function Login() {
               </button>
             </form>
 
-            <button
+            {/* <button
               className="w-100 mb-3 mt-3 btn-select "
               style={{ border: "1px solid black" }}
               onClick={() =>
@@ -219,9 +219,9 @@ function Login() {
               }
             >
               <i className="fab fa-google"></i> Login with Google
-            </button>
+            </button> */}
 
-            <button
+            {/* <button
               className="w-100"
               style={{ backgroundColor: "#3b5998", color: "#fff" }}
               onClick={() =>
@@ -230,7 +230,7 @@ function Login() {
               }
             >
               <i className="fab fa-facebook"></i> Login with Facebook
-            </button>
+            </button> */}
 
             <p className="text-center mt-4" style={{ fontSize: "16px" }}>
               Don't have an account?{" "}

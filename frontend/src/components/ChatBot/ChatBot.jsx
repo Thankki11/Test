@@ -5,11 +5,6 @@ import { useLocation } from "react-router-dom";
 const defaultQuestions = [
   { question: "giờ mở cửa", answer: "Nhà hàng mở cửa từ 8h đến 22h mỗi ngày." },
   { question: "địa chỉ", answer: "Tran Phu , Ha dong , Ha Noi" },
-  {
-    question: "giỏ hàng",
-    answer:
-      "Bạn hãy nhấn vào nút giỏ hàng ở góc trên hoặc nhắn 'giỏ hàng' cho tôi.",
-  },
 ];
 
 function ChatBot() {
@@ -129,36 +124,39 @@ function ChatBot() {
     }
 
     // Xem giỏ hàng
-    if (lower.includes("giỏ hàng")) {
-      // Lấy giỏ hàng từ localStorage
-      const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
+    // if (lower.includes("giỏ hàng")) {
+    //   // Lấy giỏ hàng từ localStorage
+    //   const cartItems = JSON.parse(localStorage.getItem("cart") || "[]");
 
-      if (cartItems.length > 0) {
-        let cartSummary = "Giỏ hàng của bạn:\n";
-        cartItems.forEach((item, index) => {
-          cartSummary += `${index + 1}. ${item.name} - Số lượng: ${
-            item.quantity
-          }\n`;
-        });
+    //   if (cartItems.length > 0) {
+    //     let cartSummary = "Giỏ hàng của bạn:\n";
+    //     cartItems.forEach((item, index) => {
+    //       cartSummary += `${index + 1}. ${item.name} - Số lượng: ${
+    //         item.quantity
+    //       }\n`;
+    //     });
 
-        setMessages((msgs) => [
-          ...msgs,
-          {
-            from: "bot",
-            text: cartSummary,
-          },
-        ]);
-      } else {
-        setMessages((msgs) => [
-          ...msgs,
-          { from: "bot", text: "Giỏ hàng của bạn đang trống." },
-        ]);
-      }
-      return;
-    }
+    //     setMessages((msgs) => [
+    //       ...msgs,
+    //       {
+    //         from: "bot",
+    //         text: cartSummary,
+    //       },
+    //     ]);
+    //   } else {
+    //     setMessages((msgs) => [
+    //       ...msgs,
+    //       { from: "bot", text: "Giỏ hàng của bạn đang trống." },
+    //     ]);
+    //   }
+    //   return;
+    // }
 
     // Xem hóa đơn
-    if (lower.includes("hóa đơn") || lower.includes("đơn hàng")) {
+    if (
+      lower.includes("nhiều") &&
+      (lower.includes("hóa đơn ") || lower.includes("đơn hàng"))
+    ) {
       if (orders.length > 0) {
         const maxOrder = orders.reduce((prev, curr) =>
           curr.totalPrice > prev.totalPrice ? curr : prev
@@ -180,7 +178,10 @@ function ChatBot() {
     }
 
     // Hóa đơn ít tiền nhất
-    if (lower.includes("hóa đơn ít tiền nhất")) {
+    if (
+      lower.includes("ít") &&
+      (lower.includes("hóa đơn ") || lower.includes("đơn hàng"))
+    ) {
       if (orders.length > 0) {
         const minOrder = orders.reduce((prev, curr) =>
           curr.totalPrice < prev.totalPrice ? curr : prev
@@ -246,7 +247,10 @@ function ChatBot() {
     }
 
     // Tổng số tiền đã mua
-    if (lower.includes("tổng số tiền đã mua")) {
+    if (
+      lower.includes("tổng") &&
+      (lower.includes("đơn hàng") || lower.includes("hóa đơn"))
+    ) {
       const totalSpent = orders.reduce(
         (sum, order) => sum + order.totalPrice,
         0
@@ -275,7 +279,7 @@ function ChatBot() {
       ...msgs,
       {
         from: "bot",
-        text: "Xin lỗi, tôi chưa hiểu ý bạn. Bạn có thể hỏi về món ăn, hóa đơn, giỏ hàng hoặc các thông tin cơ bản.",
+        text: "Xin lỗi, tôi chưa hiểu ý bạn. Tôi Chỉ có thể trả lời về món ăn, hóa đơn hoặc các thông tin cơ bản.",
       },
     ]);
   };

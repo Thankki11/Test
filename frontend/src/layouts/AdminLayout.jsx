@@ -87,28 +87,28 @@ function AdminLayout({ children }) {
                 Manage Orders
               </Link>
             </li>
-          
+
             {/* Thêm User Management */}
             <li style={{ marginBottom: "10px" }}>
               <Link
                 to="/admin/users"
                 style={{ color: "#fff", textDecoration: "none" }}
               >
-                <i
-                  className="fas fa-users"
-                  style={{ marginRight: "10px" }}
-                ></i>
+                <i className="fas fa-users" style={{ marginRight: "10px" }}></i>
                 User Management
               </Link>
             </li>
-            <li style={{ marginBottom: "10px" }}>
+            {/* <li style={{ marginBottom: "10px" }}>
               <Link to="/admin/employees" style={{ color: "#fff", textDecoration: "none" }}>
                 <i className="fas fa-users" style={{ marginRight: "10px" }}></i>
                 Manage Employees
               </Link>
-            </li>
+            </li> */}
             <li style={{ marginBottom: "10px" }}>
-              <Link to="/admin/vouchers" style={{ color: "#fff", textDecoration: "none" }}>
+              <Link
+                to="/admin/vouchers"
+                style={{ color: "#fff", textDecoration: "none" }}
+              >
                 <i className="fas fa-tags" style={{ marginRight: "10px" }}></i>
                 Manage Vouchers
               </Link>
@@ -118,7 +118,10 @@ function AdminLayout({ children }) {
                 to="/admin/combos"
                 style={{ color: "#fff", textDecoration: "none" }}
               >
-                <i className="fas fa-layer-group" style={{ marginRight: "10px" }}></i>
+                <i
+                  className="fas fa-layer-group"
+                  style={{ marginRight: "10px" }}
+                ></i>
                 Manage Combos
               </Link>
             </li>

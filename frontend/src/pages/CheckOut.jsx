@@ -232,8 +232,6 @@ function CheckOut() {
   };
 
   const handleSubmit = async (data) => {
-    console.log("Form data:", data);
-
     const phoneRegex = /^[0-9]{10}$/; // Biểu thức chính quy kiểm tra 10 chữ số
     if (!phoneRegex.test(data.phoneNumber)) {
       alert("Phone number must be exactly 10 digits.");
@@ -257,7 +255,8 @@ function CheckOut() {
           name: itemOrCombo.name,
           quantity: itemOrCombo.quantity,
           price: itemOrCombo.price,
-          category: itemOrCombo.category,
+          category:
+            itemOrCombo.type === "combo" ? "combo" : itemOrCombo.category,
           type: itemOrCombo.type === "combo" ? itemOrCombo.type : "items",
         })),
         totalPrice: discountedTotal.toFixed(2), // Sử dụng tổng tiền sau giảm giá
@@ -265,6 +264,8 @@ function CheckOut() {
       };
 
       const token = localStorage.getItem("token");
+
+      console.log("Order data:", order);
 
       if (data.paymentMethod === "vnpay") {
         // Gửi đơn hàng tới API

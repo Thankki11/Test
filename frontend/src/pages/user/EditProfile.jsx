@@ -218,18 +218,14 @@ function EditProfile() {
 
                   <div className="mb-3">
                     <label className="form-label">Address</label>
-                    <Autocomplete
-                      onLoad={(auto) => setAutocomplete(auto)}
-                      onPlaceChanged={handlePlaceSelect}
-                    >
-                      <input
-                        type="text"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
-                        className="form-control"
-                      />
-                    </Autocomplete>
+
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      className="form-control"
+                    />
                   </div>
                 </div>
                 <div className="col-4">
